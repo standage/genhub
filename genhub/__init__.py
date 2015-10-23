@@ -14,6 +14,7 @@
 from . import conf
 from . import download
 from . import ncbi
+from . import format
 
 # Custom modules
 from . import pdom

@@ -11,6 +11,7 @@
 from __future__ import print_function
 import argparse
 import importlib
+import os
 import subprocess
 import sys
 import genhub
@@ -49,6 +50,18 @@ def download_task(conf, workdir='.', logstream=sys.stderr):
                                       'implemented' % source)
 
 
+def format_task(conf, workdir='.', logstream=sys.stderr):
+    for label in sorted(conf):
+        config = conf[label]
+        specdir = '%s/%s' % (workdir, label)
+        assert os.path.isdir(specdir), \
+            'directory for %s has not yet been initialized' % label
+
+        genhub.format.gdna(label, config, workdir=workdir, logstream=logstream)
+        genhub.format.proteins(label, config, workdir=workdir,
+                               logstream=logstream)
+
+
 def get_parser():
     desc = 'Run the main GenHub build process.'
     parser = argparse.ArgumentParser(description=desc)
@@ -78,6 +91,8 @@ def main(parser=get_parser()):
 
     if 'download' in args.cmd:
         download_task(conf, workdir=args.workdir)
+    if 'format' in args.cmd:
+        format_task(conf, workdir=args.workdir)
 
 
 if __name__ == '__main__':
