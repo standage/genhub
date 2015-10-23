@@ -1,0 +1,15 @@
+Dmel:
+    species: Drosophila melanogaster
+    common: fruit fly
+    clade: fly
+    source: ncbi_flybase
+    prefix: RELEASE_5_48
+    annotation: dmel-5.48-ncbi.gff3.gz
+    accessions:
+        - CHR_X/NC_004354
+        - CHR_2/NT_033778
+        - CHR_2/NT_033779
+        - CHR_3/NT_033777
+        - CHR_3/NT_037436
+        - CHR_4/NC_004353
+    description: NCBI dissemination of FlyBase release 5.48

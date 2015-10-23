@@ -1,0 +1,8 @@
+Aech:
+    species: Acromyrmex echinatior
+    common: Panamanian leafcutter ant
+    clade: ant
+    source: ncbi
+    scaffolds: 103372_ref_Aech_3.9_chrUn.fa.gz
+    annotation: ref_Aech_3.9_top_level.gff3.gz
+    description: NCBI annotation release 100

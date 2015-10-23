@@ -1,0 +1,4 @@
+nose
+coverage
+pep8
+pycurl

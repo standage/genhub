@@ -1,0 +1,10 @@
+Ador:
+    species: Apis dorsata
+    common: giant honey bee
+    clade:
+        - bee
+        - honeybee
+    source: ncbi
+    scaffolds: ado_ref_Apis_dorsata_1.3_chrUn.fa.gz
+    annotation: ref_Apis_dorsata_1.3_top_level.gff3.gz
+    description: NCBI annotation release 100

@@ -1,0 +1,20 @@
+Epeg:
+    species: Equus pegasus
+    common: pegasus
+    source: ncbi
+    chromosomes:
+        - epeg_reg_Epe_2.1_01.fa.gz
+        - epeg_reg_Epe_2.1_02.fa.gz
+        - epeg_reg_Epe_2.1_03.fa.gz
+        - epeg_reg_Epe_2.1_04.fa.gz
+        - epeg_reg_Epe_2.1_05.fa.gz
+        - epeg_reg_Epe_2.1_06.fa.gz
+        - epeg_reg_Epe_2.1_07.fa.gz
+        - epeg_reg_Epe_2.1_08.fa.gz
+        - epeg_reg_Epe_2.1_09.fa.gz
+        - epeg_reg_Epe_2.1_10.fa.gz
+        - epeg_reg_Epe_2.1_11.fa.gz
+        - epeg_reg_Epe_2.1_12.fa.gz
+    prefix: Assembled_chromosomes/seq
+    annotation: ref_EPEG_2.1_top_level.gff3.gz
+    description: bogus NCBI annotation for software testing

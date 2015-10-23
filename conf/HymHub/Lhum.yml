@@ -1,0 +1,9 @@
+Lhum:
+    species: Linepithema humile
+    common: Argentine ant
+    clade: ant
+    source: ncbi
+    scaffolds: 83485_ref_Lhum_UMD_V04_chrUn.fa.gz
+    annotation: ref_Lhum_UMD_V04_top_level.gff3.gz
+    description: NCBI annotation release 100
+

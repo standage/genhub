@@ -1,0 +1,10 @@
+Bimp:
+    species: Bombus impatiens
+    common: common eastern bumble bee
+    clade:
+        - bee
+        - bumblebee
+    source: ncbi
+    scaffolds: bim_ref_BIMP_2.0_chrUn.fa.gz
+    annotation: ref_BIMP_2.0_top_level.gff3.gz
+    description: NCBI annotation release 101

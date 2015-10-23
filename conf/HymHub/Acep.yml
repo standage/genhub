@@ -1,0 +1,8 @@
+Acep:
+    species: Atta cephalotes
+    common: leafcutter ant
+    clade: ant
+    source: ncbi
+    scaffolds: acp_ref_Attacep1.0_chrUn.fa.gz
+    annotation: ref_Attacep1.0_top_level.gff3.gz
+    description: NCBI annotation release 102

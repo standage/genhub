@@ -1,0 +1,8 @@
+Sinv:
+    species: Solenopsis invicta
+    common: red fire ant
+    clade: ant
+    source: ncbi
+    scaffolds: 13686_ref_Si_gnG_chrUn.fa.gz
+    annotation: ref_Si_gnG_top_level.gff3.gz
+    description: NCBI annotation release 100

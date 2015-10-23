@@ -1,0 +1,28 @@
+Amel:
+    species: Apis mellifera
+    common: honey bee
+    clade:
+        - bee
+        - honeybee
+    source: ncbi
+    chromosomes:
+        - ame_ref_Amel_4.5_unplaced.fa.gz
+        - ame_ref_Amel_4.5_chrLG1.fa.gz
+        - ame_ref_Amel_4.5_chrLG2.fa.gz
+        - ame_ref_Amel_4.5_chrLG3.fa.gz
+        - ame_ref_Amel_4.5_chrLG4.fa.gz
+        - ame_ref_Amel_4.5_chrLG5.fa.gz
+        - ame_ref_Amel_4.5_chrLG6.fa.gz
+        - ame_ref_Amel_4.5_chrLG7.fa.gz
+        - ame_ref_Amel_4.5_chrLG8.fa.gz
+        - ame_ref_Amel_4.5_chrLG9.fa.gz
+        - ame_ref_Amel_4.5_chrLG10.fa.gz
+        - ame_ref_Amel_4.5_chrLG11.fa.gz
+        - ame_ref_Amel_4.5_chrLG12.fa.gz
+        - ame_ref_Amel_4.5_chrLG13.fa.gz
+        - ame_ref_Amel_4.5_chrLG14.fa.gz
+        - ame_ref_Amel_4.5_chrLG15.fa.gz
+        - ame_ref_Amel_4.5_chrLG16.fa.gz
+    prefix: Assembled_chromosomes/seq
+    annotation: ref_Amel_4.5_top_level.gff3.gz
+    description: NCBI annotation release 102

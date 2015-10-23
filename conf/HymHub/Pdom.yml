@@ -1,0 +1,10 @@
+Pdom:
+    species: Polistes dominula
+    common: European paper wasp
+    clade: vespid
+    source: custom
+    module: pdom
+    scaffolds: pdom-scaffolds-unmasked-r1.2.fa.gz
+    annotation: pdom-annot-r1.2.gff3
+    proteins: pdom-annot-r1.2-proteins.fa
+    description: Toth lab internal release 1.2

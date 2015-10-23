@@ -1,0 +1,8 @@
+Cflo:
+    species: Camponotus floridanus
+    common: carpenter ant
+    clade: ant
+    source: ncbi
+    scaffolds: cfl_ref_CamFlo_1.0_chrUn.fa.gz
+    annotation: ref_CamFlo_1.0_top_level.gff3.gz
+    description: NCBI annotation release 100

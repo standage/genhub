@@ -1,0 +1,30 @@
+Bter:
+    species: Bombus terrestris
+    common: buff-tailed bumble bee
+    clade:
+        - bee
+        - bumblebee
+    source: ncbi
+    chromosomes:
+        - bte_ref_Bter_1.0_unplaced.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B01.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B02.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B03.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B04.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B05.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B06.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B07.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B08.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B09.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B10.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B11.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B12.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B13.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B14.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B15.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B16.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B17.fa.gz
+        - bte_ref_Bter_1.0_chrLG_B18.fa.gz
+    prefix: Assembled_chromosomes/seq
+    annotation: ref_Bter_1.0_top_level.gff3.gz
+    description: NCBI annotation release 101

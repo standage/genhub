@@ -1,0 +1,8 @@
+Mrot:
+    species: Megachile rotundata
+    common: alfalfa leafcutting bee
+    clade: bee
+    source: ncbi
+    scaffolds: mro_ref_MROT_1.0_chrUn.fa.gz
+    annotation: ref_MROT_1.0_top_level.gff3.gz
+    description: NCBI annotation release 101

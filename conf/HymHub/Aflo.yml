@@ -1,0 +1,10 @@
+Aflo:
+    species: Apis florea
+    common: little honey bee
+    clade:
+        - bee
+        - honeybee
+    source: ncbi
+    scaffolds: afl_ref_Aflo_1.0_chrUn.fa.gz
+    annotation: ref_Aflo_1.0_top_level.gff3.gz
+    description: NCBI annotation release 101

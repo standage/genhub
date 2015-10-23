@@ -1,0 +1,9 @@
+Cbir:
+    species: Cerapachys biroi
+    common: clonal raider ant
+    clade: ant
+    source: ncbi
+    scaffolds: 443821_ref_CerBir1.0_chrUn.fa.gz
+    annotation: ref_CerBir1.0_top_level.gff3.gz
+    description: NCBI annotation release 100
+

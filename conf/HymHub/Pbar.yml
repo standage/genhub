@@ -1,0 +1,8 @@
+Pbar:
+    species: Pogonomyrmex barbatus
+    common: red harvester ant
+    clade: ant
+    source: ncbi
+    scaffolds: 144034_ref_Pbar_UMD_V03_chrUn.fa.gz
+    annotation: ref_Pbar_UMD_V03_top_level.gff3.gz
+    description: NCBI annotation release 100
