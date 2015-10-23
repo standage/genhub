@@ -65,6 +65,8 @@ def format_task(conf, workdir='.', logstream=sys.stderr):
 def get_parser():
     desc = 'Run the main GenHub build process.'
     parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('-v', '--version', action='version',
+                        version='GenHub v%s' % genhub.__version__)
     parser.add_argument('-w', '--workdir', metavar='WD', default='./species',
                         help='working directory for data files; default is '
                         '"./species"')
