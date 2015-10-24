@@ -5,8 +5,9 @@ depend:
 	@ pip install -r requirements.txt
 	@ pip -m easy_install pyyaml
 
-test: genhub/conf.py genhub/ncbi.py
-	@ nosetests -v --with-coverage --cover-package=genhub.conf,genhub.ncbi $^
+test:
+	@ rm -f .coverage
+	@ nosetests -v --with-coverage --cover-package=genhub genhub/*.py
 
 style:
 	@ pep8 genhub/*.py scripts/*.py
@@ -21,4 +22,4 @@ version:
 	python setup.py version
 
 clean:
-	rm -f *.pyc genhub/*.pyc
+	rm -rf *.pyc genhub/*.pyc .coverage testdata/scratch/*

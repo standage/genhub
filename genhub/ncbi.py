@@ -34,7 +34,7 @@ def download_chromosomes(label, config, workdir='.', logstream=sys.stderr,
     assert 'chromosomes' in config and 'scaffolds' not in config, \
         'Must configure only chromosomes or scaffolds, not both'
 
-    if logstream is not None:  # pragma: nocover
+    if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] download genome from NCBI' % config['species']
         print(logmsg, file=logstream)
 
@@ -60,7 +60,7 @@ def download_scaffolds(label, config, workdir='.', logstream=sys.stderr,
     assert 'chromosomes' not in config and 'scaffolds' in config, \
         'Must configure only chromosomes or scaffolds, not both'
 
-    if logstream is not None:  # pragma: nocover
+    if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] download genome from NCBI' % config['species']
         print(logmsg, file=logstream)
 
@@ -82,7 +82,7 @@ def download_annotation(label, config, workdir='.', logstream=sys.stderr,
     assert config['source'] == 'ncbi'
     assert 'annotation' in config, 'Genome annotation unconfigured'
 
-    if logstream is not None:  # pragma: nocover
+    if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] ' % config['species']
         logmsg += 'download annotation from NCBI'
         print(logmsg, file=logstream)
@@ -104,7 +104,7 @@ def download_proteins(label, config, workdir='.', logstream=sys.stderr,
     assert 'source' in config, 'Data source unconfigured'
     assert config['source'] == 'ncbi'
 
-    if logstream is not None:  # pragma: nocover
+    if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] ' % config['species']
         logmsg += 'download protein sequences from NCBI'
         print(logmsg, file=logstream)
@@ -131,7 +131,7 @@ def download_flybase(label, config, workdir='.', logstream=sys.stderr,
     assert 'source' in config, 'Data source unconfigured'
     assert config['source'] == 'ncbi_flybase'
 
-    if logstream is not None:  # pragma: nocover
+    if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] ' % config['species']
         logmsg += 'download genome data from NCBI'
         print(logmsg, file=logstream)
