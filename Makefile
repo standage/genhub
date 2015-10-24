@@ -3,7 +3,7 @@ check:
 
 depend:
 	@ pip install -r requirements.txt
-	@ pip -m easy_install pyyaml
+	@ python -m easy_install pyyaml
 
 test:
 	@ rm -f .coverage
