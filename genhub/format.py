@@ -19,6 +19,7 @@ files a consistent format for feature extraction and comparison.
 
 from __future__ import print_function
 from io import StringIO
+import filecmp
 import gzip
 import os
 import re
@@ -101,7 +102,7 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
                 'file "%s" not found; check "download" task' % infile
             instream = gzip.open(infile, 'rt')
 
-        closeoustream = False
+        closeoutstream = False
         if outstream is None:
             closeoutstream = True
             outfile = '%s/%s/%s.all.prot.fa' % (workdir, label, label)
@@ -123,8 +124,6 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
 
 def test_gdna_ncbi():
     """NCBI gDNA formatting"""
-
-    import filecmp
 
     testoutfile = 'testdata/fasta/hsal-first-7-out.fa'
     label, conf = genhub.conf.load_one('conf/HymHub/Hsal.yml')
@@ -165,3 +164,37 @@ def test_gdna_ncbi():
     outstream.close()
     assert filecmp.cmp(testoutfile, outfile), \
         'Tcas gDNA formatting failed (dir --> outstream)'
+
+
+def test_proteins_ncbi():
+    """NCBI protein formatting"""
+
+    label, conf = genhub.conf.load_one('conf/HymHub/Hsal.yml')
+    testoutfile = 'testdata/fasta/hsal-13-prot-out.fa'
+
+    infile = 'testdata/fasta/hsal-13-prot.fa.gz'
+    instream = gzip.open(infile, 'rt')
+    outfile = 'testdata/scratch/hsal-13-prot.fa'
+    outstream = open(outfile, 'w')
+    proteins(label, conf, instream=instream, outstream=outstream,
+             logstream=None)
+    instream.close()
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hsal protein formatting failed (instream --> outstream)'
+
+    wd = 'testdata/demo-workdir'
+    outstream = open(outfile, 'w')
+    proteins(label, conf, workdir=wd, outstream=outstream, logstream=None)
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hsal gDNA formatting failed (dir --> outstream)'
+
+    wd = 'testdata/scratch'
+    subprocess.call(['mkdir', '-p', 'testdata/scratch/Hsal'])
+    instream = gzip.open(infile, 'rt')
+    proteins(label, conf, workdir=wd, instream=instream, logstream=None)
+    instream.close()
+    outfile = 'testdata/scratch/Hsal/Hsal.all.prot.fa'
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hsal gDNA formatting failed (instream --> dir)'
