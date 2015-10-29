@@ -8,7 +8,7 @@ before_install:
     - export LD_LIBRARY_PATH=$HOME/local/lib
     - mkdir -p $HOME/local/src $HOME/local/bin $HOME/local/lib $HOME/local/include
     - wget -P $HOME/local/src http://genometools.org/pub/binary_distributions/gt-1.5.7-Linux_x86_64-64bit-complete.tar.gz
-    - tar -xzf gt-1.5.7-Linux_x86_64-64bit-complete.tar.gz --directory $HOME/local/src
+    - tar -xzf $HOME/local/src/gt-1.5.7-Linux_x86_64-64bit-complete.tar.gz --directory $HOME/local/src
     - sudo cp -r $HOME/local/src/gt-1.5.7-Linux_x86_64-64bit-complete/bin/* $HOME/local/bin/
     - sudo cp -r $HOME/local/src/ggt-1.5.7-Linux_x86_64-64bit-complete/include/genometools $HOME/local/include/
     - sudo cp -r $HOME/local/src/ggt-1.5.7-Linux_x86_64-64bit-complete/lib/* $HOME/local/lib/
