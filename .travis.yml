@@ -10,7 +10,7 @@ addons:
             - genometools
 before_install:
     - wget -P $HOME https://github.com/standage/AEGeAn/archive/master.tar.gz
-    - tar -xzf $HOME/master.tar.gz
+    - tar -xzf $HOME/master.tar.gz --directory $HOME
     - cd $HOME/AEGeAn-master && make
     - make depend
 before_script:
