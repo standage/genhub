@@ -17,6 +17,6 @@ before_install:
     - cd $HOME/AEGeAn-master && make prefix=$HOME/local && cd -
     - make depend
 before_script:
-    - export PATH=$HOME/AEGeAn-master/bin:$HOME/AEGeAn-master/data/script:$PATH
+    - export PATH=$HOME/local/bin:$HOME/AEGeAn-master/bin:$HOME/AEGeAn-master/data/script:$PATH
     - make check-dev
 script: make test
