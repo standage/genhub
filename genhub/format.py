@@ -21,23 +21,13 @@ from __future__ import print_function
 from io import StringIO
 import filecmp
 import gzip
-import os
 import re
 import subprocess
 import sys
 import genhub
 
 
-def file_check(filename, speclabel, workdir='.', message=None):
-    """Verify a data file exists before trying to process it."""
-    filepath = '%s/%s/%s' % (workdir, speclabel, filename)
-    msg = 'file "%s" not found' % filepath
-    if message is None:
-        msg += '; please verify that the `download` task completed successfuly'
-    else:
-        msg += '; ' + message
-    assert os.path.exists(filepath), msg
-    return filepath
+infile_message = 'please verify that "download" task completed successfully'
 
 
 def gdna(label, conf, workdir='.', instream=None, outstream=None,
@@ -66,13 +56,15 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
                 gdnafile = conf['scaffolds']
             else:
                 gdnafile = '%s.orig.fa.gz' % label
-            infile = file_check(gdnafile, label, workdir=workdir)
+            infile = genhub.file_path(gdnafile, label, workdir, check=True,
+                                      message=infile_message)
             instream = gzip.open(infile, 'rt')
 
         closeoutstream = False
         if outstream is None:
             closeoutstream = True
-            outfile = '%s/%s/%s.gdna.fa' % (workdir, label, label)
+            outbase = '%s.gdna.fa' % label
+            outfile = genhub.file_path(outbase, label, workdir=workdir)
             outstream = open(outfile, 'w')
 
         for line in instream:
@@ -107,13 +99,15 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
         closeinstream = False
         if instream is None:
             closeinstream = True
-            infile = file_check('protein.fa.gz', label, workdir=workdir)
+            infile = genhub.file_path('protein.fa.gz', label, workdir,
+                                      check=True, message=infile_message)
             instream = gzip.open(infile, 'rt')
 
         closeoutstream = False
         if outstream is None:
             closeoutstream = True
-            outfile = '%s/%s/%s.all.prot.fa' % (workdir, label, label)
+            outbase = '%s.all.prot.fa' % label
+            outfile = genhub.file_path(outbase, label, workdir)
             outstream = open(outfile, 'w')
 
         for line in instream:
@@ -133,8 +127,9 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr):
         logmsg = '[GenHub: %s] clean up annotation' % conf['species']
         print(logmsg, file=logstream)
 
-    infile = file_check(conf['annotation'], label, workdir=workdir)
-    outfile = '%s/%s/%s.gff3' % (workdir, label, label)
+    infile = genhub.file_path(conf['annotation'], label, workdir, check=True,
+                              message=infile_message)
+    outfile = genhub.file_path('%s.gff3' % label, label, workdir)
     filterstr = 'nofilter'
     if 'annotfilter' in conf:
         filterstr = conf['annotfilter']
@@ -142,7 +137,7 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr):
     cmdargs = cmd.split(' ')
     process = subprocess.Popen(cmdargs, stderr=subprocess.PIPE)
     process.wait()
-    for line in process.stderr:
+    for line in process.stderr:  # pragma: no cover
         if 'has not been previously introduced' not in line and \
            'does not begin with "##gff-version"' not in line:
             print(line, end='', file=logstream)
@@ -229,3 +224,19 @@ def test_proteins_ncbi():
     outfile = 'testdata/scratch/Hsal/Hsal.all.prot.fa'
     assert filecmp.cmp(testoutfile, outfile), \
         'Hsal gDNA formatting failed (instream --> dir)'
+
+
+def test_annotation():
+    """NCBI annotation formatting"""
+
+    label, conf = genhub.conf.load_one('conf/test2/Aech.yml')
+    annotation(label, conf, workdir='testdata/demo-workdir', logstream=None)
+    outfile = 'testdata/demo-workdir/Aech/Aech.gff3'
+    testfile = 'testdata/gff3/ncbi-format-aech.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Aech annotation formatting failed'
+
+    label, conf = genhub.conf.load_one('conf/test2/Pbar.yml')
+    annotation(label, conf, workdir='testdata/demo-workdir', logstream=None)
+    outfile = 'testdata/demo-workdir/Pbar/Pbar.gff3'
+    testfile = 'testdata/gff3/ncbi-format-pbar.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Pbar annotation formatting failed'

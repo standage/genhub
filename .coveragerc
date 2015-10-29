@@ -1,7 +1,6 @@
 [run]
 branch = True
 omit =
-    genhub/__init__.py
     genhub/_version.py
     genhub/download.py
     genhub/pdom.py

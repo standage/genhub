@@ -6,3 +6,5 @@ dist/
 .*.swp
 scratch/
 testdata/scratch/*
+testdata/demo-workdir/Aech/Aech.gff3
+testdata/demo-workdir/Pbar/Pbar.gff3
