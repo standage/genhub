@@ -14,7 +14,7 @@ before_install:
     - sudo cp -r $HOME/local/src/gt-1.5.7-Linux_x86_64-64bit-complete/lib/* $HOME/local/lib/
     - wget -P $HOME https://github.com/standage/AEGeAn/archive/master.tar.gz
     - tar -xzf $HOME/master.tar.gz --directory $HOME
-    - cd $HOME/AEGeAn-master && make prefix=$HOME/local
+    - cd $HOME/AEGeAn-master && make prefix=$HOME/local && cd -
     - make depend
 before_script:
     - export PATH=$HOME/AEGeAn-master/bin:$HOME/AEGeAn-master/data/script:$PATH
