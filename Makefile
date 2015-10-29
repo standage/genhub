@@ -1,6 +1,9 @@
 check:
 	python scripts/check.py
 
+check-dev:
+	python scripts/check.py --dev
+
 depend:
 	@ pip install -r requirements.txt
 	@ python -m easy_install pyyaml
