@@ -28,6 +28,18 @@ import sys
 import genhub
 
 
+def file_check(filename, speclabel, workdir='.', message=None):
+    """Verify a data file exists before trying to process it."""
+    filepath = '%s/%s/%s' % (workdir, speclabel, filename)
+    msg = 'file "%s" not found' % filepath
+    if message is None:
+        msg += '; please verify that the `download` task completed successfuly'
+    else:
+        msg += '; ' + message
+    assert os.path.exists(filepath), msg
+    return filepath
+
+
 def gdna(label, conf, workdir='.', instream=None, outstream=None,
          logstream=sys.stderr):
     """
@@ -54,9 +66,7 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
                 gdnafile = conf['scaffolds']
             else:
                 gdnafile = '%s.orig.fa.gz' % label
-            infile = '%s/%s/%s' % (workdir, label, gdnafile)
-            assert os.path.exists(infile), \
-                'file "%s" not found; check "download" task' % infile
+            infile = file_check(gdnafile, label, workdir=workdir)
             instream = gzip.open(infile, 'rt')
 
         closeoutstream = False
@@ -97,9 +107,7 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
         closeinstream = False
         if instream is None:
             closeinstream = True
-            infile = '%s/%s/protein.fa.gz' % (workdir, label)
-            assert os.path.exists(infile), \
-                'file "%s" not found; check "download" task' % infile
+            infile = file_check('protein.fa.gz', label, workdir=workdir)
             instream = gzip.open(infile, 'rt')
 
         closeoutstream = False
@@ -116,6 +124,29 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
             instream.close()
         if closeoutstream:
             outstream.close()
+
+
+def annotation(label, conf, workdir='.', logstream=sys.stderr):
+    """Clean up and standardize genome annotation."""
+
+    if logstream is not None:  # pragma: no cover
+        logmsg = '[GenHub: %s] clean up annotation' % conf['species']
+        print(logmsg, file=logstream)
+
+    infile = file_check(conf['annotation'], label, workdir=workdir)
+    outfile = '%s/%s/%s.gff3' % (workdir, label, label)
+    filterstr = 'nofilter'
+    if 'annotfilter' in conf:
+        filterstr = conf['annotfilter']
+    cmd = 'bash scripts/filter.sh %s %s %s' % (infile, outfile, filterstr)
+    cmdargs = cmd.split(' ')
+    process = subprocess.Popen(cmdargs, stderr=subprocess.PIPE)
+    process.wait()
+    for line in process.stderr:
+        if 'has not been previously introduced' not in line and \
+           'does not begin with "##gff-version"' not in line:
+            print(line, end='', file=logstream)
+    assert process.returncode == 0, 'annot cleanup command failed: %s' % cmd
 
 
 # -----------------------------------------------------------------------------

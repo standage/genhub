@@ -60,6 +60,8 @@ def format_task(conf, workdir='.', logstream=sys.stderr):
         genhub.format.gdna(label, config, workdir=workdir, logstream=logstream)
         genhub.format.proteins(label, config, workdir=workdir,
                                logstream=logstream)
+        genhub.format.annotation(label, config, workdir=workdir,
+                                 logstream=logstream)
 
 
 def get_parser():
