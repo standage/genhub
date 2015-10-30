@@ -135,7 +135,8 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr):
         filterstr = conf['annotfilter']
     cmd = 'bash scripts/filter.sh %s %s %s' % (infile, outfile, filterstr)
     cmdargs = cmd.split(' ')
-    process = subprocess.Popen(cmdargs, stderr=subprocess.PIPE)
+    process = subprocess.Popen(cmdargs, stderr=subprocess.PIPE,
+                               universal_newlines=True)
     process.wait()
     for line in process.stderr:  # pragma: no cover
         if 'has not been previously introduced' not in line and \

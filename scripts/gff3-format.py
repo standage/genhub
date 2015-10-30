@@ -8,6 +8,7 @@
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
 
+from __future__ import print_function
 import argparse
 import sys
 import re
@@ -68,4 +69,4 @@ if __name__ == '__main__':
             if rnaid in rnaid_to_accession:
                 line += ';accession=%s' % rnaid_to_accession[rnaid]
 
-        print line
+        print(line)
