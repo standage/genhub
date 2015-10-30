@@ -5,5 +5,9 @@ Lhum:
     source: ncbi
     scaffolds: 83485_ref_Lhum_UMD_V04_chrUn.fa.gz
     annotation: ref_Lhum_UMD_V04_top_level.gff3.gz
+    checksums:
+        gdna: 47dec463035cad39ab01d6f808ee5aa8ebd31d03
+        gff3: 9667fab80b40d57b971391a26e5e16eefa5e5ecd
+        prot: a3cc12377878b9c411bfcbd0a9cb9fd692d7df1e
     description: NCBI annotation release 100
 

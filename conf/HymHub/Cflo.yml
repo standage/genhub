@@ -5,4 +5,8 @@ Cflo:
     source: ncbi
     scaffolds: cfl_ref_CamFlo_1.0_chrUn.fa.gz
     annotation: ref_CamFlo_1.0_top_level.gff3.gz
+    checksums:
+        gdna: 6a728939aa1aaee508abf4d6279062d0174753ce
+        gff3: 4aaa07172692ca155a6f9d2113978c190a7cb4a6
+        prot: 42d06828bc1c62bad5efa43c2567d0284d387116
     description: NCBI annotation release 100

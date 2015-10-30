@@ -5,4 +5,8 @@ Pbar:
     source: ncbi
     scaffolds: 144034_ref_Pbar_UMD_V03_chrUn.fa.gz
     annotation: ref_Pbar_UMD_V03_top_level.gff3.gz
+    checksums:
+        gdna: 88846d721df1bf4f91700f68eb5331afaa40cb0b
+        gff3: 3ead8b1331fc766ece58a029365a69c199f672eb
+        prot: d6312f33be4a2c7d71ec08329c32f8cb4cd4ce3a
     description: NCBI annotation release 100

@@ -17,4 +17,8 @@ Tcas:
         - tca_ref_Tcas_3.0_chrLG10.fa.gz
     prefix: Assembled_chromosomes/seq
     annotation: ref_Tcas_3.0_top_level.gff3.gz
+    checksums:
+        gdna: 11615612aceb7352b04eb8f90da81bf12ff7a15f
+        gff3: d87d306e526077771383e69de8e0d480d072ac12
+        prot: 90560510bb25f8ed2b9b2e6bd6447e837394219d
     description: NCBI annotation release 102

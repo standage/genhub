@@ -5,4 +5,8 @@ Sinv:
     source: ncbi
     scaffolds: 13686_ref_Si_gnG_chrUn.fa.gz
     annotation: ref_Si_gnG_top_level.gff3.gz
+    checksums:
+        gdna: 7932b439c2d4d9abd1bf28675197909f579d9a3e
+        gff3: 530564a8a1224406f163cf19082e2ba78274794a
+        prot: 15760e1ad7fa5d1cc1fe65a66db3b80ecae74def
     description: NCBI annotation release 100

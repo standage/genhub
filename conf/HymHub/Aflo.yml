@@ -7,4 +7,8 @@ Aflo:
     source: ncbi
     scaffolds: afl_ref_Aflo_1.0_chrUn.fa.gz
     annotation: ref_Aflo_1.0_top_level.gff3.gz
+    checksums:
+        gdna: 9be74682098ebb039815828cbd355ef42827b053
+        gff3: e3967d56d51a50ee58f3ab981810eb6f2d898447
+        prot: d3817bc0b95b21980eb8aa996fc2fee9f2e0c4ac
     description: NCBI annotation release 101

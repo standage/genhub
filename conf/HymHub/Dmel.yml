@@ -12,4 +12,8 @@ Dmel:
         - CHR_3/NT_033777
         - CHR_3/NT_037436
         - CHR_4/NC_004353
+    checksums:
+        gdna: 3f167375484755ad103c28d4a104b626ee42ff45
+        gff3: ea4f73b80574f1575df550d9942deee85ca09caf
+        prot: 6489762e0e8b56cc8e3d19cf24a30f0bce0cb670
     description: NCBI dissemination of FlyBase release 5.48

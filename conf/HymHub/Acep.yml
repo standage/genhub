@@ -5,4 +5,8 @@ Acep:
     source: ncbi
     scaffolds: acp_ref_Attacep1.0_chrUn.fa.gz
     annotation: ref_Attacep1.0_top_level.gff3.gz
+    checksums:
+        gdna: adc0f9f92ecdefbcf82c5b4b4ac064f449d9f6a5
+        gff3: eb17e19358661a9a14db63bc9f77f3389a1a06e1
+        prot: 7189f913eade26a7879d2b38b0c64ce167991fb4
     description: NCBI annotation release 102

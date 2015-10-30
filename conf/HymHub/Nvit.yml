@@ -12,5 +12,9 @@ Nvit:
         - nvi_ref_Nvit_2.1_unlocalized.fa.gz
         - nvi_ref_Nvit_2.1_unplaced.fa.gz
     prefix: Assembled_chromosomes/seq
-    annotation: ref_Nvit_2.1_top_level.gff3.gz 
+    annotation: ref_Nvit_2.1_top_level.gff3.gz
+    checksums:
+        gdna: dcaa9994616e4339824873ddfed79fd7bd8a74d4
+        gff3: 9ac909a9b85f685335fe71b48c9c7ebd7c675088
+        prot: 22bc99bc894d215fd01f2ccab82b50e3276ad4c1
     description: NCBI annotation release 101

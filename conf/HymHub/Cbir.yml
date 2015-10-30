@@ -5,5 +5,9 @@ Cbir:
     source: ncbi
     scaffolds: 443821_ref_CerBir1.0_chrUn.fa.gz
     annotation: ref_CerBir1.0_top_level.gff3.gz
+    checksums:
+        gdna: 42faab6f3ad52f4715c181423538f546fc5f3f0c
+        gff3: ae3cfb30430af10a4010bdb679eb3dd751ac2692
+        prot: f92ed229aa8f371c03c4e42699fd836ca7891d6f
     description: NCBI annotation release 100
 

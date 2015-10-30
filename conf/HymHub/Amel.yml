@@ -25,4 +25,8 @@ Amel:
         - ame_ref_Amel_4.5_chrLG16.fa.gz
     prefix: Assembled_chromosomes/seq
     annotation: ref_Amel_4.5_top_level.gff3.gz
+    checksums:
+        gdna: f235b5115b2625550328a618b8317d6eaa2cf87d
+        gff3: 74f5eae43bb4ea7ed5199e67178dd130f93b4d37
+        prot: 421b55ba166b7c65858b16c99339379b05f0af33
     description: NCBI annotation release 102

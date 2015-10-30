@@ -7,4 +7,8 @@ Ador:
     source: ncbi
     scaffolds: ado_ref_Apis_dorsata_1.3_chrUn.fa.gz
     annotation: ref_Apis_dorsata_1.3_top_level.gff3.gz
+    checksums:
+        gdna: 5587d68781e8c5b834849457a0af1652b548bf34
+        gff3: 07aea920d51ab322361201f760cd979863215cf4
+        prot: 2ba3c7f9fdc2d25e9a386437077f6c7f1559adda
     description: NCBI annotation release 100

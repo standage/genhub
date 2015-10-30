@@ -31,7 +31,7 @@ infile_message = 'please verify that "download" task completed successfully'
 
 
 def gdna(label, conf, workdir='.', instream=None, outstream=None,
-         logstream=sys.stderr):
+         logstream=sys.stderr, verify=True):
     """
     Format genomic DNA files.
 
@@ -48,6 +48,9 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
         logmsg += 'simplify genome Fasta deflines'
         print(logmsg, file=logstream)
 
+    outbase = '%s.gdna.fa' % label
+    outfile = genhub.file_path(outbase, label, workdir=workdir)
+
     if conf['source'] == 'ncbi':
         closeinstream = False
         if instream is None:
@@ -63,8 +66,6 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
         closeoutstream = False
         if outstream is None:
             closeoutstream = True
-            outbase = '%s.gdna.fa' % label
-            outfile = genhub.file_path(outbase, label, workdir=workdir)
             outstream = open(outfile, 'w')
 
         for line in instream:
@@ -76,9 +77,21 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
         if closeoutstream:
             outstream.close()
 
+    if verify is False:
+        return
+
+    if 'checksums' in conf and 'gdna' in conf['checksums']:
+        testsha1 = genhub.file_sha1(outfile)
+        assert testsha1 == conf['checksums']['gdna'], \
+            '%s gDNA file integrity check failed' % label
+    else:  # pragma: no cover
+        message = 'Cannot verify integrity of %s gDNA file ' % label
+        message += 'without a checksum'
+        print(message, file=logstream)
+
 
 def proteins(label, conf, workdir='.', instream=None, outstream=None,
-             logstream=sys.stderr):
+             logstream=sys.stderr, verify=True):
     """
     Format protein sequence files.
 
@@ -95,6 +108,9 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
         logmsg += 'simplify protein Fasta deflines'
         print(logmsg, file=logstream)
 
+    outbase = '%s.all.prot.fa' % label
+    outfile = genhub.file_path(outbase, label, workdir)
+
     if conf['source'] == 'ncbi':
         closeinstream = False
         if instream is None:
@@ -106,8 +122,6 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
         closeoutstream = False
         if outstream is None:
             closeoutstream = True
-            outbase = '%s.all.prot.fa' % label
-            outfile = genhub.file_path(outbase, label, workdir)
             outstream = open(outfile, 'w')
 
         for line in instream:
@@ -119,8 +133,20 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
         if closeoutstream:
             outstream.close()
 
+    if verify is False:
+        return
 
-def annotation(label, conf, workdir='.', logstream=sys.stderr):
+    if 'checksums' in conf and 'prot' in conf['checksums']:
+        testsha1 = genhub.file_sha1(outfile)
+        assert testsha1 == conf['checksums']['prot'], \
+            '%s protein file integrity check failed' % label
+    else:  # pragma: no cover
+        message = 'Cannot verify integrity of %s protein file ' % label
+        message += 'without a checksum'
+        print(message, file=logstream)
+
+
+def annotation(label, conf, workdir='.', logstream=sys.stderr, verify=True):
     """Clean up and standardize genome annotation."""
 
     if logstream is not None:  # pragma: no cover
@@ -144,6 +170,18 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr):
             print(line, end='', file=logstream)
     assert process.returncode == 0, 'annot cleanup command failed: %s' % cmd
 
+    if verify is False:
+        return
+
+    if 'checksums' in conf and 'gff3' in conf['checksums']:
+        testsha1 = genhub.file_sha1(outfile)
+        assert testsha1 == conf['checksums']['gff3'], \
+            '%s annotation file integrity check failed' % label
+    else:  # pragma: no cover
+        message = 'Cannot verify integrity of %s annotation file ' % label
+        message += 'without a checksum'
+        print(message, file=logstream)
+
 
 # -----------------------------------------------------------------------------
 # Unit tests
@@ -153,13 +191,14 @@ def test_gdna_ncbi():
     """NCBI gDNA formatting"""
 
     testoutfile = 'testdata/fasta/hsal-first-7-out.fa'
-    label, conf = genhub.conf.load_one('conf/HymHub/Hsal.yml')
+    label, conf = genhub.conf.load_one('conf/test2/Hsal.yml')
 
     infile = 'testdata/fasta/hsal-first-7.fa.gz'
     instream = gzip.open(infile, 'rt')
     outfile = 'testdata/scratch/hsal-first-7.fa'
     outstream = open(outfile, 'w')
-    gdna(label, conf, instream=instream, outstream=outstream, logstream=None)
+    gdna(label, conf, instream=instream, outstream=outstream, logstream=None,
+         verify=False)
     instream.close()
     outstream.close()
     assert filecmp.cmp(testoutfile, outfile), \
@@ -167,7 +206,8 @@ def test_gdna_ncbi():
 
     wd = 'testdata/demo-workdir'
     outstream = open(outfile, 'w')
-    gdna(label, conf, workdir=wd, outstream=outstream, logstream=None)
+    gdna(label, conf, workdir=wd, outstream=outstream, logstream=None,
+         verify=False)
     outstream.close()
     assert filecmp.cmp(testoutfile, outfile), \
         'Hsal gDNA formatting failed (dir --> outstream)'
@@ -187,7 +227,8 @@ def test_gdna_ncbi():
     wd = 'testdata/demo-workdir'
     outfile = 'testdata/scratch/tcas-first-33.fa'
     outstream = open(outfile, 'w')
-    gdna(label, conf, workdir=wd, outstream=outstream, logstream=None)
+    gdna(label, conf, workdir=wd, outstream=outstream, logstream=None,
+         verify=False)
     outstream.close()
     assert filecmp.cmp(testoutfile, outfile), \
         'Tcas gDNA formatting failed (dir --> outstream)'
@@ -196,7 +237,7 @@ def test_gdna_ncbi():
 def test_proteins_ncbi():
     """NCBI protein formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Hsal.yml')
+    label, conf = genhub.conf.load_one('conf/test2/Hsal.yml')
     testoutfile = 'testdata/fasta/hsal-13-prot-out.fa'
 
     infile = 'testdata/fasta/hsal-13-prot.fa.gz'
@@ -204,7 +245,7 @@ def test_proteins_ncbi():
     outfile = 'testdata/scratch/hsal-13-prot.fa'
     outstream = open(outfile, 'w')
     proteins(label, conf, instream=instream, outstream=outstream,
-             logstream=None)
+             logstream=None, verify=False)
     instream.close()
     outstream.close()
     assert filecmp.cmp(testoutfile, outfile), \
@@ -212,7 +253,8 @@ def test_proteins_ncbi():
 
     wd = 'testdata/demo-workdir'
     outstream = open(outfile, 'w')
-    proteins(label, conf, workdir=wd, outstream=outstream, logstream=None)
+    proteins(label, conf, workdir=wd, outstream=outstream, logstream=None,
+             verify=False)
     outstream.close()
     assert filecmp.cmp(testoutfile, outfile), \
         'Hsal gDNA formatting failed (dir --> outstream)'
@@ -237,7 +279,8 @@ def test_annotation():
     assert filecmp.cmp(outfile, testfile), 'Aech annotation formatting failed'
 
     label, conf = genhub.conf.load_one('conf/test2/Pbar.yml')
-    annotation(label, conf, workdir='testdata/demo-workdir', logstream=None)
+    annotation(label, conf, workdir='testdata/demo-workdir', logstream=None,
+               verify=False)
     outfile = 'testdata/demo-workdir/Pbar/Pbar.gff3'
     testfile = 'testdata/gff3/ncbi-format-pbar.gff3'
     assert filecmp.cmp(outfile, testfile), 'Pbar annotation formatting failed'

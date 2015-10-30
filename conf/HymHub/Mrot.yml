@@ -5,4 +5,8 @@ Mrot:
     source: ncbi
     scaffolds: mro_ref_MROT_1.0_chrUn.fa.gz
     annotation: ref_MROT_1.0_top_level.gff3.gz
+    checksums:
+        gdna: c603b9af806bd3477ed3419df70f0f61fed4c620
+        gff3: 53b2b049a4526b8e56074862661a25a42861f783
+        prot: 71263714badd2e63a5f3da820071fada9a653659
     description: NCBI annotation release 101

@@ -27,4 +27,8 @@ Bter:
         - bte_ref_Bter_1.0_chrLG_B18.fa.gz
     prefix: Assembled_chromosomes/seq
     annotation: ref_Bter_1.0_top_level.gff3.gz
+    checksums:
+        gdna: 729a79d46caff8f1f9c1eba829fa826c6922a4ed
+        gff3: 50f4fcadf1e032a8a86e80f8f4d5cf21549c206d
+        prot: 826189e94fed1207a52ce387d4f132012c240549
     description: NCBI annotation release 101

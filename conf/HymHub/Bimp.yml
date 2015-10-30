@@ -7,4 +7,8 @@ Bimp:
     source: ncbi
     scaffolds: bim_ref_BIMP_2.0_chrUn.fa.gz
     annotation: ref_BIMP_2.0_top_level.gff3.gz
+    checksums:
+        gdna: a5f5133af4c4322a94df2984fbe514032897f948
+        gff3: 6eb476a42793d6a9f684c27de2c5423afee81cb1
+        prot: 85a14d0f2efa2a0935b81cb1158f3bf85d881be8
     description: NCBI annotation release 101
