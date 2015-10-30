@@ -4,19 +4,16 @@ python:
     - 2.7
     - 3.3
     - 3.4
+cache:
+    directories:
+        - $HOME/local/tgz
 before_install:
-    - export LD_LIBRARY_PATH=$HOME/local/lib
-    - mkdir -p $HOME/local/src $HOME/local/bin $HOME/local/lib $HOME/local/include
-    - wget -P $HOME/local/src http://genometools.org/pub/binary_distributions/gt-1.5.7-Linux_x86_64-64bit-complete.tar.gz
-    - tar -xzf $HOME/local/src/gt-1.5.7-Linux_x86_64-64bit-complete.tar.gz --directory $HOME/local/src
-    - sudo cp -r $HOME/local/src/gt-1.5.7-Linux_x86_64-64bit-complete/bin/* $HOME/local/bin/
-    - sudo cp -r $HOME/local/src/gt-1.5.7-Linux_x86_64-64bit-complete/include/genometools $HOME/local/include/
-    - sudo cp -r $HOME/local/src/gt-1.5.7-Linux_x86_64-64bit-complete/lib/* $HOME/local/lib/
-    - wget -P $HOME https://github.com/standage/AEGeAn/archive/master.tar.gz
-    - tar -xzf $HOME/master.tar.gz --directory $HOME
-    - cd $HOME/AEGeAn-master && make prefix=$HOME/local && cd -
+    - mkdir -p $HOME/.python-eggs
+    - chmod og-w $HOME/.python-eggs
+    - bash scripts/travis-prereqs.sh
     - make depend
 before_script:
-    - export PATH=$HOME/local/bin:$HOME/AEGeAn-master/bin:$HOME/AEGeAn-master/data/script:$PATH
+    - export PATH=$HOME/local/bin:$PATH
+    - export LD_LIBRARY_PATH=$HOME/local/lib
     - make check-dev
 script: make test

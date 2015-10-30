@@ -5,6 +5,7 @@ check-dev:
 	python scripts/genhub-check.py --dev
 
 depend:
+	@ pip install --upgrade pip
 	@ pip install -r requirements.txt
 	@ python -m easy_install pyyaml
 
