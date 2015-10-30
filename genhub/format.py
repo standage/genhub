@@ -21,6 +21,7 @@ from __future__ import print_function
 from io import StringIO
 import filecmp
 import gzip
+import importlib
 import re
 import subprocess
 import sys
@@ -69,7 +70,9 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
             outstream = open(outfile, 'w')
 
         for line in instream:
-            line = re.sub('>gi\|\d+\|(ref|gb)\|([^\|]+)\S+', '>\g<2>', line)
+            if line.startswith('>'):
+                pattern = '>gi\|\d+\|(ref|gb)\|([^\|]+)\S+'
+                line = re.sub(pattern, '>\g<2>', line)
             print(line, end='', file=outstream)
 
         if closeinstream:
@@ -77,7 +80,11 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
         if closeoutstream:
             outstream.close()
 
-    if verify is False:
+    elif conf['source'] == 'custom':
+        mod = importlib.import_module('genhub.' + conf['module'])
+        mod.gdna(label, conf, workdir=workdir, logstream=logstream)
+
+    if verify is False:  # pragma: no cover
         return
 
     if 'checksums' in conf and 'gdna' in conf['checksums']:
@@ -125,7 +132,9 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
             outstream = open(outfile, 'w')
 
         for line in instream:
-            line = re.sub('>gi\|\d+\|(ref|gb)\|([^\|]+)\S+', '>\g<2>', line)
+            if line.startswith('>'):
+                pattern = '>gi\|\d+\|(ref|gb)\|([^\|]+)\S+'
+                line = re.sub(pattern, '>\g<2>', line)
             print(line, end='', file=outstream)
 
         if closeinstream:
@@ -133,7 +142,11 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
         if closeoutstream:
             outstream.close()
 
-    if verify is False:
+    elif conf['source'] == 'custom':
+        mod = importlib.import_module('genhub.' + conf['module'])
+        mod.proteins(label, conf, workdir=workdir, logstream=logstream)
+
+    if verify is False:  # pragma: no cover
         return
 
     if 'checksums' in conf and 'prot' in conf['checksums']:
@@ -153,24 +166,30 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr, verify=True):
         logmsg = '[GenHub: %s] clean up annotation' % conf['species']
         print(logmsg, file=logstream)
 
-    infile = genhub.file_path(conf['annotation'], label, workdir, check=True,
-                              message=infile_message)
     outfile = genhub.file_path('%s.gff3' % label, label, workdir)
-    filterstr = 'nofilter'
-    if 'annotfilter' in conf:
-        filterstr = conf['annotfilter']
-    cmd = 'genhub-filter.sh %s %s %s' % (infile, outfile, filterstr)
-    cmdargs = cmd.split(' ')
-    process = subprocess.Popen(cmdargs, stderr=subprocess.PIPE,
-                               universal_newlines=True)
-    process.wait()
-    for line in process.stderr:  # pragma: no cover
-        if 'has not been previously introduced' not in line and \
-           'does not begin with "##gff-version"' not in line:
-            print(line, end='', file=logstream)
-    assert process.returncode == 0, 'annot cleanup command failed: %s' % cmd
 
-    if verify is False:
+    if conf['source'] == 'ncbi':
+        infile = genhub.file_path(conf['annotation'], label, workdir,
+                                  check=True, message=infile_message)
+        filterstr = 'nofilter'
+        if 'annotfilter' in conf:
+            filterstr = conf['annotfilter']
+        cmd = 'genhub-filter.sh %s %s %s' % (infile, outfile, filterstr)
+        cmdargs = cmd.split(' ')
+        proc = subprocess.Popen(cmdargs, stderr=subprocess.PIPE,
+                                universal_newlines=True)
+        proc.wait()
+        for line in proc.stderr:  # pragma: no cover
+            if 'has not been previously introduced' not in line and \
+               'does not begin with "##gff-version"' not in line:
+                print(line, end='', file=logstream)
+        assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
+
+    elif conf['source'] == 'custom':
+        mod = importlib.import_module('genhub.' + conf['module'])
+        mod.annotation(label, conf, workdir=workdir, logstream=logstream)
+
+    if verify is False:  # pragma: no cover
         return
 
     if 'checksums' in conf and 'gff3' in conf['checksums']:

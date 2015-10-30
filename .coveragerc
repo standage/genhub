@@ -3,7 +3,6 @@ branch = True
 omit =
     genhub/_version.py
     genhub/download.py
-    genhub/pdom.py
 
 [report]
 exclude_lines =
