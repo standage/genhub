@@ -133,8 +133,7 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr):
     filterstr = 'nofilter'
     if 'annotfilter' in conf:
         filterstr = conf['annotfilter']
-    cmd = 'bash scripts/genhub-filter.sh %s %s %s' % (infile, outfile,
-                                                      filterstr)
+    cmd = 'genhub-filter.sh %s %s %s' % (infile, outfile, filterstr)
     cmdargs = cmd.split(' ')
     process = subprocess.Popen(cmdargs, stderr=subprocess.PIPE,
                                universal_newlines=True)

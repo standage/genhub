@@ -11,7 +11,9 @@
 """Package-wide configuration"""
 
 # Package modules
+from __future__ import print_function
 import os
+import sys
 from . import conf
 from . import download
 from . import ncbi
@@ -24,6 +26,11 @@ from . import pdom
 from ._version import get_versions
 __version__ = get_versions()['version']
 del get_versions
+
+
+ghdir = os.path.dirname(os.path.realpath(__file__))
+scriptdir = os.path.realpath(ghdir + '/../scripts/')
+os.environ['PATH'] += ':' + scriptdir
 
 
 def file_path(filename, speclabel, workdir='.', check=False, message=None):
