@@ -17,6 +17,7 @@ import re
 if __name__ == '__main__':
     desc = 'Preliminary clean up / processing of GFF3 files'
     parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('-o', '--outfile', type=argparse.FileType('w'))
     parser.add_argument('gff3', type=argparse.FileType('r'))
     args = parser.parse_args()
 
@@ -69,4 +70,4 @@ if __name__ == '__main__':
             if rnaid in rnaid_to_accession:
                 line += ';accession=%s' % rnaid_to_accession[rnaid]
 
-        print(line)
+        print(line, file=args.outfile)

@@ -8,3 +8,6 @@ scratch/
 testdata/scratch/*
 testdata/demo-workdir/Aech/Aech.gff3
 testdata/demo-workdir/Pbar/Pbar.gff3
+testdata/demo-workdir/Pdom/Pdom.all.prot.fa
+testdata/demo-workdir/Pdom/Pdom.gdna.fa
+testdata/demo-workdir/Pdom/Pdom.gff3
