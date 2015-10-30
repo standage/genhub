@@ -1,5 +1,9 @@
-languages:
-    Python: true
+---
+engines:
+  fixme:
+    enabled: true
+ratings:
+  paths: []
 exclude_paths:
-    - genhub/_version.py
-    - versioneer.py
+- genhub/_version.py
+- versioneer.py
