@@ -66,6 +66,7 @@ def check_path():
     for exe in execs:
         try:
             proc = subprocess.Popen(['which', exe], stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
                                     universal_newlines=True)
             resultcode = proc.wait()
             if resultcode == 0:
