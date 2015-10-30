@@ -21,5 +21,5 @@ fi
 gunzip -c $infile \
     | $filtercmd \
     | tidygff3 \
-    | python scripts/gff3-format.py - \
+    | python scripts/genhub-format-gff3.py - \
     | gt gff3 -sort -tidy -o $outfile -force

@@ -24,4 +24,8 @@ setuptools.setup(name='genhub',
                  author_email='daniel.standage@gmail.com',
                  license='BSD-3',
                  packages=['genhub'],
+                 scripts=['scripts/genhub-build.py',
+                          'scripts/genhub-check.py',
+                          'scripts/genhub-filter.sh',
+                          'scripts/genhub-format-gff3.py'],
                  zip_safe=False)

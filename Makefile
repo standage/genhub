@@ -1,8 +1,8 @@
 check:
-	python scripts/check.py
+	python scripts/genhub-check.py
 
 check-dev:
-	python scripts/check.py --dev
+	python scripts/genhub-check.py --dev
 
 depend:
 	@ pip install -r requirements.txt
