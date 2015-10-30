@@ -42,8 +42,7 @@ def load_dir(dirname):
     filelist = glob.glob(dirname + '/*.yml')
     for filename in filelist:
         conf = load_file(filename)
-        for label in conf:
-            configs[label] = conf
+        configs.update(conf)
     return configs
 
 
