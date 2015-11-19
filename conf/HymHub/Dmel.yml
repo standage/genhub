@@ -13,7 +13,25 @@ Dmel:
         - CHR_3/NT_037436
         - CHR_4/NC_004353
     checksums:
-        gdna: 3f167375484755ad103c28d4a104b626ee42ff45
+        gdna: a010d9c19f8d9d9792c0a6f180b12d0c27e86077
         gff3: ea4f73b80574f1575df550d9942deee85ca09caf
-        prot: 6489762e0e8b56cc8e3d19cf24a30f0bce0cb670
+        prot: c4ba26a693b7a954db846f8add3aed41b065052d
+    annotfilter:
+        - exception=trans-splicing
+        - pseudo=true
+        - exception=transcribed pseudogene
+        - CR32518
+        - CR31485
+        - CR32761
+        - CR32123
+        - FBgn0264745
+        - =HPsi;
+        - tRNA:HPsi-
+        - "	region	"
+        - "	STS	"
+        - "	sequence_variant"
+        - "##species"
+        - "###"
+        - "#!gff-spec-version"
+        - "#!processor"
     description: NCBI dissemination of FlyBase release 5.48

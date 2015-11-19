@@ -12,14 +12,20 @@ set -eo pipefail
 infile=$1
 outfile=$2
 filterstr=$3
+fixtrna=$4
 
 filtercmd="cat"
 if [ "$filterstr" != "nofilter" ]; then
-    filtercmd="grep -Ev $filterstr"
+    filtercmd="grep -vf $filterstr"
+fi
+trnacmd="cat"
+if [ "$fixtrna" != "nofix" ]; then
+    trnacmd="genhub-fix-trna.py"
 fi
 
 gunzip -c $infile \
     | $filtercmd \
+    | $trnacmd \
     | tidygff3 \
     | genhub-format-gff3.py - \
     | gt gff3 -sort -tidy -o $outfile -force

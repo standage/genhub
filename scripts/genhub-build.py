@@ -42,6 +42,16 @@ def download_task(conf, workdir='.', logstream=sys.stderr):
                                             logstream=logstream)
             genhub.ncbi.download_proteins(label, config, workdir=workdir,
                                           logstream=logstream)
+        elif source == 'ncbi_flybase':
+            genhub.ncbi_flybase.download_chromosomes(label, config,
+                                                     workdir=workdir,
+                                                     logstream=logstream)
+            genhub.ncbi_flybase.download_annotation(label, config,
+                                                    workdir=workdir,
+                                                    logstream=logstream)
+            genhub.ncbi_flybase.download_proteins(label, config,
+                                                  workdir=workdir,
+                                                  logstream=logstream)
         elif source == 'custom':
             mod = importlib.import_module('genhub.' + config['module'])
             mod.download(label, config, workdir=workdir, logstream=logstream)

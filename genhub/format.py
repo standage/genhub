@@ -22,6 +22,7 @@ from io import StringIO
 import filecmp
 import gzip
 import importlib
+import os
 import re
 import subprocess
 import sys
@@ -52,7 +53,7 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
     outbase = '%s.gdna.fa' % label
     outfile = genhub.file_path(outbase, label, workdir=workdir)
 
-    if conf['source'] == 'ncbi':
+    if conf['source'] in ['ncbi', 'ncbi_flybase']:
         closeinstream = False
         if instream is None:
             closeinstream = True
@@ -118,7 +119,7 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
     outbase = '%s.all.prot.fa' % label
     outfile = genhub.file_path(outbase, label, workdir)
 
-    if conf['source'] == 'ncbi':
+    if conf['source'] in ['ncbi', 'ncbi_flybase']:
         closeinstream = False
         if instream is None:
             closeinstream = True
@@ -168,13 +169,18 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr, verify=True):
 
     outfile = genhub.file_path('%s.gff3' % label, label, workdir)
 
-    if conf['source'] == 'ncbi':
+    if conf['source'] in ['ncbi', 'ncbi_flybase']:
         infile = genhub.file_path(conf['annotation'], label, workdir,
                                   check=True, message=infile_message)
         filterstr = 'nofilter'
         if 'annotfilter' in conf:
-            filterstr = conf['annotfilter']
-        cmd = 'genhub-filter.sh %s %s %s' % (infile, outfile, filterstr)
+            excludefile = genhub.conf.conf_filter_file(conf)
+            filterstr = excludefile.name
+        trnastr = 'nofix'
+        if conf['source'] == 'ncbi_flybase':  # pragma: no cover
+            trnastr = 'fix'
+        cmd = 'genhub-filter.sh %s %s %s %s' % (
+            infile, outfile, filterstr, trnastr)
         cmdargs = cmd.split(' ')
         proc = subprocess.Popen(cmdargs, stderr=subprocess.PIPE,
                                 universal_newlines=True)
@@ -184,6 +190,8 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr, verify=True):
                'does not begin with "##gff-version"' not in line:
                 print(line, end='', file=logstream)
         assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
+        if filterstr != 'nofilter':
+            os.unlink(excludefile.name)
 
     elif conf['source'] == 'custom':
         mod = importlib.import_module('genhub.' + conf['module'])
@@ -303,3 +311,10 @@ def test_annotation():
     outfile = 'testdata/demo-workdir/Pbar/Pbar.gff3'
     testfile = 'testdata/gff3/ncbi-format-pbar.gff3'
     assert filecmp.cmp(outfile, testfile), 'Pbar annotation formatting failed'
+
+    label, conf = genhub.conf.load_one('conf/test2/Ador.yml')
+    annotation(label, conf, workdir='testdata/demo-workdir', logstream=None,
+               verify=False)
+    outfile = 'testdata/demo-workdir/Ador/Ador.gff3'
+    testfile = 'testdata/gff3/ncbi-format-ador.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Ador annotation formatting failed'
