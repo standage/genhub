@@ -177,7 +177,7 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr, verify=True):
             excludefile = genhub.conf.conf_filter_file(conf)
             filterstr = excludefile.name
         trnastr = 'nofix'
-        if conf['source'] == 'ncbi_flybase':
+        if conf['source'] == 'ncbi_flybase':  # pragma: no cover
             trnastr = 'fix'
         cmd = 'genhub-filter.sh %s %s %s %s' % (
             infile, outfile, filterstr, trnastr)
@@ -311,3 +311,10 @@ def test_annotation():
     outfile = 'testdata/demo-workdir/Pbar/Pbar.gff3'
     testfile = 'testdata/gff3/ncbi-format-pbar.gff3'
     assert filecmp.cmp(outfile, testfile), 'Pbar annotation formatting failed'
+
+    label, conf = genhub.conf.load_one('conf/test2/Ador.yml')
+    annotation(label, conf, workdir='testdata/demo-workdir', logstream=None,
+               verify=False)
+    outfile = 'testdata/demo-workdir/Ador/Ador.gff3'
+    testfile = 'testdata/gff3/ncbi-format-ador.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Ador annotation formatting failed'

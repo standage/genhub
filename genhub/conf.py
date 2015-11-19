@@ -75,9 +75,12 @@ def conf_filter_file(conf):
     for unlinking the temporary file from the operating system.
     """
     assert 'annotfilter' in conf
-    excludefile = tempfile.NamedTemporaryFile(delete=False)
-    for exclusion in conf['annotfilter']:
-        print(exclusion, file=excludefile)
+    excludefile = tempfile.NamedTemporaryFile(mode='wt', delete=False)
+    if isinstance(conf['annotfilter'], str):
+        print(conf['annotfilter'], file=excludefile)
+    else:
+        for exclusion in conf['annotfilter']:
+            print(exclusion, file=excludefile)
     excludefile.close()
     return excludefile
 
