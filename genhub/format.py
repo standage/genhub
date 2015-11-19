@@ -30,6 +30,7 @@ import genhub
 
 
 infile_message = 'please verify that "download" task completed successfully'
+sources = ['ncbi', 'ncbi_flybase', 'beebase']
 
 
 def gdna(label, conf, workdir='.', instream=None, outstream=None,
@@ -43,11 +44,11 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
     """
 
     assert 'source' in conf
-    assert conf['source'] in ['ncbi', 'ncbi_flybase', 'custom']
+    assert conf['source'] in sources + ['custom']
 
     if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] ' % conf['species']
-        logmsg += 'simplify genome Fasta deflines'
+        logmsg += 'preprocess genome Fasta file (clean up deflines)'
         print(logmsg, file=logstream)
 
     outbase = '%s.gdna.fa' % label
@@ -74,6 +75,29 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
             if line.startswith('>'):
                 pattern = '>gi\|\d+\|(ref|gb)\|([^\|]+)\S+'
                 line = re.sub(pattern, '>\g<2>', line)
+            print(line, end='', file=outstream)
+
+        if closeinstream:
+            instream.close()
+        if closeoutstream:
+            outstream.close()
+
+    elif conf['source'] == 'beebase':
+        closeinstream = False
+        if instream is None:
+            closeinstream = True
+            infile = genhub.file_path(conf['scaffolds'], label, workdir,
+                                      check=True, message=infile_message)
+            instream = gzip.open(infile, 'rt')
+
+        closeoutstream = False
+        if outstream is None:
+            closeoutstream = True
+            outstream = open(outfile, 'w')
+
+        for line in instream:
+            if line.startswith('>'):
+                line = '>%s_%s' % (label, line[1:])
             print(line, end='', file=outstream)
 
         if closeinstream:
@@ -109,11 +133,11 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
     """
 
     assert 'source' in conf
-    assert conf['source'] in ['ncbi', 'ncbi_flybase', 'custom']
+    assert conf['source'] in sources + ['custom']
 
     if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] ' % conf['species']
-        logmsg += 'simplify protein Fasta deflines'
+        logmsg += 'preprocess protein Fasta file (clean up deflines)'
         print(logmsg, file=logstream)
 
     outbase = '%s.all.prot.fa' % label
@@ -143,6 +167,29 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
         if closeoutstream:
             outstream.close()
 
+    if conf['source'] == 'beebase':
+        closeinstream = False
+        if instream is None:
+            closeinstream = True
+            infile = genhub.file_path(conf['proteins'], label, workdir,
+                                      check=True, message=infile_message)
+            instream = gzip.open(infile, 'rt')
+
+        closeoutstream = False
+        if outstream is None:
+            closeoutstream = True
+            outstream = open(outfile, 'w')
+
+        for line in instream:
+            # No processing required currently.
+            # If any is ever needed, do it here.
+            print(line, end='', file=outstream)
+
+        if closeinstream:
+            instream.close()
+        if closeoutstream:
+            outstream.close()
+
     elif conf['source'] == 'custom':
         mod = importlib.import_module('genhub.' + conf['module'])
         mod.proteins(label, conf, workdir=workdir, logstream=logstream)
@@ -163,34 +210,39 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
 def annotation(label, conf, workdir='.', logstream=sys.stderr, verify=True):
     """Clean up and standardize genome annotation."""
 
+    assert 'source' in conf
+    assert conf['source'] in sources + ['custom']
+
     if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] clean up annotation' % conf['species']
         print(logmsg, file=logstream)
 
     outfile = genhub.file_path('%s.gff3' % label, label, workdir)
 
-    if conf['source'] in ['ncbi', 'ncbi_flybase']:
+    if conf['source'] in ['ncbi', 'ncbi_flybase', 'beebase']:
         infile = genhub.file_path(conf['annotation'], label, workdir,
                                   check=True, message=infile_message)
-        filterstr = 'nofilter'
+
+        cmd = 'genhub-filter.py'
         if 'annotfilter' in conf:
             excludefile = genhub.conf.conf_filter_file(conf)
-            filterstr = excludefile.name
-        trnastr = 'nofix'
-        if conf['source'] == 'ncbi_flybase':  # pragma: no cover
-            trnastr = 'fix'
-        cmd = 'genhub-filter.sh %s %s %s %s' % (
-            infile, outfile, filterstr, trnastr)
+            cmd += ' --exclude %s' % excludefile.name
+        if conf['source'] == 'ncbi_flybase':
+            cmd += ' --fixtrna'
+        if conf['source'] == 'beebase':
+            cmd += ' --namedup --prefix %s_' % label
+        cmd += ' %s %s' % (infile, outfile)
         cmdargs = cmd.split(' ')
         proc = subprocess.Popen(cmdargs, stderr=subprocess.PIPE,
                                 universal_newlines=True)
-        proc.wait()
-        for line in proc.stderr:  # pragma: no cover
+        stdout, stderr = proc.communicate()
+        for line in stderr.split('\n'):  # pragma: no cover
             if 'has not been previously introduced' not in line and \
-               'does not begin with "##gff-version"' not in line:
-                print(line, end='', file=logstream)
+               'does not begin with "##gff-version"' not in line and \
+               'illegal uppercase attribute "Shift"' not in line:
+                print(line, file=logstream)
         assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
-        if filterstr != 'nofilter':
+        if 'annotfilter' in conf:
             os.unlink(excludefile.name)
 
     elif conf['source'] == 'custom':

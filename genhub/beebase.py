@@ -16,10 +16,7 @@ sequences from the BeeBase consortium page at HymenopteraBase.
 """
 
 from __future__ import print_function
-import gzip
-import subprocess
 import sys
-import yaml
 import genhub
 
 beebase = ('http://hymenopteragenome.org/beebase/sites/'
