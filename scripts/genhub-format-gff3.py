@@ -42,7 +42,8 @@ if __name__ == '__main__':
             if not accmatch:
                 accmatch = re.search('ID=([^;\n]+)', line)
             assert accmatch, 'Cannot parse GeneID: %s' % line.split('\t')[-1]
-            line += ';accession=%s' % accmatch.group(1)
+            if '\tAEGeAn::tidygff3\t' not in line:
+                line += ';accession=%s' % accmatch.group(1)
 
         for rnatype in ['mRNA', 'tRNA', 'rRNA', 'ncRNA', 'transcript',
                         'primary_transcript']:

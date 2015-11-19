@@ -227,7 +227,7 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr, verify=True):
         if 'annotfilter' in conf:
             excludefile = genhub.conf.conf_filter_file(conf)
             cmd += ' --exclude %s' % excludefile.name
-        if conf['source'] == 'ncbi_flybase':
+        if conf['source'] == 'ncbi_flybase':  # pragma: no cover
             cmd += ' --fixtrna'
         if conf['source'] == 'beebase':
             cmd += ' --namedup --prefix %s_' % label
@@ -313,6 +313,41 @@ def test_gdna_ncbi():
         'Tcas gDNA formatting failed (dir --> outstream)'
 
 
+def test_gdna_beebase():
+    """BeeBase gDNA formatting"""
+
+    testoutfile = 'testdata/fasta/hlab-first-6-out.fa'
+    label, conf = genhub.conf.load_one('conf/test2/Hlab.yml')
+
+    infile = 'testdata/fasta/hlab-first-6.fa.gz'
+    instream = gzip.open(infile, 'rt')
+    outfile = 'testdata/scratch/hlab-first-6.fa'
+    outstream = open(outfile, 'w')
+    gdna(label, conf, instream=instream, outstream=outstream, logstream=None,
+         verify=False)
+    instream.close()
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hlab gDNA formatting failed (instream --> outstream)'
+
+    wd = 'testdata/demo-workdir'
+    outstream = open(outfile, 'w')
+    gdna(label, conf, workdir=wd, outstream=outstream, logstream=None,
+         verify=False)
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hlab gDNA formatting failed (dir --> outstream)'
+
+    wd = 'testdata/scratch'
+    subprocess.call(['mkdir', '-p', 'testdata/scratch/Hlab'])
+    instream = gzip.open(infile, 'rt')
+    gdna(label, conf, workdir=wd, instream=instream, logstream=None)
+    instream.close()
+    outfile = 'testdata/scratch/Hlab/Hlab.gdna.fa'
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hlab gDNA formatting failed (instream --> dir)'
+
+
 def test_proteins_ncbi():
     """NCBI protein formatting"""
 
@@ -336,7 +371,7 @@ def test_proteins_ncbi():
              verify=False)
     outstream.close()
     assert filecmp.cmp(testoutfile, outfile), \
-        'Hsal gDNA formatting failed (dir --> outstream)'
+        'Hsal protein formatting failed (dir --> outstream)'
 
     wd = 'testdata/scratch'
     subprocess.call(['mkdir', '-p', 'testdata/scratch/Hsal'])
@@ -345,10 +380,45 @@ def test_proteins_ncbi():
     instream.close()
     outfile = 'testdata/scratch/Hsal/Hsal.all.prot.fa'
     assert filecmp.cmp(testoutfile, outfile), \
-        'Hsal gDNA formatting failed (instream --> dir)'
+        'Hsal protein formatting failed (instream --> dir)'
 
 
-def test_annotation():
+def test_proteins_beebase():
+    """BeeBase protein formatting"""
+
+    label, conf = genhub.conf.load_one('conf/test2/Hlab.yml')
+    testoutfile = 'testdata/fasta/hlab-first-20-prot-out.fa'
+
+    infile = 'testdata/fasta/hlab-first-20-prot.fa.gz'
+    instream = gzip.open(infile, 'rt')
+    outfile = 'testdata/scratch/hlab-first-20-prot.fa'
+    outstream = open(outfile, 'w')
+    proteins(label, conf, instream=instream, outstream=outstream,
+             logstream=None, verify=False)
+    instream.close()
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hlab protein formatting failed (instream --> outstream)'
+
+    wd = 'testdata/demo-workdir'
+    outstream = open(outfile, 'w')
+    proteins(label, conf, workdir=wd, outstream=outstream, logstream=None,
+             verify=False)
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hlab protein formatting failed (dir --> outstream)'
+
+    wd = 'testdata/scratch'
+    subprocess.call(['mkdir', '-p', 'testdata/scratch/Hsal'])
+    instream = gzip.open(infile, 'rt')
+    proteins(label, conf, workdir=wd, instream=instream, logstream=None)
+    instream.close()
+    outfile = 'testdata/scratch/Hlab/Hlab.all.prot.fa'
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hlab gDNA formatting failed (instream --> dir)'
+
+
+def test_annotation_ncbi():
     """NCBI annotation formatting"""
 
     label, conf = genhub.conf.load_one('conf/test2/Aech.yml')
@@ -370,3 +440,14 @@ def test_annotation():
     outfile = 'testdata/demo-workdir/Ador/Ador.gff3'
     testfile = 'testdata/gff3/ncbi-format-ador.gff3'
     assert filecmp.cmp(outfile, testfile), 'Ador annotation formatting failed'
+
+
+def test_annotation_beebase():
+    """BeeBase annotation formatting"""
+
+    label, conf = genhub.conf.load_one('conf/test2/Hlab.yml')
+    annotation(label, conf, workdir='testdata/demo-workdir', logstream=None,
+               verify=False)
+    outfile = 'testdata/demo-workdir/Hlab/Hlab.gff3'
+    testfile = 'testdata/gff3/beebase-format-hlab.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Hlab annotation formatting failed'
