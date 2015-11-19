@@ -1,6 +1,0 @@
----
-languages:
-  Python: true
-exclude_paths:
-- genhub/_version.py
-- versioneer.py
