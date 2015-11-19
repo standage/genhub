@@ -13,6 +13,7 @@
 from __future__ import print_function
 import glob
 import itertools
+import tempfile
 import yaml
 import genhub
 
@@ -61,6 +62,24 @@ def load_file_list(cfglist):
         with open(filename, 'r') as filehandle:
             config.update(yaml.load(filehandle))
     return config
+
+
+def conf_filter_file(conf):
+    """
+    Write exclusion filter to a temporary file and return.
+
+    Data configurations may include an optional `annotfilter` with patterns to
+    discard from the input annotation a la `grep -v`. This function reads the
+    pattern(s) from the data configuration and writes them to a temporary file
+    that can be used in a `grep -vf` command. Calling function is responsible
+    for unlinking the temporary file from the operating system.
+    """
+    assert 'annotfilter' in conf
+    excludefile = tempfile.NamedTemporaryFile(delete=False)
+    for exclusion in conf['annotfilter']:
+        print(exclusion, file=excludefile)
+    excludefile.close()
+    return excludefile
 
 
 def test_load_file():

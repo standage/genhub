@@ -12,6 +12,7 @@
 
 from __future__ import print_function
 import gzip
+import os
 import subprocess
 import sys
 import yaml
@@ -61,7 +62,20 @@ def download_annotation(label, config, workdir='.', logstream=sys.stderr,
     if dryrun is True:
         return urls, outfile
     else:  # pragma: no cover
-        genhub.download.url_download(urls, outfile)
+        command = ['gt', 'gff3', '-sort', '-tidy', '-force', '-gzip',
+                   '-o', '%s' % outfile]
+        for url, acc in zip(urls, config['accessions']):
+            tempdir = '%s/%s' % (workdir, label)
+            tempout = '%s/%s.gff.gz' % (tempdir, os.path.basename(acc))
+            genhub.download.url_download(url, tempout, compress=True)
+            command.append(tempout)
+        logfile = open('%s.log' % outfile, 'w')
+        proc = subprocess.Popen(command, stderr=subprocess.PIPE)
+        proc.wait()
+        for line in proc.stderr:
+            print(line, end='', file=logfile)
+        assert proc.returncode == 0, ('command failed, check the log (%s.log):'
+                                      '%s' % (outfile, ' '.join(command)))
 
 
 def download_proteins(label, config, workdir='.', logstream=sys.stderr,
