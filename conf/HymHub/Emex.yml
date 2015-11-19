@@ -1,0 +1,9 @@
+Emex:
+    species: Eufriesea mexicana
+    common: orchid bee
+    clade: bee
+    source: beebase
+    scaffolds: Eufriesea_mexicana.v1.0.fa.gz
+    annotation: Eufriesea_mexicana_v1.1.gff.gz
+    proteins: Eufriesea_mexicana_v1.1.pep.fa.gz
+    description: BeeBase annotation version 1.1

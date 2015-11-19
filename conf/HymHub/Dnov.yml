@@ -1,8 +1,7 @@
 Dnov:
     species: Dufourea novaeangliae
-    clade:
-        - bee
-        - sweat bee
+    common: sweat bee
+    clade: bee
     source: beebase
     scaffolds: Dufourea_novaeangliae.fa.gz
     annotation: Dufourea_novaeangliae_v1.1.gff.gz

@@ -23,7 +23,7 @@ import yaml
 import genhub
 
 beebase = ('http://hymenopteragenome.org/beebase/sites/'
-           'hymenopteragenome.org.beebase/files/data/consortium_data/')
+           'hymenopteragenome.org.beebase/files/data/consortium_data')
 
 
 def download_scaffolds(label, config, workdir='.', logstream=sys.stderr,
@@ -95,3 +95,47 @@ def download_proteins(label, config, workdir='.', logstream=sys.stderr,
 # -----------------------------------------------------------------------------
 # Unit tests
 # -----------------------------------------------------------------------------
+
+
+def test_scaffolds():
+    """BeeBase consortium scaffolds download"""
+
+    label, config = genhub.conf.load_one('conf/HymHub/Emex.yml')
+    testurl = ('http://hymenopteragenome.org/beebase/sites/'
+               'hymenopteragenome.org.beebase/files/data/consortium_data/'
+               'Eufriesea_mexicana.v1.0.fa.gz')
+    testpath = './Emex/Eufriesea_mexicana.v1.0.fa.gz'
+    testresult = (testurl, testpath)
+    result = download_scaffolds(label, config, dryrun=True, logstream=None)
+    assert result == testresult, \
+        'filenames do not match\n%s\n%s\n' % (result, testresult)
+
+
+def test_annot():
+    """BeeBase consortium annotation download"""
+
+    label, config = genhub.conf.load_one('conf/HymHub/Dnov.yml')
+    testurl = ('http://hymenopteragenome.org/beebase/sites/'
+               'hymenopteragenome.org.beebase/files/data/consortium_data/'
+               'Dufourea_novaeangliae_v1.1.gff.gz')
+    testpath = 'BeeBase/Dnov/Dufourea_novaeangliae_v1.1.gff.gz'
+    testresult = (testurl, testpath)
+    result = download_annotation(label, config, dryrun=True, workdir='BeeBase',
+                                 logstream=None)
+    assert result == testresult, \
+        'filenames do not match\n%s\n%s\n' % (result, testresult)
+
+
+def test_proteins():
+    """BeeBase consortium protein download"""
+
+    label, config = genhub.conf.load_one('conf/HymHub/Hlab.yml')
+    testurl = ('http://hymenopteragenome.org/beebase/sites/'
+               'hymenopteragenome.org.beebase/files/data/consortium_data/'
+               'Habropoda_laboriosa_v1.2.pep.fa.gz')
+    testpath = '/opt/db/genhub/Hlab/Habropoda_laboriosa_v1.2.pep.fa.gz'
+    testresult = (testurl, testpath)
+    result = download_proteins(label, config, dryrun=True, logstream=None,
+                               workdir='/opt/db/genhub')
+    assert result == testresult, \
+        'filenames do not match\n%s\n%s\n' % (result, testresult)
