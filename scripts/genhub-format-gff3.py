@@ -18,6 +18,8 @@ if __name__ == '__main__':
     desc = 'Preliminary clean up / processing of GFF3 files'
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('-o', '--outfile', type=argparse.FileType('w'))
+    parser.add_argument('-p', '--prefix', default=None, help='attach the given'
+                        ' prefix to each sequence ID')
     parser.add_argument('gff3', type=argparse.FileType('r'))
     args = parser.parse_args()
 
@@ -40,7 +42,8 @@ if __name__ == '__main__':
             if not accmatch:
                 accmatch = re.search('ID=([^;\n]+)', line)
             assert accmatch, 'Cannot parse GeneID: %s' % line.split('\t')[-1]
-            line += ';accession=%s' % accmatch.group(1)
+            if '\tAEGeAn::tidygff3\t' not in line:
+                line += ';accession=%s' % accmatch.group(1)
 
         for rnatype in ['mRNA', 'tRNA', 'rRNA', 'ncRNA', 'transcript',
                         'primary_transcript']:
@@ -49,7 +52,9 @@ if __name__ == '__main__':
                 if not accmatch:
                     geneidmatch = re.search('GeneID:([^;,\n]+)', line)
                 if not accmatch and not geneidmatch:
-                    idmatch = re.search('ID=([^;\n]+)', line)
+                    idmatch = re.search('Name=([^;\n]+)', line)
+                    if not idmatch or rnatype == 'tRNA':
+                        idmatch = re.search('ID=([^;\n]+)', line)
                 assert accmatch or geneidmatch or idmatch, \
                     'Unable to parse transcript accession: %s' % line
                 if accmatch:
@@ -70,4 +75,11 @@ if __name__ == '__main__':
             if rnaid in rnaid_to_accession:
                 line += ';accession=%s' % rnaid_to_accession[rnaid]
 
+        if args.prefix:
+            if len(line.split('\t')) == 9:
+                print(args.prefix, end='', file=args.outfile)
+            elif line.startswith('##sequence-region'):
+                line = re.sub('##sequence-region(\s+)(\S+)',
+                              '##sequence-region\g<1>%s\g<2>' % args.prefix,
+                              line)
         print(line, file=args.outfile)

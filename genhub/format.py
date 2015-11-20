@@ -30,6 +30,7 @@ import genhub
 
 
 infile_message = 'please verify that "download" task completed successfully'
+sources = ['ncbi', 'ncbi_flybase', 'beebase']
 
 
 def gdna(label, conf, workdir='.', instream=None, outstream=None,
@@ -43,11 +44,11 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
     """
 
     assert 'source' in conf
-    assert conf['source'] in ['ncbi', 'ncbi_flybase', 'custom']
+    assert conf['source'] in sources + ['custom']
 
     if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] ' % conf['species']
-        logmsg += 'simplify genome Fasta deflines'
+        logmsg += 'preprocess genome Fasta file (clean up deflines)'
         print(logmsg, file=logstream)
 
     outbase = '%s.gdna.fa' % label
@@ -74,6 +75,29 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
             if line.startswith('>'):
                 pattern = '>gi\|\d+\|(ref|gb)\|([^\|]+)\S+'
                 line = re.sub(pattern, '>\g<2>', line)
+            print(line, end='', file=outstream)
+
+        if closeinstream:
+            instream.close()
+        if closeoutstream:
+            outstream.close()
+
+    elif conf['source'] == 'beebase':
+        closeinstream = False
+        if instream is None:
+            closeinstream = True
+            infile = genhub.file_path(conf['scaffolds'], label, workdir,
+                                      check=True, message=infile_message)
+            instream = gzip.open(infile, 'rt')
+
+        closeoutstream = False
+        if outstream is None:
+            closeoutstream = True
+            outstream = open(outfile, 'w')
+
+        for line in instream:
+            if line.startswith('>'):
+                line = '>%s_%s' % (label, line[1:])
             print(line, end='', file=outstream)
 
         if closeinstream:
@@ -109,11 +133,11 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
     """
 
     assert 'source' in conf
-    assert conf['source'] in ['ncbi', 'ncbi_flybase', 'custom']
+    assert conf['source'] in sources + ['custom']
 
     if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] ' % conf['species']
-        logmsg += 'simplify protein Fasta deflines'
+        logmsg += 'preprocess protein Fasta file (clean up deflines)'
         print(logmsg, file=logstream)
 
     outbase = '%s.all.prot.fa' % label
@@ -143,6 +167,29 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
         if closeoutstream:
             outstream.close()
 
+    if conf['source'] == 'beebase':
+        closeinstream = False
+        if instream is None:
+            closeinstream = True
+            infile = genhub.file_path(conf['proteins'], label, workdir,
+                                      check=True, message=infile_message)
+            instream = gzip.open(infile, 'rt')
+
+        closeoutstream = False
+        if outstream is None:
+            closeoutstream = True
+            outstream = open(outfile, 'w')
+
+        for line in instream:
+            # No processing required currently.
+            # If any is ever needed, do it here.
+            print(line, end='', file=outstream)
+
+        if closeinstream:
+            instream.close()
+        if closeoutstream:
+            outstream.close()
+
     elif conf['source'] == 'custom':
         mod = importlib.import_module('genhub.' + conf['module'])
         mod.proteins(label, conf, workdir=workdir, logstream=logstream)
@@ -163,34 +210,45 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
 def annotation(label, conf, workdir='.', logstream=sys.stderr, verify=True):
     """Clean up and standardize genome annotation."""
 
+    assert 'source' in conf
+    assert conf['source'] in sources + ['custom']
+
     if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] clean up annotation' % conf['species']
         print(logmsg, file=logstream)
 
     outfile = genhub.file_path('%s.gff3' % label, label, workdir)
 
-    if conf['source'] in ['ncbi', 'ncbi_flybase']:
+    if conf['source'] in ['ncbi', 'ncbi_flybase', 'beebase']:
         infile = genhub.file_path(conf['annotation'], label, workdir,
                                   check=True, message=infile_message)
-        filterstr = 'nofilter'
+
+        cmd = 'genhub-filter.py'
         if 'annotfilter' in conf:
             excludefile = genhub.conf.conf_filter_file(conf)
-            filterstr = excludefile.name
-        trnastr = 'nofix'
+            cmd += ' --exclude %s' % excludefile.name
         if conf['source'] == 'ncbi_flybase':  # pragma: no cover
-            trnastr = 'fix'
-        cmd = 'genhub-filter.sh %s %s %s %s' % (
-            infile, outfile, filterstr, trnastr)
+            cmd += ' --fixtrna'
+        if conf['source'] == 'beebase':
+            gdnafile = genhub.file_path('%s.gdna.fa' % label, label, workdir,
+                                        check=True, message=infile_message)
+            cmd += ' --namedup'
+            cmd += ' --prefix %s_' % label
+            cmd += ' --fixseq %s' % gdnafile
+        cmd += ' %s %s' % (infile, outfile)
         cmdargs = cmd.split(' ')
         proc = subprocess.Popen(cmdargs, stderr=subprocess.PIPE,
                                 universal_newlines=True)
-        proc.wait()
-        for line in proc.stderr:  # pragma: no cover
+        stdout, stderr = proc.communicate()
+        for line in stderr.split('\n'):  # pragma: no cover
             if 'has not been previously introduced' not in line and \
-               'does not begin with "##gff-version"' not in line:
-                print(line, end='', file=logstream)
+               'does not begin with "##gff-version"' not in line and \
+               'illegal uppercase attribute "Shift"' not in line and \
+               'has the wrong phase' not in line and \
+               line != '':
+                print(line, file=logstream)
         assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
-        if filterstr != 'nofilter':
+        if 'annotfilter' in conf:
             os.unlink(excludefile.name)
 
     elif conf['source'] == 'custom':
@@ -261,6 +319,41 @@ def test_gdna_ncbi():
         'Tcas gDNA formatting failed (dir --> outstream)'
 
 
+def test_gdna_beebase():
+    """BeeBase gDNA formatting"""
+
+    testoutfile = 'testdata/fasta/hlab-first-6-out.fa'
+    label, conf = genhub.conf.load_one('conf/test2/Hlab.yml')
+
+    infile = 'testdata/fasta/hlab-first-6.fa.gz'
+    instream = gzip.open(infile, 'rt')
+    outfile = 'testdata/scratch/hlab-first-6.fa'
+    outstream = open(outfile, 'w')
+    gdna(label, conf, instream=instream, outstream=outstream, logstream=None,
+         verify=False)
+    instream.close()
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hlab gDNA formatting failed (instream --> outstream)'
+
+    wd = 'testdata/demo-workdir'
+    outstream = open(outfile, 'w')
+    gdna(label, conf, workdir=wd, outstream=outstream, logstream=None,
+         verify=False)
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hlab gDNA formatting failed (dir --> outstream)'
+
+    wd = 'testdata/scratch'
+    subprocess.call(['mkdir', '-p', 'testdata/scratch/Hlab'])
+    instream = gzip.open(infile, 'rt')
+    gdna(label, conf, workdir=wd, instream=instream, logstream=None)
+    instream.close()
+    outfile = 'testdata/scratch/Hlab/Hlab.gdna.fa'
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hlab gDNA formatting failed (instream --> dir)'
+
+
 def test_proteins_ncbi():
     """NCBI protein formatting"""
 
@@ -284,7 +377,7 @@ def test_proteins_ncbi():
              verify=False)
     outstream.close()
     assert filecmp.cmp(testoutfile, outfile), \
-        'Hsal gDNA formatting failed (dir --> outstream)'
+        'Hsal protein formatting failed (dir --> outstream)'
 
     wd = 'testdata/scratch'
     subprocess.call(['mkdir', '-p', 'testdata/scratch/Hsal'])
@@ -293,10 +386,45 @@ def test_proteins_ncbi():
     instream.close()
     outfile = 'testdata/scratch/Hsal/Hsal.all.prot.fa'
     assert filecmp.cmp(testoutfile, outfile), \
-        'Hsal gDNA formatting failed (instream --> dir)'
+        'Hsal protein formatting failed (instream --> dir)'
 
 
-def test_annotation():
+def test_proteins_beebase():
+    """BeeBase protein formatting"""
+
+    label, conf = genhub.conf.load_one('conf/test2/Hlab.yml')
+    testoutfile = 'testdata/fasta/hlab-first-20-prot-out.fa'
+
+    infile = 'testdata/fasta/hlab-first-20-prot.fa.gz'
+    instream = gzip.open(infile, 'rt')
+    outfile = 'testdata/scratch/hlab-first-20-prot.fa'
+    outstream = open(outfile, 'w')
+    proteins(label, conf, instream=instream, outstream=outstream,
+             logstream=None, verify=False)
+    instream.close()
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hlab protein formatting failed (instream --> outstream)'
+
+    wd = 'testdata/demo-workdir'
+    outstream = open(outfile, 'w')
+    proteins(label, conf, workdir=wd, outstream=outstream, logstream=None,
+             verify=False)
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hlab protein formatting failed (dir --> outstream)'
+
+    wd = 'testdata/scratch'
+    subprocess.call(['mkdir', '-p', 'testdata/scratch/Hsal'])
+    instream = gzip.open(infile, 'rt')
+    proteins(label, conf, workdir=wd, instream=instream, logstream=None)
+    instream.close()
+    outfile = 'testdata/scratch/Hlab/Hlab.all.prot.fa'
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hlab gDNA formatting failed (instream --> dir)'
+
+
+def test_annotation_ncbi():
     """NCBI annotation formatting"""
 
     label, conf = genhub.conf.load_one('conf/test2/Aech.yml')
@@ -318,3 +446,14 @@ def test_annotation():
     outfile = 'testdata/demo-workdir/Ador/Ador.gff3'
     testfile = 'testdata/gff3/ncbi-format-ador.gff3'
     assert filecmp.cmp(outfile, testfile), 'Ador annotation formatting failed'
+
+
+def test_annotation_beebase():
+    """BeeBase annotation formatting"""
+
+    label, conf = genhub.conf.load_one('conf/test2/Hlab.yml')
+    annotation(label, conf, workdir='testdata/demo-workdir', logstream=None,
+               verify=False)
+    outfile = 'testdata/demo-workdir/Hlab/Hlab.gff3'
+    testfile = 'testdata/gff3/beebase-format-hlab.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Hlab annotation formatting failed'

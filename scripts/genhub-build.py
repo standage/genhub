@@ -17,6 +17,7 @@ import sys
 import genhub
 
 buildcmds = 'download format datatypes stats cleanup'.split(' ')
+sources = ['ncbi', 'ncbi_flybase', 'beebase']
 
 
 def download_task(conf, workdir='.', logstream=sys.stderr):
@@ -26,32 +27,31 @@ def download_task(conf, workdir='.', logstream=sys.stderr):
         assert 'source' in config, \
             'data source unspecified for genome "%s"' % label
         source = config['source']
-        assert source in ['ncbi', 'ncbi_flybase', 'custom'], \
+        assert source in sources + ['custom'], \
             'unrecognized data source "%s"' % source
 
-        if source == 'ncbi':
-            if 'scaffolds' in config:
-                genomefunc = genhub.ncbi.download_scaffolds
-            elif 'chromosomes' in config:
-                genomefunc = genhub.ncbi.download_chromosomes
-            else:
-                raise Exception('genome sequence configured incorrectly for '
-                                'genome "%s"' % label)
+        if source in sources:
+            if source == 'ncbi':
+                if 'scaffolds' in config:
+                    genomefunc = genhub.ncbi.download_scaffolds
+                elif 'chromosomes' in config:
+                    genomefunc = genhub.ncbi.download_chromosomes
+                else:
+                    raise Exception('genome sequence configured incorrectly '
+                                    'for genome "%s"' % label)
+                annotfunc = genhub.ncbi.download_annotation
+                protfunc = genhub.ncbi.download_proteins
+            elif source == 'ncbi_flybase':
+                genomefunc = genhub.ncbi_flybase.download_chromosomes
+                annotfunc = genhub.ncbi_flybase.download_annotation
+                protfunc = genhub.ncbi_flybase.download_proteins
+            elif source == 'beebase':
+                genomefunc = genhub.beebase.download_scaffolds
+                annotfunc = genhub.beebase.download_annotation
+                protfunc = genhub.beebase.download_proteins
             genomefunc(label, config, workdir=workdir, logstream=logstream)
-            genhub.ncbi.download_annotation(label, config, workdir=workdir,
-                                            logstream=logstream)
-            genhub.ncbi.download_proteins(label, config, workdir=workdir,
-                                          logstream=logstream)
-        elif source == 'ncbi_flybase':
-            genhub.ncbi_flybase.download_chromosomes(label, config,
-                                                     workdir=workdir,
-                                                     logstream=logstream)
-            genhub.ncbi_flybase.download_annotation(label, config,
-                                                    workdir=workdir,
-                                                    logstream=logstream)
-            genhub.ncbi_flybase.download_proteins(label, config,
-                                                  workdir=workdir,
-                                                  logstream=logstream)
+            annotfunc(label, config, workdir=workdir, logstream=logstream)
+            protfunc(label, config, workdir=workdir, logstream=logstream)
         elif source == 'custom':
             mod = importlib.import_module('genhub.' + config['module'])
             mod.download(label, config, workdir=workdir, logstream=logstream)
