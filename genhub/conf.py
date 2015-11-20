@@ -110,7 +110,7 @@ def test_load_dir():
     assert sorted(conf) == ['Bvul', 'Docc', 'Emon', 'Epeg']
 
     conf = load_dir('conf/HymHub')
-    assert len(conf) == 21
+    assert len(conf) == 23
     assert sorted(conf)[0:4] == ['Acep', 'Ador', 'Aech', 'Aflo']
 
 

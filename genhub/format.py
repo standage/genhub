@@ -239,7 +239,9 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr, verify=True):
         for line in stderr.split('\n'):  # pragma: no cover
             if 'has not been previously introduced' not in line and \
                'does not begin with "##gff-version"' not in line and \
-               'illegal uppercase attribute "Shift"' not in line:
+               'illegal uppercase attribute "Shift"' not in line and \
+               'has the wrong phase' not in line and \
+               line != '':
                 print(line, file=logstream)
         assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
         if 'annotfilter' in conf:

@@ -1,0 +1,12 @@
+Mqua:
+    species: Melipona quadrifasciata
+    clade: bee
+    source: beebase
+    scaffolds: Melipona_quadrifasciata.v1.0.fa.gz
+    annotation: Melipona_quadrifasciata_v1.1.gff.gz
+    proteins: Melipona_quadrifasciata_v1.1.pep.fa.gz
+    checksums:
+        gdna: 262df56dadb9dca025a8170361d99ef38e8a374f
+        gff3: c9e89f55221a8354f5d96b5ad2ae66e6e4562fb4
+        prot: 159ea49281c4ee96010eae3fce9e065314c6c824
+    description: BeeBase annotation version 1.1
