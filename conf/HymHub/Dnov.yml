@@ -8,6 +8,6 @@ Dnov:
     proteins: Dufourea_novaeangliae_v1.1.pep.fa.gz
     checksums:
         gdna: d9983bd510a710e767f6053ecd21abf0dc58f0d6
-        gff3: 5e4a3eb4e5b8c255b3ccf082bfe9503017000ae0
+        gff3: c6329f4c63e847e9ff6f7ee9d248a3c81e9d34b1
         prot: fb9bc4cc210527ffd13e6a23987a641af1e0a9f2
     description: BeeBase annotation version 1.1

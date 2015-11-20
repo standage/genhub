@@ -24,6 +24,9 @@ parser.add_argument('-n', '--namedup', action='store_true',
                     help='preprocess with namedup')
 parser.add_argument('-p', '--prefix', default=None, help='string to prepend to'
                     ' every sequence ID in the input')
+parser.add_argument('-f', '--fixseq', metavar='GDNA', default=None,
+                    help='genomic DNA file for correcting `##sequence-region` '
+                    'pragmas')
 parser.add_argument('-d', '--debug', action='store_true', help='debug mode')
 parser.add_argument('infile')
 parser.add_argument('outfile')
@@ -42,6 +45,8 @@ if args.prefix:
     cmds.append('genhub-format-gff3.py --prefix %s -' % args.prefix)
 else:
     cmds.append('genhub-format-gff3.py -')
+if args.fixseq:
+    cmds.append('seq-reg.py - %s' % args.fixseq)
 cmds.append('gt gff3 -sort -tidy -o %s -force' % args.outfile)
 
 commands = ' | '.join(cmds)

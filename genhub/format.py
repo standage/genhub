@@ -230,7 +230,11 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr, verify=True):
         if conf['source'] == 'ncbi_flybase':  # pragma: no cover
             cmd += ' --fixtrna'
         if conf['source'] == 'beebase':
-            cmd += ' --namedup --prefix %s_' % label
+            gdnafile = genhub.file_path('%s.gdna.fa' % label, label, workdir,
+                                        check=True, message=infile_message)
+            cmd += ' --namedup'
+            cmd += ' --prefix %s_' % label
+            cmd += ' --fixseq %s' % gdnafile
         cmd += ' %s %s' % (infile, outfile)
         cmdargs = cmd.split(' ')
         proc = subprocess.Popen(cmdargs, stderr=subprocess.PIPE,
