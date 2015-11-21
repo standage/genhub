@@ -1,0 +1,8 @@
+Dqua:
+    species: Dinoponera quadriceps
+    clade: ants
+    source: crg
+    scaffolds: DQUA.v01.fa.gz
+    annotation: DQUA.v01.gff3
+    proteins: DQUA.v01.pep.fa.gz
+    description: CRG version v01
