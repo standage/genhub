@@ -59,7 +59,8 @@ class GenomeDB():
             logmsg = '[GenHub: %s] ' % self.config['species']
             logmsg += 'download genome sequence from %r' % self
             print(logmsg, file=logstream)
-        genhub.download.url_download(self.gdnaurl, self.gdnapath)
+        genhub.download.url_download(self.gdnaurl, self.gdnapath,
+                                     compress=self.compressgdna)
 
     def download_gff3(self, logstream=sys.stderr):  # pragma: no cover
         """Download genome annotation."""
@@ -68,7 +69,8 @@ class GenomeDB():
             logmsg = '[GenHub: %s] ' % self.config['species']
             logmsg += 'download genome annotation from %r' % self
             print(logmsg, file=logstream)
-        genhub.download.url_download(self.gff3url, self.gff3path)
+        genhub.download.url_download(self.gff3url, self.gff3path,
+                                     compress=self.compressgff3)
 
     def download_prot(self, logstream=sys.stderr):  # pragma: no cover
         """Download protein sequences."""
@@ -77,7 +79,8 @@ class GenomeDB():
             logmsg = '[GenHub: %s] ' % self.config['species']
             logmsg += 'download protein sequences from %r' % self
             print(logmsg, file=logstream)
-        genhub.download.url_download(self.proturl, self.protpath)
+        genhub.download.url_download(self.proturl, self.protpath,
+                                     compress=self.compressprot)
 
     def download(self, logstream=sys.stderr):  # pragma: no cover
         """Run download task."""

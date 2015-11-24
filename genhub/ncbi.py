@@ -16,17 +16,13 @@ sequences from NCBI's FTP site.
 """
 
 from __future__ import print_function
-import gzip
-import subprocess
-import sys
-import yaml
 import genhub
 
 
-class NcbiGenomeDB(genhub.genomedb.GenomeDB):
+class NcbiDB(genhub.genomedb.GenomeDB):
 
     def __init__(self, label, conf, workdir='.'):
-        super(NcbiGenomeDB, self).__init__(label, conf, workdir)
+        super(NcbiDB, self).__init__(label, conf, workdir)
         assert self.config['source'] == 'ncbi'
         assert 'species' in self.config
         species = self.config['species'].replace(' ', '_')
@@ -50,7 +46,7 @@ class NcbiGenomeDB(genhub.genomedb.GenomeDB):
         if self.moltype == 'scaffolds':
             return self.config['scaffolds']
         else:
-            return '%s.orig.fa.gz' % (self.label)
+            return '%s.orig.fa.gz' % self.label
 
     @property
     def gff3filename(self):
@@ -92,6 +88,18 @@ class NcbiGenomeDB(genhub.genomedb.GenomeDB):
     def proturl(self):
         return '%s/protein/protein.fa.gz' % self.specbase
 
+    @property
+    def compressgdna(self):
+        return False
+
+    @property
+    def compressgff3(self):
+        return False
+
+    @property
+    def compressprot(self):
+        return False
+
 
 # -----------------------------------------------------------------------------
 # Unit tests
@@ -105,7 +113,7 @@ def test_scaffolds():
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Equus_monoceros/CHR_Un/'
                'emon_ref_3.4_chrUn.fa.gz')
     testpath = './Emon/emon_ref_3.4_chrUn.fa.gz'
-    emon_db = NcbiGenomeDB(label, config)
+    emon_db = NcbiDB(label, config)
     assert emon_db.gdnaurl == testurl, \
         'scaffold URL mismatch\n%s\n%s' % (emon_db.gdnaurl, testurl)
     assert emon_db.gdnapath == testpath, \
@@ -115,7 +123,7 @@ def test_scaffolds():
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Basiliscus_vulgaris/CHR_Un/'
                'bv_ref_1.1_chrUn.fa.gz')
     testpath = '/some/path/Bvul/bv_ref_1.1_chrUn.fa.gz'
-    bvul_db = NcbiGenomeDB(label, config, workdir='/some/path')
+    bvul_db = NcbiDB(label, config, workdir='/some/path')
     assert bvul_db.gdnaurl == testurl, \
         'scaffold URL mismatch\n%s\n%s' % (bvul_db.gdnaurl, testurl)
     assert bvul_db.gdnapath == testpath, \
@@ -125,12 +133,13 @@ def test_scaffolds():
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Apis_dorsata/CHR_Un/'
                'ado_ref_Apis_dorsata_1.3_chrUn.fa.gz')
     testpath = './Ador/ado_ref_Apis_dorsata_1.3_chrUn.fa.gz'
-    ador_db = NcbiGenomeDB(label, config)
+    ador_db = NcbiDB(label, config)
     assert '%r' % ador_db == 'NCBI'
     assert ador_db.gdnaurl == testurl, \
         'scaffold URL mismatch\n%s\n%s' % (ador_db.gdnaurl, testurl)
     assert ador_db.gdnapath == testpath, \
         'scaffold path mismatch\n%s\n%s' % (ador_db.gdnapath, testpath)
+    assert ador_db.compressgdna is False
 
 
 def test_chromosomes():
@@ -145,7 +154,7 @@ def test_chromosomes():
               'Assembled_chromosomes/seq/')
     testurls = [prefix + x for x in urls]
     testpath = './Docc/Docc.orig.fa.gz'
-    docc_db = NcbiGenomeDB(label, config)
+    docc_db = NcbiDB(label, config)
     assert docc_db.gdnaurl == testurls, \
         'chromosome URL mismatch\n%s\n%s' % (docc_db.gdnaurl, testurls)
     assert docc_db.gdnapath == testpath, \
@@ -162,7 +171,7 @@ def test_chromosomes():
               'Assembled_chromosomes/seq/')
     testurls = [prefix + x for x in urls]
     testpath = './Epeg/Epeg.orig.fa.gz'
-    epeg_db = NcbiGenomeDB(label, config)
+    epeg_db = NcbiDB(label, config)
     assert epeg_db.gdnaurl == testurls, \
         'chromosome URL mismatch\n%s\n%s' % (epeg_db.gdnaurl, testurls)
     assert epeg_db.gdnapath == testpath, \
@@ -182,7 +191,7 @@ def test_chromosomes():
               'Assembled_chromosomes/seq/')
     testurls = [prefix + x for x in urls]
     testpath = '/home/student/data/Amel/Amel.orig.fa.gz'
-    amel_db = NcbiGenomeDB(label, config, workdir='/home/student/data')
+    amel_db = NcbiDB(label, config, workdir='/home/student/data')
     assert amel_db.gdnaurl == testurls, \
         'chromosome URL mismatch\n%s\n%s' % (amel_db.gdnaurl, testurls)
     assert amel_db.gdnapath == testpath, \
@@ -197,7 +206,7 @@ def test_annot():
                'ref_Basiliscus_vulgaris_1.1_top_level.gff3.gz')
     testpath = ('/another/path//Bvul/'
                 'ref_Basiliscus_vulgaris_1.1_top_level.gff3.gz')
-    bvul_db = NcbiGenomeDB(label, config, workdir='/another/path/')
+    bvul_db = NcbiDB(label, config, workdir='/another/path/')
     assert bvul_db.gff3url == testurl, \
         'annotation URL mismatch\n%s\n%s' % (bvul_db.gff3url, testurl)
     assert bvul_db.gff3path == testpath, \
@@ -207,7 +216,7 @@ def test_annot():
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Equus_pegasus/GFF/'
                'ref_EPEG_2.1_top_level.gff3.gz')
     testpath = './Epeg/ref_EPEG_2.1_top_level.gff3.gz'
-    epeg_db = NcbiGenomeDB(label, config)
+    epeg_db = NcbiDB(label, config)
     assert epeg_db.gff3url == testurl, \
         'annotation URL mismatch\n%s\n%s' % (epeg_db.gff3url, testurl)
     assert epeg_db.gff3path == testpath, \
@@ -217,11 +226,12 @@ def test_annot():
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Apis_dorsata/GFF/'
                'ref_Apis_dorsata_1.3_top_level.gff3.gz')
     testpath = './Ador/ref_Apis_dorsata_1.3_top_level.gff3.gz'
-    ador_db = NcbiGenomeDB(label, config)
+    ador_db = NcbiDB(label, config)
     assert ador_db.gff3url == testurl, \
         'annotation URL mismatch\n%s\n%s' % (ador_db.gff3url, testurl)
     assert ador_db.gff3path == testpath, \
         'annotation path mismatch\n%s\n%s' % (ador_db.gff3path, testpath)
+    assert ador_db.compressgff3 is False
 
 
 def test_proteins():
@@ -231,7 +241,7 @@ def test_proteins():
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Equus_monoceros/protein/'
                'protein.fa.gz')
     testpath = './Emon/protein.fa.gz'
-    emon_db = NcbiGenomeDB(label, config)
+    emon_db = NcbiDB(label, config)
     assert emon_db.proturl == testurl, \
         'protein URL mismatch\n%s\n%s' % (emon_db.proturl, testurl)
     assert emon_db.protpath == testpath, \
@@ -241,7 +251,7 @@ def test_proteins():
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Basiliscus_vulgaris/protein/'
                'protein.fa.gz')
     testpath = './Bvul/protein.fa.gz'
-    bvul_db = NcbiGenomeDB(label, config)
+    bvul_db = NcbiDB(label, config)
     assert bvul_db.proturl == testurl, \
         'protein URL mismatch\n%s\n%s' % (bvul_db.proturl, testurl)
     assert bvul_db.protpath == testpath, \
@@ -251,8 +261,9 @@ def test_proteins():
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Apis_dorsata/protein/'
                'protein.fa.gz')
     testpath = '/home/gandalf/HymHub/Ador/protein.fa.gz'
-    ador_db = NcbiGenomeDB(label, config, workdir='/home/gandalf/HymHub')
+    ador_db = NcbiDB(label, config, workdir='/home/gandalf/HymHub')
     assert ador_db.proturl == testurl, \
         'protein URL mismatch\n%s\n%s' % (ador_db.proturl, testurl)
     assert ador_db.protpath == testpath, \
         'protein path mismatch\n%s\n%s' % (ador_db.protpath, testpath)
+    assert ador_db.compressprot is False

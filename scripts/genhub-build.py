@@ -18,7 +18,7 @@ import genhub
 
 buildcmds = 'download format datatypes stats cleanup'.split(' ')
 sources = ['ncbi', 'ncbi_flybase', 'beebase', 'crg']
-dbtype = {'ncbi': genhub.ncbi.NcbiGenomeDB}
+dbtype = {'ncbi': genhub.ncbi.NcbiDB}
 
 
 def get_parser():
