@@ -17,7 +17,7 @@ import sys
 import genhub
 
 buildcmds = 'download format datatypes stats cleanup'.split(' ')
-sources = ['ncbi', 'ncbi_flybase', 'beebase']
+sources = ['ncbi', 'ncbi_flybase', 'beebase', 'crg']
 
 
 def download_task(conf, workdir='.', logstream=sys.stderr):
@@ -49,6 +49,10 @@ def download_task(conf, workdir='.', logstream=sys.stderr):
                 genomefunc = genhub.beebase.download_scaffolds
                 annotfunc = genhub.beebase.download_annotation
                 protfunc = genhub.beebase.download_proteins
+            elif source == 'crg':
+                genomefunc = genhub.crg.download_scaffolds
+                annotfunc = genhub.crg.download_annotation
+                protfunc = genhub.crg.download_proteins
             genomefunc(label, config, workdir=workdir, logstream=logstream)
             annotfunc(label, config, workdir=workdir, logstream=logstream)
             protfunc(label, config, workdir=workdir, logstream=logstream)

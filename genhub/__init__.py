@@ -20,6 +20,7 @@ from . import download
 from . import ncbi
 from . import ncbi_flybase
 from . import beebase
+from . import crg
 from . import format
 
 # Custom modules

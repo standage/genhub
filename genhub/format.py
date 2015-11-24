@@ -30,7 +30,7 @@ import genhub
 
 
 infile_message = 'please verify that "download" task completed successfully'
-sources = ['ncbi', 'ncbi_flybase', 'beebase']
+sources = ['ncbi', 'ncbi_flybase', 'beebase', 'crg']
 
 
 def gdna(label, conf, workdir='.', instream=None, outstream=None,
@@ -82,7 +82,7 @@ def gdna(label, conf, workdir='.', instream=None, outstream=None,
         if closeoutstream:
             outstream.close()
 
-    elif conf['source'] == 'beebase':
+    elif conf['source'] in ['beebase', 'crg']:
         closeinstream = False
         if instream is None:
             closeinstream = True
@@ -167,7 +167,7 @@ def proteins(label, conf, workdir='.', instream=None, outstream=None,
         if closeoutstream:
             outstream.close()
 
-    if conf['source'] == 'beebase':
+    if conf['source'] in ['beebase', 'crg']:
         closeinstream = False
         if instream is None:
             closeinstream = True
@@ -219,9 +219,14 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr, verify=True):
 
     outfile = genhub.file_path('%s.gff3' % label, label, workdir)
 
-    if conf['source'] in ['ncbi', 'ncbi_flybase', 'beebase']:
-        infile = genhub.file_path(conf['annotation'], label, workdir,
-                                  check=True, message=infile_message)
+    if conf['source'] in ['ncbi', 'ncbi_flybase', 'beebase', 'crg']:
+        if conf['source'] == 'crg':  # pragma: no cover
+            infile = genhub.file_path(conf['annotation'] + '.gz', label,
+                                      workdir, check=True,
+                                      message=infile_message)
+        else:
+            infile = genhub.file_path(conf['annotation'], label, workdir,
+                                      check=True, message=infile_message)
 
         cmd = 'genhub-filter.py'
         if 'annotfilter' in conf:
@@ -229,10 +234,11 @@ def annotation(label, conf, workdir='.', logstream=sys.stderr, verify=True):
             cmd += ' --exclude %s' % excludefile.name
         if conf['source'] == 'ncbi_flybase':  # pragma: no cover
             cmd += ' --fixtrna'
-        if conf['source'] == 'beebase':
+        if conf['source'] in ['beebase', 'crg']:
             gdnafile = genhub.file_path('%s.gdna.fa' % label, label, workdir,
                                         check=True, message=infile_message)
             cmd += ' --namedup'
+            cmd += ' --fixtrans'
             cmd += ' --prefix %s_' % label
             cmd += ' --fixseq %s' % gdnafile
         cmd += ' %s %s' % (infile, outfile)
