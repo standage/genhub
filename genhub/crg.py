@@ -9,83 +9,41 @@
 # -----------------------------------------------------------------------------
 
 """
-Module for handling two data sets from the Centre de Regulacio Genomica.
+Genome database implementation for data from CRG.
 
-Utilities for downloading genome assemblies, annotations, and protein
-sequences from two insect genomes at the CRG.
+Two aculeate insect data sets from the Centre de Regulacio Genomica.
 """
 
 from __future__ import print_function
 import sys
 import genhub
 
-crgbase = 'http://wasp.crg.eu'
 
+class CrgDB(genhub.genomedb.GenomeDB):
 
-def download_scaffolds(label, config, workdir='.', logstream=sys.stderr,
-                       dryrun=False):
-    """Download a scaffold-level genome from CRG."""
+    def __init__(self, label, conf, workdir='.'):
+        super(CrgDB, self).__init__(label, conf, workdir)
+        assert self.config['source'] == 'crg'
+        self.specbase = 'http://wasp.crg.eu'
 
-    assert 'source' in config, 'Data source unconfigured'
-    assert config['source'] == 'crg'
-    assert 'scaffolds' in config
+    def __repr__(self):
+        return 'CRG'
 
-    if logstream is not None:  # pragma: no cover
-        logmsg = '[GenHub: %s] ' % config['species']
-        logmsg += 'download genome from CRG'
-        print(logmsg, file=logstream)
+    @property
+    def gdnaurl(self):
+        return '%s/%s' % (self.specbase, self.gdnafilename)
 
-    filename = config['scaffolds']
-    url = '%s/%s' % (crgbase, filename)
-    outfile = genhub.file_path(filename, label, workdir)
-    if dryrun is True:
-        return url, outfile
-    else:  # pragma: no cover
-        genhub.download.url_download(url, outfile)
+    @property
+    def gff3url(self):
+        return '%s/%s' % (self.specbase, self.config['annotation'])
 
+    @property
+    def proturl(self):
+        return '%s/%s' % (self.specbase, self.protfilename)
 
-def download_annotation(label, config, workdir='.', logstream=sys.stderr,
-                        dryrun=False):
-    """Download a genome annotation from CRG."""
-
-    assert 'source' in config, 'Data source unconfigured'
-    assert config['source'] == 'crg'
-    assert 'annotation' in config, 'Genome annotation unconfigured'
-
-    if logstream is not None:  # pragma: no cover
-        logmsg = '[GenHub: %s] ' % config['species']
-        logmsg += 'download annotation from CRG'
-        print(logmsg, file=logstream)
-
-    filename = config['annotation']
-    url = '%s/%s' % (crgbase, filename)
-    outfile = genhub.file_path(filename + '.gz', label, workdir)
-    if dryrun is True:
-        return url, outfile
-    else:  # pragma: no cover
-        genhub.download.url_download(url, outfile, compress=True)
-
-
-def download_proteins(label, config, workdir='.', logstream=sys.stderr,
-                      dryrun=False):
-    """Download gene model translation sequences from CRG."""
-
-    assert 'source' in config, 'Data source unconfigured'
-    assert config['source'] == 'crg'
-    assert 'proteins' in config
-
-    if logstream is not None:  # pragma: no cover
-        logmsg = '[GenHub: %s] ' % config['species']
-        logmsg += 'download protein sequences from CRG'
-        print(logmsg, file=logstream)
-
-    filename = config['proteins']
-    url = '%s/%s' % (crgbase, filename)
-    outfile = genhub.file_path(filename, label, workdir)
-    if dryrun is True:
-        return url, outfile
-    else:  # pragma: no cover
-        genhub.download.url_download(url, outfile)
+    @property
+    def gff3filename(self):
+        return '%s.gz' % self.config['annotation']
 
 
 # -----------------------------------------------------------------------------
@@ -99,10 +57,12 @@ def test_scaffolds():
     label, config = genhub.conf.load_one('conf/HymHub/Dqua.yml')
     testurl = 'http://wasp.crg.eu/DQUA.v01.fa.gz'
     testpath = './Dqua/DQUA.v01.fa.gz'
-    testresult = (testurl, testpath)
-    result = download_scaffolds(label, config, dryrun=True, logstream=None)
-    assert result == testresult, \
-        'filenames do not match\n%s\n%s\n' % (result, testresult)
+    dqua_db = CrgDB(label, config)
+    assert dqua_db.gdnaurl == testurl, \
+        'scaffold URL mismatch\n%s\n%s' % (dqua_db.gdnaurl, testurl)
+    assert dqua_db.gdnapath == testpath, \
+        'scaffold path mismatch\n%s\n%s' % (dqua_db.gdnapath, testpath)
+    assert '%r' % dqua_db == 'CRG'
 
 
 def test_annot():
@@ -112,10 +72,11 @@ def test_annot():
     testurl = 'http://wasp.crg.eu/DQUA.v01.gff3'
     testpath = 'CRG/Dqua/DQUA.v01.gff3.gz'
     testresult = (testurl, testpath)
-    result = download_annotation(label, config, dryrun=True, workdir='CRG',
-                                 logstream=None)
-    assert result == testresult, \
-        'filenames do not match\n%s\n%s\n' % (result, testresult)
+    dqua_db = CrgDB(label, config, workdir='CRG')
+    assert dqua_db.gff3url == testurl, \
+        'annotation URL mismatch\n%s\n%s' % (dqua_db.gff3url, testurl)
+    assert dqua_db.gff3path == testpath, \
+        'annotation path mismatch\n%s\n%s' % (dqua_db.gff3path, testpath)
 
 
 def test_proteins():
@@ -124,8 +85,8 @@ def test_proteins():
     label, config = genhub.conf.load_one('conf/HymHub/Dqua.yml')
     testurl = 'http://wasp.crg.eu/DQUA.v01.pep.fa.gz'
     testpath = '/opt/db/genhub/Dqua/DQUA.v01.pep.fa.gz'
-    testresult = (testurl, testpath)
-    result = download_proteins(label, config, dryrun=True, logstream=None,
-                               workdir='/opt/db/genhub')
-    assert result == testresult, \
-        'filenames do not match\n%s\n%s\n' % (result, testresult)
+    dqua_db = CrgDB(label, config, workdir='/opt/db/genhub')
+    assert dqua_db.proturl == testurl, \
+        'protein URL mismatch\n%s\n%s' % (dqua_db.proturl, testurl)
+    assert dqua_db.protpath == testpath, \
+        'protein path mismatch\n%s\n%s' % (dqua_db.protpath, testpath)

@@ -8,12 +8,7 @@
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
 
-"""
-Genome database manager for NCBI data.
-
-Utilities for downloading and preprocessing genome assemblies, annotations, and
-protein sequences from NCBI's FTP site.
-"""
+"""Genome database implementation for data from NCBI."""
 
 from __future__ import print_function
 import genhub

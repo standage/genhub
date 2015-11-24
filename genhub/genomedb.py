@@ -13,6 +13,10 @@ Class for managing a genome database.
 
 By "genome database" we mean a collection of sequence, annotation, and
 ancillary data files for a annotated genome assembly.
+
+This "superclass" defines many default characteristics and behaviors that are
+shared across different genome databases. Subclasses implement additional
+specifics for managing data from a particular source.
 """
 
 from __future__ import print_function

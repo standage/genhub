@@ -8,85 +8,36 @@
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
 
-"""
-Module for handling BeeBase consortium data.
-
-Utilities for downloading genome assemblies, annotations, and protein
-sequences from the BeeBase consortium page at HymenopteraBase.
-"""
+"""Genome database implementation for BeeBase consortium data."""
 
 from __future__ import print_function
 import sys
 import genhub
 
-beebase = ('http://hymenopteragenome.org/beebase/sites/'
-           'hymenopteragenome.org.beebase/files/data/consortium_data')
 
+class BeeBaseDB(genhub.genomedb.GenomeDB):
 
-def download_scaffolds(label, config, workdir='.', logstream=sys.stderr,
-                       dryrun=False):
-    """Download a scaffold-level genome from BeeBase."""
+    def __init__(self, label, conf, workdir='.'):
+        super(BeeBaseDB, self).__init__(label, conf, workdir)
+        assert self.config['source'] == 'beebase'
+        self.specbase = ('http://hymenopteragenome.org/beebase/sites/'
+                         'hymenopteragenome.org.beebase/files/data/'
+                         'consortium_data')
 
-    assert 'source' in config, 'Data source unconfigured'
-    assert config['source'] == 'beebase'
-    assert 'scaffolds' in config
+    def __repr__(self):
+        return 'BeeBase'
 
-    if logstream is not None:  # pragma: no cover
-        logmsg = '[GenHub: %s] ' % config['species']
-        logmsg += 'download genome from BeeBase'
-        print(logmsg, file=logstream)
+    @property
+    def gdnaurl(self):
+        return '%s/%s' % (self.specbase, self.gdnafilename)
 
-    filename = config['scaffolds']
-    url = '%s/%s' % (beebase, filename)
-    outfile = '%s/%s/%s' % (workdir, label, filename)
-    if dryrun is True:
-        return url, outfile
-    else:  # pragma: no cover
-        genhub.download.url_download(url, outfile)
+    @property
+    def gff3url(self):
+        return '%s/%s' % (self.specbase, self.gff3filename)
 
-
-def download_annotation(label, config, workdir='.', logstream=sys.stderr,
-                        dryrun=False):
-    """Download a genome annotation from BeeBase."""
-
-    assert 'source' in config, 'Data source unconfigured'
-    assert config['source'] == 'beebase'
-    assert 'annotation' in config, 'Genome annotation unconfigured'
-
-    if logstream is not None:  # pragma: no cover
-        logmsg = '[GenHub: %s] ' % config['species']
-        logmsg += 'download annotation from BeeBase'
-        print(logmsg, file=logstream)
-
-    filename = config['annotation']
-    url = '%s/%s' % (beebase, filename)
-    outfile = '%s/%s/%s' % (workdir, label, filename)
-    if dryrun is True:
-        return url, outfile
-    else:  # pragma: no cover
-        genhub.download.url_download(url, outfile)
-
-
-def download_proteins(label, config, workdir='.', logstream=sys.stderr,
-                      dryrun=False):
-    """Download gene model translation sequences from BeeBase."""
-
-    assert 'source' in config, 'Data source unconfigured'
-    assert config['source'] == 'beebase'
-    assert 'proteins' in config
-
-    if logstream is not None:  # pragma: no cover
-        logmsg = '[GenHub: %s] ' % config['species']
-        logmsg += 'download protein sequences from BeeBase'
-        print(logmsg, file=logstream)
-
-    filename = config['proteins']
-    url = '%s/%s' % (beebase, filename)
-    outfile = '%s/%s/%s' % (workdir, label, filename)
-    if dryrun is True:
-        return url, outfile
-    else:  # pragma: no cover
-        genhub.download.url_download(url, outfile)
+    @property
+    def proturl(self):
+        return '%s/%s' % (self.specbase, self.protfilename)
 
 
 # -----------------------------------------------------------------------------
@@ -102,10 +53,12 @@ def test_scaffolds():
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
                'Eufriesea_mexicana.v1.0.fa.gz')
     testpath = './Emex/Eufriesea_mexicana.v1.0.fa.gz'
-    testresult = (testurl, testpath)
-    result = download_scaffolds(label, config, dryrun=True, logstream=None)
-    assert result == testresult, \
-        'filenames do not match\n%s\n%s\n' % (result, testresult)
+    emex_db = BeeBaseDB(label, config)
+    assert emex_db.gdnaurl == testurl, \
+        'scaffold URL mismatch\n%s\n%s' % (emex_db.gdnaurl, testurl)
+    assert emex_db.gdnapath == testpath, \
+        'scaffold path mismatch\n%s\n%s' % (emex_db.gdnapath, testpath)
+    assert '%r' % emex_db == 'BeeBase'
 
 
 def test_annot():
@@ -116,11 +69,11 @@ def test_annot():
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
                'Dufourea_novaeangliae_v1.1.gff.gz')
     testpath = 'BeeBase/Dnov/Dufourea_novaeangliae_v1.1.gff.gz'
-    testresult = (testurl, testpath)
-    result = download_annotation(label, config, dryrun=True, workdir='BeeBase',
-                                 logstream=None)
-    assert result == testresult, \
-        'filenames do not match\n%s\n%s\n' % (result, testresult)
+    dnov_db = BeeBaseDB(label, config, workdir='BeeBase')
+    assert dnov_db.gff3url == testurl, \
+        'annotation URL mismatch\n%s\n%s' % (dnov_db.gff3url, testurl)
+    assert dnov_db.gff3path == testpath, \
+        'annotation path mismatch\n%s\n%s' % (dnov_db.gff3path, testpath)
 
 
 def test_proteins():
@@ -131,8 +84,8 @@ def test_proteins():
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
                'Habropoda_laboriosa_v1.2.pep.fa.gz')
     testpath = '/opt/db/genhub/Hlab/Habropoda_laboriosa_v1.2.pep.fa.gz'
-    testresult = (testurl, testpath)
-    result = download_proteins(label, config, dryrun=True, logstream=None,
-                               workdir='/opt/db/genhub')
-    assert result == testresult, \
-        'filenames do not match\n%s\n%s\n' % (result, testresult)
+    hlab_db = BeeBaseDB(label, config, workdir='/opt/db/genhub')
+    assert hlab_db.proturl == testurl, \
+        'protein URL mismatch\n%s\n%s' % (hlab_db.proturl, testurl)
+    assert hlab_db.protpath == testpath, \
+        'protein path mismatch\n%s\n%s' % (hlab_db.protpath, testpath)

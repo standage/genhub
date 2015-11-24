@@ -8,7 +8,7 @@
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
 
-"""Module for handling FlyBase data hosted at NCBI."""
+"""Genome database implementation for FlyBase data at NCBI."""
 
 from __future__ import print_function
 import os
@@ -107,7 +107,6 @@ def test_chromosomes():
     dmel_db = FlyBaseDB(label, config)
     assert dmel_db.gdnaurl == testurls, \
         'chromosome URL mismatch\n%s\n%s' % (dmel_db.gdnaurl, testurls)
-    print('DEBUG: ' + dmel_db.gdnafilename, file=sys.stderr)
     assert dmel_db.gdnapath == testpath, \
         'chromosome path mismatch\n%s\n%s' % (dmel_db.gdnapath, testpath)
     assert '%r' % dmel_db == 'FlyBase@NCBI'

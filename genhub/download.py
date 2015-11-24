@@ -14,7 +14,7 @@ import gzip
 import pycurl
 
 
-def url_download(urldata, localpath, compress=False, follow=False):
+def url_download(urldata, localpath, compress=False, follow=True):
     """
     Helper function for downloading remote data files with PycURL.
 
