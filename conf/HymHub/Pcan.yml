@@ -6,4 +6,8 @@ Pcan:
     scaffolds: PCAN.v01.fa.gz
     annotation: PCAN.v01.gff3
     proteins: PCAN.v01.pep.fa.gz
+    checksums:
+        gdna: 1920388c7b6f48638fe4f4248aaf349108457a1a
+        gff3: 9cc1223610b43a5d5a2dff4fa3ac74b6d2b25467
+        prot: a2cb40bd4ad9ff9defffbeecdd71514511e8d892
     description: CRG version v01

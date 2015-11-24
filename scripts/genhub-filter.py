@@ -20,8 +20,10 @@ parser.add_argument('-t', '--fixtrna', action='store_true', help='NCBI FlyBase'
                     ' annotations do not have ID/Parent relationship properly '
                     'defined between tRNA features and the corresponding gene '
                     'features; use this option to fix these data')
-parser.add_argument('-n', '--namedup', action='store_true',
-                    help='preprocess with namedup')
+parser.add_argument('-m', '--fixtrans', action='store_true', help='convert '
+                    '`transcript` features to `mRNA` features')
+parser.add_argument('-n', '--namedup', action='store_true', help='preprocess '
+                    'with namedup')
 parser.add_argument('-p', '--prefix', default=None, help='string to prepend to'
                     ' every sequence ID in the input')
 parser.add_argument('-f', '--fixseq', metavar='GDNA', default=None,
@@ -40,6 +42,8 @@ if args.fixtrna:
     cmds.append('genhub-fix-trna.py')
 if args.namedup:
     cmds.append('genhub-namedup.py')
+if args.fixtrans:
+    cmds.append("sed $'s/\ttranscript\t/\tmRNA\t/'")
 cmds.append('tidygff3')
 if args.prefix:
     cmds.append('genhub-format-gff3.py --prefix %s -' % args.prefix)
