@@ -9,10 +9,10 @@
 # -----------------------------------------------------------------------------
 
 """
-Module for handling NCBI data.
+Genome database manager for NCBI data.
 
-Utilities for downloading genome assemblies, annotations, and protein
-sequences from NCBI's FTP site.
+Utilities for downloading and preprocessing genome assemblies, annotations, and
+protein sequences from NCBI's FTP site.
 """
 
 from __future__ import print_function
@@ -32,47 +32,11 @@ class NcbiDB(genhub.genomedb.GenomeDB):
         return 'NCBI'
 
     @property
-    def moltype(self):
-        chrmtype = 'chromosomes' in self.config
-        scaftype = 'scaffolds' in self.config
-        assert chrmtype != scaftype, ('Must configure only chromosomes or '
-                                      'scaffolds, not both')
-        if chrmtype:
-            return 'chromosomes'
-        return 'scaffolds'
-
-    @property
-    def gdnafilename(self):
-        if self.moltype == 'scaffolds':
-            return self.config['scaffolds']
-        else:
-            return '%s.orig.fa.gz' % self.label
-
-    @property
-    def gff3filename(self):
-        return self.config['annotation']
-
-    @property
-    def protfilename(self):
-        return 'protein.fa.gz'
-
-    @property
-    def gdnapath(self):
-        return genhub.file_path(self.gdnafilename, self.label, self.workdir)
-
-    @property
-    def gff3path(self):
-        return genhub.file_path(self.gff3filename, self.label, self.workdir)
-
-    @property
-    def protpath(self):
-        return genhub.file_path(self.protfilename, self.label, self.workdir)
-
-    @property
     def gdnaurl(self):
-        if self.moltype == 'scaffolds':
+        if 'scaffolds' in self.config:
             return '%s/CHR_Un/%s' % (self.specbase, self.gdnafilename)
         else:
+            assert 'chromosomes' in self.config
             urls = list()
             prefix = self.config['prefix']
             for chrmfile in self.config['chromosomes']:
@@ -87,18 +51,6 @@ class NcbiDB(genhub.genomedb.GenomeDB):
     @property
     def proturl(self):
         return '%s/protein/protein.fa.gz' % self.specbase
-
-    @property
-    def compressgdna(self):
-        return False
-
-    @property
-    def compressgff3(self):
-        return False
-
-    @property
-    def compressprot(self):
-        return False
 
 
 # -----------------------------------------------------------------------------
@@ -139,7 +91,7 @@ def test_scaffolds():
         'scaffold URL mismatch\n%s\n%s' % (ador_db.gdnaurl, testurl)
     assert ador_db.gdnapath == testpath, \
         'scaffold path mismatch\n%s\n%s' % (ador_db.gdnapath, testpath)
-    assert ador_db.compressgdna is False
+    assert ador_db.compress_gdna is False
 
 
 def test_chromosomes():
@@ -231,7 +183,7 @@ def test_annot():
         'annotation URL mismatch\n%s\n%s' % (ador_db.gff3url, testurl)
     assert ador_db.gff3path == testpath, \
         'annotation path mismatch\n%s\n%s' % (ador_db.gff3path, testpath)
-    assert ador_db.compressgff3 is False
+    assert ador_db.compress_gff3 is False
 
 
 def test_proteins():
@@ -266,4 +218,4 @@ def test_proteins():
         'protein URL mismatch\n%s\n%s' % (ador_db.proturl, testurl)
     assert ador_db.protpath == testpath, \
         'protein path mismatch\n%s\n%s' % (ador_db.protpath, testpath)
-    assert ador_db.compressprot is False
+    assert ador_db.compress_prot is False

@@ -11,6 +11,7 @@
 """Module for handling FlyBase data hosted at NCBI."""
 
 from __future__ import print_function
+import os
 import subprocess
 import sys
 import genhub
@@ -34,27 +35,7 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
         return '%s.orig.fa.gz' % self.label
 
     @property
-    def gff3filename(self):
-        return self.config['annotation']
-
-    @property
-    def protfilename(self):
-        return 'protein.fa.gz'
-
-    @property
-    def gdnapath(self):
-        return genhub.file_path(self.gdnafilename, self.label, self.workdir)
-
-    @property
-    def gff3path(self):
-        return genhub.file_path(self.gff3filename, self.label, self.workdir)
-
-    @property
-    def protpath(self):
-        return genhub.file_path(self.protfilename, self.label, self.workdir)
-
-    @property
-    def chrurls(self):
+    def gdnaurl(self):
         urls = list()
         for acc in self.config['accessions']:
             url = '%s/%s.fna' % (self.specbase, acc)
@@ -62,7 +43,7 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
         return urls
 
     @property
-    def gff3urls(self):
+    def gff3url(self):
         urls = list()
         for acc in self.config['accessions']:
             url = '%s/%s.gff' % (self.specbase, acc)
@@ -70,24 +51,12 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
         return urls
 
     @property
-    def proturls(self):
+    def proturl(self):
         urls = list()
         for acc in self.config['accessions']:
             url = '%s/%s.faa' % (self.specbase, acc)
             urls.append(url)
         return urls
-
-    @property
-    def compressgdna(self):
-        return True
-
-    @property
-    def compressgff3(self):
-        return True
-
-    @property
-    def compressprot(self):
-        return True
 
     def download_gff3(self, logstream=sys.stderr):  # pragma: no cover
         """Override the default download task."""
@@ -99,17 +68,18 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
 
         command = ['gt', 'gff3', '-sort', '-tidy', '-force', '-gzip', '-o',
                    '%s' % self.gff3path]
-        for url, acc in zip(urls, config['accessions']):
+        for url, acc in zip(self.gff3url, self.config['accessions']):
             tempout = '%s/%s.gff.gz' % (self.dbdir, os.path.basename(acc))
             genhub.download.url_download(url, tempout, compress=True)
             command.append(tempout)
-        logfile = open('%s.log' % outfile, 'w')
+        logfile = open('%s.log' % self.gff3path, 'w')
         proc = subprocess.Popen(command, stderr=subprocess.PIPE)
         proc.wait()
         for line in proc.stderr:
             print(line, end='', file=logfile)
-        assert proc.returncode == 0, ('command failed, check the log (%s.log):'
-                                      ' %s' % (outfile, ' '.join(command)))
+        assert proc.returncode == 0, ('command failed, check the log '
+                                      '(%s.log): %s' %
+                                      (self.gff3path, ' '.join(command)))
 
 
 # -----------------------------------------------------------------------------
@@ -135,12 +105,13 @@ def test_chromosomes():
                 'RELEASE_5_48/CHR_4/NC_004353.fna']
     testpath = './Dmel/Dmel.orig.fa.gz'
     dmel_db = FlyBaseDB(label, config)
-    assert dmel_db.chrurls == testurls, \
-        'chromosome URL mismatch\n%s\n%s' % (dmel_db.chrurls, testurls)
+    assert dmel_db.gdnaurl == testurls, \
+        'chromosome URL mismatch\n%s\n%s' % (dmel_db.gdnaurl, testurls)
+    print('DEBUG: ' + dmel_db.gdnafilename, file=sys.stderr)
     assert dmel_db.gdnapath == testpath, \
         'chromosome path mismatch\n%s\n%s' % (dmel_db.gdnapath, testpath)
     assert '%r' % dmel_db == 'FlyBase@NCBI'
-    assert dmel_db.compressgdna is True
+    assert dmel_db.compress_gdna is True
 
 
 def test_annot():
@@ -161,11 +132,11 @@ def test_annot():
                 'RELEASE_5_48/CHR_4/NC_004353.gff']
     testpath = './Dmel/dmel-5.48-ncbi.gff3.gz'
     dmel_db = FlyBaseDB(label, config)
-    assert dmel_db.gff3urls == testurls, \
-        'annotation URL mismatch\n%s\n%s' % (dmel_db.gff3urls, testurls)
+    assert dmel_db.gff3url == testurls, \
+        'annotation URL mismatch\n%s\n%s' % (dmel_db.gff3url, testurls)
     assert dmel_db.gff3path == testpath, \
         'annotation path mismatch\n%s\n%s' % (dmel_db.gff3path, testpath)
-    assert dmel_db.compressgff3 is True
+    assert dmel_db.compress_gff3 is True
 
 
 def test_proteins():
@@ -185,8 +156,8 @@ def test_proteins():
                 'RELEASE_5_48/CHR_4/NC_004353.faa']
     testpath = './Dmel/protein.fa.gz'
     dmel_db = FlyBaseDB(label, config)
-    assert dmel_db.proturls == testurls, \
-        'protein URL mismatch\n%s\n%s' % (dmel_db.proturls, testurls)
+    assert dmel_db.proturl == testurls, \
+        'protein URL mismatch\n%s\n%s' % (dmel_db.proturl, testurls)
     assert dmel_db.protpath == testpath, \
         'protein path mismatch\n%s\n%s' % (dmel_db.protpath, testpath)
-    assert dmel_db.compressprot is True
+    assert dmel_db.compress_prot is True
