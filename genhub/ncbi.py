@@ -11,6 +11,12 @@
 """Genome database implementation for data from NCBI."""
 
 from __future__ import print_function
+import filecmp
+import gzip
+import os
+import re
+import subprocess
+import sys
 import genhub
 
 
@@ -22,6 +28,8 @@ class NcbiDB(genhub.genomedb.GenomeDB):
         assert 'species' in self.config
         species = self.config['species'].replace(' ', '_')
         self.specbase = 'ftp://ftp.ncbi.nih.gov/genomes/%s' % species
+        self.format_gdna = self.format_fasta
+        self.format_prot = self.format_fasta
 
     def __repr__(self):
         return 'NCBI'
@@ -47,13 +55,45 @@ class NcbiDB(genhub.genomedb.GenomeDB):
     def proturl(self):
         return '%s/protein/protein.fa.gz' % self.specbase
 
+    def format_fasta(self, instream, outstream, logstream=sys.stderr):
+        for line in instream:
+            if line.startswith('>'):
+                pattern = '>gi\|\d+\|(ref|gb)\|([^\|]+)\S+'
+                line = re.sub(pattern, '>\g<2>', line)
+            print(line, end='', file=outstream)
+
+    def format_gff3(self, logstream=sys.stderr, debug=False):
+        cmds = list()
+        cmds.append('gunzip -c %s' % self.gff3path)
+        if 'annotfilter' in self.config:
+            excludefile = genhub.conf.conf_filter_file(self.config)
+            cmds.append('grep -vf %s' % excludefile.name)
+        cmds.append('tidygff3')
+        cmds.append('genhub-format-gff3.py -')
+        cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
+
+        commands = ' | '.join(cmds)
+        if debug:  # pragma: no cover
+            print('DEBUG: running command: %s' % commands, file=logstream)
+        proc = subprocess.Popen(commands, shell=True, universal_newlines=True,
+                                stderr=subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+        for line in stderr.split('\n'):  # pragma: no cover
+            if 'has not been previously introduced' not in line and \
+               'does not begin with "##gff-version"' not in line and \
+               line != '':
+                print(line, file=logstream)
+        assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
+        if 'annotfilter' in self.config:
+            os.unlink(excludefile.name)
+
 
 # -----------------------------------------------------------------------------
 # Unit tests
 # -----------------------------------------------------------------------------
 
 
-def test_scaffolds():
+def test_scaffolds_download():
     """NCBI scaffolds download"""
 
     label, config = genhub.conf.load_one('conf/test/Emon.yml')
@@ -89,7 +129,7 @@ def test_scaffolds():
     assert ador_db.compress_gdna is False
 
 
-def test_chromosomes():
+def test_chromosomes_download():
     """NCBI chromosome download"""
 
     label, config = genhub.conf.load_one('conf/test/Docc.yml')
@@ -145,7 +185,7 @@ def test_chromosomes():
         'chromosome path mismatch\n%s\n%s' % (amel_db.gdnapath, chrmpath)
 
 
-def test_annot():
+def test_annot_download():
     """NCBI annotation download"""
 
     label, config = genhub.conf.load_one('conf/test/Bvul.yml')
@@ -181,7 +221,7 @@ def test_annot():
     assert ador_db.compress_gff3 is False
 
 
-def test_proteins():
+def test_proteins_download():
     """NCBI protein download"""
 
     label, config = genhub.conf.load_one('conf/test/Emon.yml')
@@ -214,3 +254,115 @@ def test_proteins():
     assert ador_db.protpath == testpath, \
         'protein path mismatch\n%s\n%s' % (ador_db.protpath, testpath)
     assert ador_db.compress_prot is False
+
+
+def test_gdna_format():
+    """NCBI gDNA formatting"""
+
+    testoutfile = 'testdata/fasta/hsal-first-7-out.fa'
+    label, conf = genhub.conf.load_one('conf/test2/Hsal.yml')
+
+    infile = 'testdata/fasta/hsal-first-7.fa.gz'
+    instream = gzip.open(infile, 'rt')
+    outfile = 'testdata/scratch/hsal-first-7.fa'
+    outstream = open(outfile, 'w')
+    hsal_db = NcbiDB(label, conf)
+    hsal_db.preprocess_gdna(instream=instream, outstream=outstream,
+                            logstream=None, verify=False)
+    instream.close()
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hsal gDNA formatting failed (instream --> outstream)'
+
+    wd = 'testdata/demo-workdir'
+    outstream = open(outfile, 'w')
+    hsal_db = NcbiDB(label, conf, workdir=wd)
+    hsal_db.preprocess_gdna(outstream=outstream, logstream=None,
+                            verify=False)
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hsal gDNA formatting failed (dir --> outstream)'
+
+    wd = 'testdata/scratch'
+    subprocess.call(['mkdir', '-p', 'testdata/scratch/Hsal'])
+    instream = gzip.open(infile, 'rt')
+    hsal_db = NcbiDB(label, conf, workdir=wd)
+    hsal_db.preprocess_gdna(instream=instream, logstream=None, verify=False)
+    instream.close()
+    outfile = 'testdata/scratch/Hsal/Hsal.gdna.fa'
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hsal gDNA formatting failed (instream --> dir)'
+
+    testoutfile = 'testdata/fasta/tcas-first-33-out.fa'
+    label, conf = genhub.conf.load_one('conf/HymHub/Tcas.yml')
+
+    wd = 'testdata/demo-workdir'
+    outfile = 'testdata/scratch/tcas-first-33.fa'
+    outstream = open(outfile, 'w')
+    tcas_db = NcbiDB(label, conf, workdir=wd)
+    tcas_db.preprocess_gdna(outstream=outstream, logstream=None,
+                            verify=False)
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Tcas gDNA formatting failed (dir --> outstream)'
+
+
+def test_annot_format():
+    """NCBI annotation formatting"""
+
+    label, conf = genhub.conf.load_one('conf/test2/Aech.yml')
+    aech_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
+    aech_db.preprocess_gff3(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Aech/Aech.gff3'
+    testfile = 'testdata/gff3/ncbi-format-aech.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Aech annotation formatting failed'
+
+    label, conf = genhub.conf.load_one('conf/test2/Pbar.yml')
+    pbar_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
+    pbar_db.preprocess_gff3(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Pbar/Pbar.gff3'
+    testfile = 'testdata/gff3/ncbi-format-pbar.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Pbar annotation formatting failed'
+
+    label, conf = genhub.conf.load_one('conf/test2/Ador.yml')
+    ador_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
+    ador_db.preprocess_gff3(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Ador/Ador.gff3'
+    testfile = 'testdata/gff3/ncbi-format-ador.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Ador annotation formatting failed'
+
+
+def test_prot_ncbi():
+    """NCBI protein formatting"""
+
+    label, conf = genhub.conf.load_one('conf/test2/Hsal.yml')
+    testoutfile = 'testdata/fasta/hsal-13-prot-out.fa'
+
+    infile = 'testdata/fasta/hsal-13-prot.fa.gz'
+    instream = gzip.open(infile, 'rt')
+    outfile = 'testdata/scratch/hsal-13-prot.fa'
+    outstream = open(outfile, 'w')
+    hsal_db = NcbiDB(label, conf)
+    hsal_db.preprocess_prot(instream, outstream, logstream=None, verify=False)
+    instream.close()
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hsal protein formatting failed (instream --> outstream)'
+
+    wd = 'testdata/demo-workdir'
+    outstream = open(outfile, 'w')
+    hsal_db = NcbiDB(label, conf, workdir=wd)
+    hsal_db.preprocess_prot(None, outstream, logstream=None, verify=False)
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hsal protein formatting failed (dir --> outstream)'
+
+    wd = 'testdata/scratch'
+    subprocess.call(['mkdir', '-p', 'testdata/scratch/Hsal'])
+    instream = gzip.open(infile, 'rt')
+    hsal_db = NcbiDB(label, conf, workdir=wd)
+    hsal_db.preprocess_prot(instream, None, logstream=None, verify=False)
+    instream.close()
+    outfile = 'testdata/scratch/Hsal/Hsal.all.prot.fa'
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Hsal protein formatting failed (instream --> dir)'

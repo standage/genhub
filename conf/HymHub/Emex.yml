@@ -7,7 +7,7 @@ Emex:
     annotation: Eufriesea_mexicana_v1.1.gff.gz
     proteins: Eufriesea_mexicana_v1.1.pep.fa.gz
     checksums:
-        gdna: 6fd9d1b9d37cafcbd4ea00643e3e9d05f69b1974
-        gff3: 3ded53111f59600cf3420927a996b800677f7d6e
+        gdna: c54b6580747e3d7e8acff1695e9410396d2dfb84
+        gff3: 3ee40c4536c973d8a2525579410cfba99d80df31
         prot: ae6353b7059d89f75f5480e546435259c3fd622e
     description: BeeBase annotation version 1.1

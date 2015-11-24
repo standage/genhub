@@ -22,7 +22,6 @@ from . import ncbi
 from . import ncbi_flybase
 from . import beebase
 from . import crg
-from . import format
 
 # Custom modules
 from . import pdom
@@ -43,7 +42,7 @@ def file_path(filename, speclabel, workdir='.', check=False, message=None):
     Resolve a file's complete path, optionally checking if the file exists.
     """
     filepath = '%s/%s/%s' % (workdir, speclabel, filename)
-    if check:
+    if check:  # pragma: no cover
         msg = 'file "%s" not found' % filepath
         if message is not None:
             msg += '; %s' % message

@@ -11,7 +11,10 @@
 """Genome database implementation for FlyBase data at NCBI."""
 
 from __future__ import print_function
+import filecmp
+import gzip
 import os
+import re
 import subprocess
 import sys
 import genhub
@@ -26,6 +29,8 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
         species = self.config['species'].replace(' ', '_')
         self.specbase = ('ftp://ftp.ncbi.nih.gov/genomes/'
                          'Drosophila_melanogaster/RELEASE_5_48')
+        self.format_gdna = self.format_fasta
+        self.format_prot = self.format_fasta
 
     def __repr__(self):
         return 'FlyBase@NCBI'
@@ -80,6 +85,37 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
         assert proc.returncode == 0, ('command failed, check the log '
                                       '(%s.log): %s' %
                                       (self.gff3path, ' '.join(command)))
+
+    def format_fasta(self, instream, outstream, logstream=sys.stderr):
+        for line in instream:
+            if line.startswith('>'):
+                pattern = '>gi\|\d+\|(ref|gb)\|([^\|]+)\S+'
+                line = re.sub(pattern, '>\g<2>', line)
+            print(line, end='', file=outstream)
+
+    def format_gff3(self, logstream=sys.stderr, debug=False):
+        cmds = list()
+        cmds.append('gunzip -c %s' % self.gff3path)
+        excludefile = genhub.conf.conf_filter_file(self.config)
+        cmds.append('grep -vf %s' % excludefile.name)
+        cmds.append('genhub-fix-trna.py')
+        cmds.append('tidygff3')
+        cmds.append('genhub-format-gff3.py -')
+        cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
+
+        commands = ' | '.join(cmds)
+        if debug:  # pragma: no cover
+            print('DEBUG: running command: %s' % commands, file=logstream)
+        proc = subprocess.Popen(commands, shell=True, universal_newlines=True,
+                                stderr=subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+        for line in stderr.split('\n'):  # pragma: no cover
+            if 'has not been previously introduced' not in line and \
+               'does not begin with "##gff-version"' not in line and \
+               line != '':
+                print(line, file=logstream)
+        assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
+        os.unlink(excludefile.name)
 
 
 # -----------------------------------------------------------------------------
@@ -160,3 +196,59 @@ def test_proteins():
     assert dmel_db.protpath == testpath, \
         'protein path mismatch\n%s\n%s' % (dmel_db.protpath, testpath)
     assert dmel_db.compress_prot is True
+
+
+def test_format():
+    """Task drivers"""
+    label, conf = genhub.conf.load_one('conf/test2/Dmel.yml')
+    dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
+    dmel_db.format(logstream=None)
+
+
+def test_gdna_format():
+    """NCBI/FlyBase gDNA formatting"""
+
+    testoutfile = 'testdata/fasta/dmel-fb-gdna-ut-out.fa'
+    label, conf = genhub.conf.load_one('conf/test2/Dmel.yml')
+
+    infile = 'testdata/demo-workdir/Dmel/Dmel.orig.fa.gz'
+    instream = gzip.open(infile, 'rt')
+    outfile = 'testdata/scratch/dmel-fb-gdna-ut-out.fa'
+    outstream = open(outfile, 'w')
+    dmel_db = FlyBaseDB(label, conf)
+    dmel_db.preprocess_gdna(instream=instream, outstream=outstream,
+                            logstream=None, verify=False)
+    instream.close()
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Dmel gDNA formatting failed (instream --> outstream)'
+
+
+def test_annot_format():
+    """NCBI/FlyBase annotation formatting"""
+
+    label, conf = genhub.conf.load_one('conf/test2/Dmel.yml')
+    aech_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
+    aech_db.preprocess_gff3(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Dmel/Dmel.gff3'
+    testfile = 'testdata/gff3/ncbi-format-dmel.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Dmel annotation formatting failed'
+
+
+def test_prot_format():
+    """NCBI/FlyBase protein formatting"""
+
+    testoutfile = 'testdata/fasta/dmel-fb-prot-ut-out.fa'
+    label, conf = genhub.conf.load_one('conf/test2/Dmel.yml')
+
+    infile = 'testdata/demo-workdir/Dmel/protein.fa.gz'
+    instream = gzip.open(infile, 'rt')
+    outfile = 'testdata/scratch/dmel-fb-prot-ut-out.fa'
+    outstream = open(outfile, 'w')
+    dmel_db = FlyBaseDB(label, conf)
+    dmel_db.preprocess_prot(instream=instream, outstream=outstream,
+                            logstream=None, verify=False)
+    instream.close()
+    outstream.close()
+    assert filecmp.cmp(testoutfile, outfile), \
+        'Dmel protein formatting failed (instream --> outstream)'

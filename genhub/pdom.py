@@ -43,31 +43,22 @@ class PdomDB(genhub.genomedb.GenomeDB):
         prefix = 'ACD29139-6619-48DF-A9F2-F75CA382E248'
         return '%s/%s/%s' % (self.specbase, prefix, self.protfilename)
 
+    def format_gdna(self, instream, outstream, logstream=sys.stderr):
+        for line in instream:
+            # No processing required currently.
+            # If any is ever needed, do it here.
+            print(line, end='', file=outstream)
 
-def gdna(label, conf, workdir='.', logstream=sys.stderr):
-    """Decompression only, no processing required."""
-    inpath = '%s/%s/%s' % (workdir, label, conf['scaffolds'])
-    outpath = '%s/%s/%s.gdna.fa' % (workdir, label, label)
-    with gzip.open(inpath, 'rt') as infile, open(outpath, 'w') as outfile:
-        for line in infile:
-            print(line, end='', file=outfile)
+    def format_prot(self, instream, outstream, logstream=sys.stderr):
+        for line in instream:
+            # No processing required currently.
+            # If any is ever needed, do it here.
+            print(line, end='', file=outstream)
 
-
-def proteins(label, conf, workdir='.', logstream=sys.stderr):
-    """Decompression only, no processing required."""
-    inpath = '%s/%s/%s.gz' % (workdir, label, conf['proteins'])
-    outpath = '%s/%s/%s.all.prot.fa' % (workdir, label, label)
-    with gzip.open(inpath, 'rt') as infile, open(outpath, 'w') as outfile:
-        for line in infile:
-            print(line, end='', file=outfile)
-
-
-def annotation(label, conf, workdir='.', logstream=sys.stderr):
-    """Preprocess annotations"""
-    inpath = '%s/%s/%s' % (workdir, label, conf['annotation'])
-    outpath = '%s/%s/%s.gff3' % (workdir, label, label)
-    command = 'genhub-format-gff3.py --outfile %s %s' % (outpath, inpath)
-    subprocess.check_call(command.split(' '))
+    def format_gff3(self, logstream=sys.stderr):
+        command = ['genhub-format-gff3.py', '--outfile', self.gff3file,
+                   self.gff3path]
+        subprocess.check_call(command)
 
 
 # -----------------------------------------------------------------------------
@@ -95,6 +86,7 @@ def test_format():
 
     label, conf = genhub.conf.load_one('conf/Pdom-ut.yml')
     wd = 'testdata/demo-workdir'
-    genhub.format.gdna(label, conf, workdir=wd, logstream=None)
-    genhub.format.proteins(label, conf, workdir=wd, logstream=None)
-    genhub.format.annotation(label, conf, workdir=wd, logstream=None)
+    pdom_db = PdomDB(label, conf, workdir=wd)
+    pdom_db.preprocess_gdna(logstream=None)
+    pdom_db.preprocess_gff3(logstream=None)
+    pdom_db.preprocess_prot(logstream=None)

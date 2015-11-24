@@ -64,7 +64,7 @@ def main(parser=get_parser()):
         if 'download' in args.task:
             db.download()
         if 'format' in args.task:
-            raise NotImplementedError('formatting not yet implemented')
+            db.format()
 
 
 if __name__ == '__main__':

@@ -15,6 +15,7 @@ Two aculeate insect data sets from the Centre de Regulacio Genomica.
 """
 
 from __future__ import print_function
+import subprocess
 import sys
 import genhub
 
@@ -44,6 +45,44 @@ class CrgDB(genhub.genomedb.GenomeDB):
     @property
     def gff3filename(self):
         return '%s.gz' % self.config['annotation']
+
+    def format_gdna(self, instream, outstream, logstream=sys.stderr):
+        for line in instream:
+            if line.startswith('>'):
+                line = line.replace('scaffold_', '%sScf_' % self.label)
+                line = line.replace('scaffold', '%sScf_' % self.label)
+            print(line, end='', file=outstream)
+
+    def format_prot(self, instream, outstream, logstream=sys.stderr):
+        for line in instream:
+            # No processing required currently.
+            # If any is ever needed, do it here.
+            print(line, end='', file=outstream)
+
+    def format_gff3(self, logstream=sys.stderr, debug=False):
+        cmds = list()
+        cmds.append('gunzip -c %s' % self.gff3path)
+        cmds.append('genhub-namedup.py')
+        cmds.append("sed $'s/\ttranscript\t/\tmRNA\t/'")
+        cmds.append("sed 's/scaffold_/%sScf_/'" % self.label)
+        cmds.append("sed 's/scaffold/%sScf_/'" % self.label)
+        cmds.append('tidygff3')
+        cmds.append('genhub-format-gff3.py -')
+        cmds.append('seq-reg.py - %s' % self.gdnafile)
+        cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
+
+        commands = ' | '.join(cmds)
+        if debug:  # pragma: no cover
+            print('DEBUG: running command: %s' % commands, file=logstream)
+        proc = subprocess.Popen(commands, shell=True, universal_newlines=True,
+                                stderr=subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+        for line in stderr.split('\n'):  # pragma: no cover
+            if 'has not been previously introduced' not in line and \
+               'does not begin with "##gff-version"' not in line and \
+               line != '':
+                print(line, file=logstream)
+        assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
 
 
 # -----------------------------------------------------------------------------
@@ -90,3 +129,10 @@ def test_proteins():
         'protein URL mismatch\n%s\n%s' % (dqua_db.proturl, testurl)
     assert dqua_db.protpath == testpath, \
         'protein path mismatch\n%s\n%s' % (dqua_db.protpath, testpath)
+
+
+def test_format():
+    """GenomeDB task drivers"""
+    label, conf = genhub.conf.load_one('conf/test2/Pcan.yml')
+    pcan_db = CrgDB(label, conf, workdir='testdata/demo-workdir')
+    pcan_db.format(logstream=None)

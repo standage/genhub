@@ -20,6 +20,7 @@ specifics for managing data from a particular source.
 """
 
 from __future__ import print_function
+import gzip
 import subprocess
 import sys
 import genhub
@@ -165,6 +166,100 @@ class GenomeDB():
         self.download_gdna(logstream)
         self.download_gff3(logstream)
         self.download_prot(logstream)
+
+    def format(self, logstream=sys.stderr, verify=True):  # pragma: no cover
+        """Run format task"""
+        self.preprocess_gdna(logstream=logstream, verify=verify)
+        self.preprocess_gff3(logstream=logstream, verify=verify)
+        self.preprocess_prot(logstream=logstream, verify=verify)
+
+    def preprocess(self, datatype, instream=None, outstream=None,
+                   logstream=sys.stderr, verify=True):
+        """
+        Preprocess genome data files.
+
+        To read from or write to a custom input/output streams (rather than the
+        default file locations), set `instream` and/or `outstream` to a
+        readable or writeable file handle, a stringio, or similar object.
+
+        Note that this is a wrapper function: each subclass must implement 3
+        methods (`format_gdna`, `format_gff3`, and `format_prot`) to do the
+        actual formatting.
+        """
+        messages = {'gdna': 'genome sequence file',
+                    'gff3': 'annotation file',
+                    'prot': 'protein sequence file'}
+        assert datatype in messages
+
+        if logstream is not None:  # pragma: no cover
+            logmsg = '[GenHub: %s] ' % self.config['species']
+            logmsg += 'preprocess %s' % messages[datatype]
+            print(logmsg, file=logstream)
+
+        outfile = None
+        if datatype == 'gdna':
+            streamin = instream
+            if instream is None:
+                if self.gdnapath.endswith('.gz'):
+                    streamin = gzip.open(self.gdnapath, 'rt')
+                else:
+                    streamin = open(self.gdnapath, 'r')
+            streamout = outstream
+            if outstream is None:
+                streamout = open(self.gdnafile, 'w')
+                outfile = self.gdnafile
+            self.format_gdna(streamin, streamout, logstream)
+            if instream is None:
+                streamin.close()
+            if outstream is None:
+                streamout.close()
+
+        elif datatype == 'gff3':
+            self.format_gff3(logstream)
+            outfile = self.gff3file
+
+        elif datatype == 'prot':
+            streamin = instream
+            if instream is None:
+                if self.protpath.endswith('.gz'):
+                    streamin = gzip.open(self.protpath, 'rt')
+                else:
+                    streamin = open(self.protpath, 'r')
+            streamout = outstream
+            if outstream is None:
+                streamout = open(self.protfile, 'w')
+                outfile = self.protfile
+            self.format_prot(streamin, streamout, logstream)
+            if instream is None:
+                streamin.close()
+            if outstream is None:
+                streamout.close()
+
+        if verify is False:
+            return
+
+        if outstream is None or datatype == 'gff3':
+            if 'checksums' in self.config and \
+               datatype in self.config['checksums']:
+                testsha1 = genhub.file_sha1(outfile)
+                assert testsha1 == self.config['checksums'][datatype], \
+                    '%s %s integrity check failed' % (self.label,
+                                                      messages[datatype])
+            else:  # pragma: no cover
+                message = 'Cannot verify integrity of %s ' % self.label
+                message += '%s without a checksum' % messages[datatype]
+                print(message, file=logstream)
+
+    def preprocess_gdna(self, instream=None, outstream=None,
+                        logstream=sys.stderr, verify=True):
+        self.preprocess('gdna', instream, outstream, logstream, verify)
+
+    def preprocess_gff3(self, logstream=sys.stderr, verify=True):
+        self.preprocess('gff3', None, None, logstream, verify)
+
+    def preprocess_prot(self, instream=None, outstream=None,
+                        logstream=sys.stderr, verify=True):
+        self.preprocess('prot', instream, outstream, logstream, verify)
 
 
 # -----------------------------------------------------------------------------

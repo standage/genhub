@@ -2,8 +2,7 @@ Pdom:
     species: Polistes dominula
     common: European paper wasp
     clade: vespid
-    source: custom
-    module: pdom
+    source: pdom
     scaffolds: pdom-gdna.fa.gz
     annotation: pdom-annot.gff3
     proteins: pdom-proteins.fa
