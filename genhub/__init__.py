@@ -17,6 +17,7 @@ import os
 import sys
 from . import conf
 from . import download
+from . import genomedb
 from . import ncbi
 from . import ncbi_flybase
 from . import beebase
