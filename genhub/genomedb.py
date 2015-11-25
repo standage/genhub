@@ -26,7 +26,7 @@ import sys
 import genhub
 
 
-class GenomeDB():
+class GenomeDB(object):
 
     def __init__(self, label, conf, workdir='.'):
         self.label = label
