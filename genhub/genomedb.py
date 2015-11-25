@@ -195,7 +195,6 @@ class GenomeDB(object):
             logmsg += 'preprocess %s' % datatypes[datatype]
             print(logmsg, file=logstream)
 
-
         infile = {'gdna': self.gdnapath,
                   'gff3': self.gff3path,
                   'prot': self.protpath}[datatype]
@@ -208,7 +207,7 @@ class GenomeDB(object):
             else:
                 instream = open(infile, 'r')
             outstream = open(outfile, 'w')
-        
+
         if datatype == 'gdna':
             self.format_gdna(instream, outstream, logstream)
         elif datatype == 'prot':

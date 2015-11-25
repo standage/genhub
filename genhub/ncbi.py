@@ -277,21 +277,23 @@ def test_gdna_format():
 def test_annot_format():
     """NCBI annotation formatting"""
 
-    label, conf = genhub.conf.load_one('conf/test2/Aech.yml')
+    label, conf = genhub.conf.load_one('conf/HymHub/Aech.yml')
     aech_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
     aech_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Aech/Aech.gff3'
     testfile = 'testdata/gff3/ncbi-format-aech.gff3'
     assert filecmp.cmp(outfile, testfile), 'Aech annotation formatting failed'
 
-    label, conf = genhub.conf.load_one('conf/test2/Pbar.yml')
+    label, conf = genhub.conf.load_one('conf/HymHub/Pbar.yml')
+    conf['annotfilter'] = 'NW_011933506.1'
     pbar_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
     pbar_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Pbar/Pbar.gff3'
     testfile = 'testdata/gff3/ncbi-format-pbar.gff3'
     assert filecmp.cmp(outfile, testfile), 'Pbar annotation formatting failed'
 
-    label, conf = genhub.conf.load_one('conf/test2/Ador.yml')
+    label, conf = genhub.conf.load_one('conf/HymHub/Ador.yml')
+    conf['annotfilter'] = ['NW_006264094.1', 'NW_006263516.1']
     ador_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
     ador_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Ador/Ador.gff3'
