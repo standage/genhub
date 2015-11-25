@@ -200,34 +200,26 @@ def test_proteins():
 
 def test_format():
     """Task drivers"""
-    label, conf = genhub.conf.load_one('conf/test2/Dmel.yml')
+    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
     dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
-    dmel_db.format(logstream=None)
+    dmel_db.format(logstream=None, verify=False)
 
 
 def test_gdna_format():
     """NCBI/FlyBase gDNA formatting"""
 
+    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
+    dmel_db.preprocess_gdna(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Dmel/Dmel.gdna.fa'
     testoutfile = 'testdata/fasta/dmel-fb-gdna-ut-out.fa'
-    label, conf = genhub.conf.load_one('conf/test2/Dmel.yml')
-
-    infile = 'testdata/demo-workdir/Dmel/Dmel.orig.fa.gz'
-    instream = gzip.open(infile, 'rt')
-    outfile = 'testdata/scratch/dmel-fb-gdna-ut-out.fa'
-    outstream = open(outfile, 'w')
-    dmel_db = FlyBaseDB(label, conf)
-    dmel_db.preprocess_gdna(instream=instream, outstream=outstream,
-                            logstream=None, verify=False)
-    instream.close()
-    outstream.close()
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Dmel gDNA formatting failed (instream --> outstream)'
+    assert filecmp.cmp(testoutfile, outfile), 'Dmel gDNA formatting failed'
 
 
 def test_annot_format():
     """NCBI/FlyBase annotation formatting"""
 
-    label, conf = genhub.conf.load_one('conf/test2/Dmel.yml')
+    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
     aech_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
     aech_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Dmel/Dmel.gff3'
@@ -238,17 +230,9 @@ def test_annot_format():
 def test_prot_format():
     """NCBI/FlyBase protein formatting"""
 
+    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
+    dmel_db.preprocess_prot(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Dmel/Dmel.all.prot.fa'
     testoutfile = 'testdata/fasta/dmel-fb-prot-ut-out.fa'
-    label, conf = genhub.conf.load_one('conf/test2/Dmel.yml')
-
-    infile = 'testdata/demo-workdir/Dmel/protein.fa.gz'
-    instream = gzip.open(infile, 'rt')
-    outfile = 'testdata/scratch/dmel-fb-prot-ut-out.fa'
-    outstream = open(outfile, 'w')
-    dmel_db = FlyBaseDB(label, conf)
-    dmel_db.preprocess_prot(instream=instream, outstream=outstream,
-                            logstream=None, verify=False)
-    instream.close()
-    outstream.close()
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Dmel protein formatting failed (instream --> outstream)'
+    assert filecmp.cmp(testoutfile, outfile), 'Dmel protein formatting failed'
