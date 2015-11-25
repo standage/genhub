@@ -173,8 +173,7 @@ class GenomeDB():
         self.preprocess_gff3(logstream=logstream, verify=verify)
         self.preprocess_prot(logstream=logstream, verify=verify)
 
-    def preprocess(self, datatype, instream=None, outstream=None,
-                   logstream=sys.stderr, verify=True):
+    def preprocess(self, datatype, logstream=sys.stderr, verify=True):
         """
         Preprocess genome data files.
 
@@ -186,80 +185,62 @@ class GenomeDB():
         methods (`format_gdna`, `format_gff3`, and `format_prot`) to do the
         actual formatting.
         """
-        messages = {'gdna': 'genome sequence file',
-                    'gff3': 'annotation file',
-                    'prot': 'protein sequence file'}
-        assert datatype in messages
+        datatypes = {'gdna': 'genome sequence file',
+                     'gff3': 'annotation file',
+                     'prot': 'protein sequence file'}
+        assert datatype in datatypes
 
         if logstream is not None:  # pragma: no cover
             logmsg = '[GenHub: %s] ' % self.config['species']
-            logmsg += 'preprocess %s' % messages[datatype]
+            logmsg += 'preprocess %s' % datatypes[datatype]
             print(logmsg, file=logstream)
 
-        outfile = None
+
+        infile = {'gdna': self.gdnapath,
+                  'gff3': self.gff3path,
+                  'prot': self.protpath}[datatype]
+        outfile = {'gdna': self.gdnafile,
+                   'gff3': self.gff3file,
+                   'prot': self.protfile}[datatype]
+        if datatype != 'gff3':
+            if infile.endswith('.gz'):
+                instream = gzip.open(infile, 'rt')
+            else:
+                instream = open(infile, 'r')
+            outstream = open(outfile, 'w')
+        
         if datatype == 'gdna':
-            streamin = instream
-            if instream is None:
-                if self.gdnapath.endswith('.gz'):
-                    streamin = gzip.open(self.gdnapath, 'rt')
-                else:
-                    streamin = open(self.gdnapath, 'r')
-            streamout = outstream
-            if outstream is None:
-                streamout = open(self.gdnafile, 'w')
-                outfile = self.gdnafile
-            self.format_gdna(streamin, streamout, logstream)
-            if instream is None:
-                streamin.close()
-            if outstream is None:
-                streamout.close()
-
-        elif datatype == 'gff3':
-            self.format_gff3(logstream)
-            outfile = self.gff3file
-
+            self.format_gdna(instream, outstream, logstream)
         elif datatype == 'prot':
-            streamin = instream
-            if instream is None:
-                if self.protpath.endswith('.gz'):
-                    streamin = gzip.open(self.protpath, 'rt')
-                else:
-                    streamin = open(self.protpath, 'r')
-            streamout = outstream
-            if outstream is None:
-                streamout = open(self.protfile, 'w')
-                outfile = self.protfile
-            self.format_prot(streamin, streamout, logstream)
-            if instream is None:
-                streamin.close()
-            if outstream is None:
-                streamout.close()
+            self.format_prot(instream, outstream, logstream)
+        else:
+            self.format_gff3(logstream)
+
+        if datatype != 'gff3':
+            instream.close()
+            outstream.close()
 
         if verify is False:
             return
 
-        if outstream is None or datatype == 'gff3':
-            if 'checksums' in self.config and \
-               datatype in self.config['checksums']:
-                testsha1 = genhub.file_sha1(outfile)
-                assert testsha1 == self.config['checksums'][datatype], \
-                    '%s %s integrity check failed' % (self.label,
-                                                      messages[datatype])
-            else:  # pragma: no cover
-                message = 'Cannot verify integrity of %s ' % self.label
-                message += '%s without a checksum' % messages[datatype]
-                print(message, file=logstream)
+        if 'checksums' in self.config and datatype in self.config['checksums']:
+            sha1 = self.config['checksums'][datatype]
+            testsha1 = genhub.file_sha1(outfile)
+            assert testsha1 == sha1, ('%s %s integrity check failed\n%s\n%s' %
+                                      (self.label, datatypes[datatype]))
+        else:  # pragma: no cover
+            message = 'Cannot verify integrity of %s ' % self.label
+            message += '%s without a checksum' % datatypes[datatype]
+            print(message, file=logstream)
 
-    def preprocess_gdna(self, instream=None, outstream=None,
-                        logstream=sys.stderr, verify=True):
-        self.preprocess('gdna', instream, outstream, logstream, verify)
+    def preprocess_gdna(self, logstream=sys.stderr, verify=True):
+        self.preprocess('gdna', logstream, verify)
 
     def preprocess_gff3(self, logstream=sys.stderr, verify=True):
-        self.preprocess('gff3', None, None, logstream, verify)
+        self.preprocess('gff3', logstream, verify)
 
-    def preprocess_prot(self, instream=None, outstream=None,
-                        logstream=sys.stderr, verify=True):
-        self.preprocess('prot', instream, outstream, logstream, verify)
+    def preprocess_prot(self, logstream=sys.stderr, verify=True):
+        self.preprocess('prot', logstream, verify)
 
 
 # -----------------------------------------------------------------------------
