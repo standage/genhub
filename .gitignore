@@ -1,11 +1,15 @@
+# Various development files
 .coverage
+.*.swp
+scratch/
+
+# Just Python things
 *.pyc
 build/
 dist/
 *.egg-info/
-.*.swp
-scratch/
-testdata/scratch/*
+
+# Artifacts from testing
 testdata/demo-workdir/????/????.gdna.fa
 testdata/demo-workdir/????/????.gff3
 testdata/demo-workdir/????/????.all.prot.fa
