@@ -259,52 +259,19 @@ def test_proteins_download():
 def test_gdna_format():
     """NCBI gDNA formatting"""
 
+    label, conf = genhub.conf.load_one('conf/HymHub/Hsal.yml')
+    hsal_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
+    hsal_db.preprocess_gdna(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Hsal/Hsal.gdna.fa'
     testoutfile = 'testdata/fasta/hsal-first-7-out.fa'
-    label, conf = genhub.conf.load_one('conf/test2/Hsal.yml')
+    assert filecmp.cmp(testoutfile, outfile), 'Hsal gDNA formatting failed'
 
-    infile = 'testdata/fasta/hsal-first-7.fa.gz'
-    instream = gzip.open(infile, 'rt')
-    outfile = 'testdata/scratch/hsal-first-7.fa'
-    outstream = open(outfile, 'w')
-    hsal_db = NcbiDB(label, conf)
-    hsal_db.preprocess_gdna(instream=instream, outstream=outstream,
-                            logstream=None, verify=False)
-    instream.close()
-    outstream.close()
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Hsal gDNA formatting failed (instream --> outstream)'
-
-    wd = 'testdata/demo-workdir'
-    outstream = open(outfile, 'w')
-    hsal_db = NcbiDB(label, conf, workdir=wd)
-    hsal_db.preprocess_gdna(outstream=outstream, logstream=None,
-                            verify=False)
-    outstream.close()
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Hsal gDNA formatting failed (dir --> outstream)'
-
-    wd = 'testdata/scratch'
-    subprocess.call(['mkdir', '-p', 'testdata/scratch/Hsal'])
-    instream = gzip.open(infile, 'rt')
-    hsal_db = NcbiDB(label, conf, workdir=wd)
-    hsal_db.preprocess_gdna(instream=instream, logstream=None, verify=False)
-    instream.close()
-    outfile = 'testdata/scratch/Hsal/Hsal.gdna.fa'
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Hsal gDNA formatting failed (instream --> dir)'
-
-    testoutfile = 'testdata/fasta/tcas-first-33-out.fa'
     label, conf = genhub.conf.load_one('conf/HymHub/Tcas.yml')
-
-    wd = 'testdata/demo-workdir'
-    outfile = 'testdata/scratch/tcas-first-33.fa'
-    outstream = open(outfile, 'w')
-    tcas_db = NcbiDB(label, conf, workdir=wd)
-    tcas_db.preprocess_gdna(outstream=outstream, logstream=None,
-                            verify=False)
-    outstream.close()
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Tcas gDNA formatting failed (dir --> outstream)'
+    tcas_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
+    tcas_db.preprocess_gdna(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Tcas/Tcas.gdna.fa'
+    testoutfile = 'testdata/fasta/tcas-first-33-out.fa'
+    assert filecmp.cmp(testoutfile, outfile), 'Tcas gDNA formatting failed'
 
 
 def test_annot_format():
@@ -335,34 +302,9 @@ def test_annot_format():
 def test_prot_ncbi():
     """NCBI protein formatting"""
 
-    label, conf = genhub.conf.load_one('conf/test2/Hsal.yml')
+    label, conf = genhub.conf.load_one('conf/HymHub/Hsal.yml')
+    hsal_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
+    hsal_db.preprocess_prot(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Hsal/Hsal.all.prot.fa'
     testoutfile = 'testdata/fasta/hsal-13-prot-out.fa'
-
-    infile = 'testdata/fasta/hsal-13-prot.fa.gz'
-    instream = gzip.open(infile, 'rt')
-    outfile = 'testdata/scratch/hsal-13-prot.fa'
-    outstream = open(outfile, 'w')
-    hsal_db = NcbiDB(label, conf)
-    hsal_db.preprocess_prot(instream, outstream, logstream=None, verify=False)
-    instream.close()
-    outstream.close()
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Hsal protein formatting failed (instream --> outstream)'
-
-    wd = 'testdata/demo-workdir'
-    outstream = open(outfile, 'w')
-    hsal_db = NcbiDB(label, conf, workdir=wd)
-    hsal_db.preprocess_prot(None, outstream, logstream=None, verify=False)
-    outstream.close()
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Hsal protein formatting failed (dir --> outstream)'
-
-    wd = 'testdata/scratch'
-    subprocess.call(['mkdir', '-p', 'testdata/scratch/Hsal'])
-    instream = gzip.open(infile, 'rt')
-    hsal_db = NcbiDB(label, conf, workdir=wd)
-    hsal_db.preprocess_prot(instream, None, logstream=None, verify=False)
-    instream.close()
-    outfile = 'testdata/scratch/Hsal/Hsal.all.prot.fa'
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Hsal protein formatting failed (instream --> dir)'
+    assert filecmp.cmp(testoutfile, outfile), 'Hsal protein formatting failed'
