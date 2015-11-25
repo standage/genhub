@@ -7,6 +7,22 @@ Aflo:
     source: ncbi
     scaffolds: afl_ref_Aflo_1.0_chrUn.fa.gz
     annotation: ref_Aflo_1.0_top_level.gff3.gz
+    annotfilter:
+        - 'GeneID:100869736'
+        - 'GeneID:100872241'
+        - 'GeneID:105734816'
+        - 'GeneID:100866334'
+        - 'GeneID:100867240'
+        - 'GeneID:100869302'
+        - 'GeneID:100870387'
+        - 'GeneID:100863969'
+        - 'GeneID:100869872'
+        - 'GeneID:105735938'
+        - 'GeneID:100868935'
+        - 'GeneID:100866510'
+        - 'GeneID:100864030'
+        - 'GeneID:100869321'
+        - 'GeneID:100868109'
     checksums:
         gdna: 9be74682098ebb039815828cbd355ef42827b053
         gff3: e3967d56d51a50ee58f3ab981810eb6f2d898447

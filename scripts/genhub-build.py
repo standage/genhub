@@ -17,65 +17,12 @@ import sys
 import genhub
 
 buildcmds = 'download format datatypes stats cleanup'.split(' ')
-sources = ['ncbi', 'ncbi_flybase', 'beebase', 'crg']
-
-
-def download_task(conf, workdir='.', logstream=sys.stderr):
-    for label in sorted(conf):
-        config = conf[label]
-        subprocess.call(['mkdir', '-p', workdir + '/' + label])
-        assert 'source' in config, \
-            'data source unspecified for genome "%s"' % label
-        source = config['source']
-        assert source in sources + ['custom'], \
-            'unrecognized data source "%s"' % source
-
-        if source in sources:
-            if source == 'ncbi':
-                if 'scaffolds' in config:
-                    genomefunc = genhub.ncbi.download_scaffolds
-                elif 'chromosomes' in config:
-                    genomefunc = genhub.ncbi.download_chromosomes
-                else:
-                    raise Exception('genome sequence configured incorrectly '
-                                    'for genome "%s"' % label)
-                annotfunc = genhub.ncbi.download_annotation
-                protfunc = genhub.ncbi.download_proteins
-            elif source == 'ncbi_flybase':
-                genomefunc = genhub.ncbi_flybase.download_chromosomes
-                annotfunc = genhub.ncbi_flybase.download_annotation
-                protfunc = genhub.ncbi_flybase.download_proteins
-            elif source == 'beebase':
-                genomefunc = genhub.beebase.download_scaffolds
-                annotfunc = genhub.beebase.download_annotation
-                protfunc = genhub.beebase.download_proteins
-            elif source == 'crg':
-                genomefunc = genhub.crg.download_scaffolds
-                annotfunc = genhub.crg.download_annotation
-                protfunc = genhub.crg.download_proteins
-            genomefunc(label, config, workdir=workdir, logstream=logstream)
-            annotfunc(label, config, workdir=workdir, logstream=logstream)
-            protfunc(label, config, workdir=workdir, logstream=logstream)
-        elif source == 'custom':
-            mod = importlib.import_module('genhub.' + config['module'])
-            mod.download(label, config, workdir=workdir, logstream=logstream)
-        else:
-            raise NotImplementedError('handling of "%s" genomes not yet '
-                                      'implemented' % source)
-
-
-def format_task(conf, workdir='.', logstream=sys.stderr):
-    for label in sorted(conf):
-        config = conf[label]
-        specdir = '%s/%s' % (workdir, label)
-        assert os.path.isdir(specdir), \
-            'directory for %s has not yet been initialized' % label
-
-        genhub.format.gdna(label, config, workdir=workdir, logstream=logstream)
-        genhub.format.proteins(label, config, workdir=workdir,
-                               logstream=logstream)
-        genhub.format.annotation(label, config, workdir=workdir,
-                                 logstream=logstream)
+sources = ['ncbi', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
+dbtype = {'ncbi': genhub.ncbi.NcbiDB,
+          'ncbi_flybase': genhub.ncbi_flybase.FlyBaseDB,
+          'beebase': genhub.beebase.BeeBaseDB,
+          'crg': genhub.crg.CrgDB,
+          'pdom': genhub.pdom.PdomDB}
 
 
 def get_parser():
@@ -92,8 +39,8 @@ def get_parser():
                           'genome configurations in a single file')
     confargs.add_argument('--cfgdir', default=None, metavar='DIR', help='Load '
                           'genome configs from all .yml files in a directory')
-    parser.add_argument('cmd', nargs='+', choices=buildcmds, metavar='cmd',
-                        help='Build command(s) to execute; options include '
+    parser.add_argument('task', nargs='+', choices=buildcmds, metavar='task',
+                        help='Build task(s) to execute; options include '
                         '"%s"' % '", "'.join(buildcmds))
     return parser
 
@@ -107,10 +54,17 @@ def main(parser=get_parser()):
     else:
         print('error: must specify config file or directory', file=sys.stderr)
 
-    if 'download' in args.cmd:
-        download_task(conf, workdir=args.workdir)
-    if 'format' in args.cmd:
-        format_task(conf, workdir=args.workdir)
+    for label in sorted(conf):
+        config = conf[label]
+        assert 'source' in config
+        assert config['source'] in sources
+        constructor = dbtype[config['source']]
+        db = constructor(label, config, workdir=args.workdir)
+
+        if 'download' in args.task:
+            db.download()
+        if 'format' in args.task:
+            db.format()
 
 
 if __name__ == '__main__':

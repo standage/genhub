@@ -8,159 +8,84 @@
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
 
-"""
-Module for handling NCBI data.
-
-Utilities for downloading genome assemblies, annotations, and protein
-sequences from NCBI's FTP site.
-"""
+"""Genome database implementation for data from NCBI."""
 
 from __future__ import print_function
+import filecmp
 import gzip
+import os
+import re
 import subprocess
 import sys
-import yaml
 import genhub
 
-ncbibase = 'ftp://ftp.ncbi.nih.gov/genomes'
 
+class NcbiDB(genhub.genomedb.GenomeDB):
 
-def download_chromosomes(label, config, workdir='.', logstream=sys.stderr,
-                         dryrun=False):
-    """Download a chromosome-level genome from NCBI."""
+    def __init__(self, label, conf, workdir='.'):
+        super(NcbiDB, self).__init__(label, conf, workdir)
+        assert self.config['source'] == 'ncbi'
+        assert 'species' in self.config
+        species = self.config['species'].replace(' ', '_')
+        self.specbase = 'ftp://ftp.ncbi.nih.gov/genomes/%s' % species
+        self.format_gdna = self.format_fasta
+        self.format_prot = self.format_fasta
 
-    assert 'source' in config, 'Data source unconfigured'
-    assert config['source'] == 'ncbi'
-    assert 'chromosomes' in config and 'scaffolds' not in config, \
-        'Must configure only chromosomes or scaffolds, not both'
+    def __repr__(self):
+        return 'NCBI'
 
-    if logstream is not None:  # pragma: no cover
-        logmsg = '[GenHub: %s] download genome from NCBI' % config['species']
-        print(logmsg, file=logstream)
+    @property
+    def gdnaurl(self):
+        if 'scaffolds' in self.config:
+            return '%s/CHR_Un/%s' % (self.specbase, self.gdnafilename)
+        else:
+            assert 'chromosomes' in self.config
+            urls = list()
+            prefix = self.config['prefix']
+            for chrmfile in self.config['chromosomes']:
+                url = '%s/%s/%s' % (self.specbase, prefix, chrmfile)
+                urls.append(url)
+            return urls
 
-    urls = list()
-    species = config['species'].replace(' ', '_')
-    prefix = config['prefix']
-    for remotefile in config['chromosomes']:
-        url = '%s/%s/%s/%s' % (ncbibase, species, prefix, remotefile)
-        urls.append(url)
-    outfile = '%s/%s/%s.orig.fa.gz' % (workdir, label, label)
-    if dryrun is True:
-        return urls, outfile
-    else:  # pragma: no cover
-        genhub.download.url_download(urls, outfile)
+    @property
+    def gff3url(self):
+        return '%s/GFF/%s' % (self.specbase, self.config['annotation'])
 
+    @property
+    def proturl(self):
+        return '%s/protein/protein.fa.gz' % self.specbase
 
-def download_scaffolds(label, config, workdir='.', logstream=sys.stderr,
-                       dryrun=False):
-    """Download a scaffold-level genome from NCBI."""
+    def format_fasta(self, instream, outstream, logstream=sys.stderr):
+        for line in instream:
+            if line.startswith('>'):
+                pattern = '>gi\|\d+\|(ref|gb)\|([^\|]+)\S+'
+                line = re.sub(pattern, '>\g<2>', line)
+            print(line, end='', file=outstream)
 
-    assert 'source' in config, 'Data source unconfigured'
-    assert config['source'] == 'ncbi'
-    assert 'chromosomes' not in config and 'scaffolds' in config, \
-        'Must configure only chromosomes or scaffolds, not both'
+    def format_gff3(self, logstream=sys.stderr, debug=False):
+        cmds = list()
+        cmds.append('gunzip -c %s' % self.gff3path)
+        if 'annotfilter' in self.config:
+            excludefile = genhub.conf.conf_filter_file(self.config)
+            cmds.append('grep -vf %s' % excludefile.name)
+        cmds.append('tidygff3')
+        cmds.append('genhub-format-gff3.py -')
+        cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
 
-    if logstream is not None:  # pragma: no cover
-        logmsg = '[GenHub: %s] download genome from NCBI' % config['species']
-        print(logmsg, file=logstream)
-
-    species = config['species'].replace(' ', '_')
-    filename = config['scaffolds']
-    url = '%s/%s/CHR_Un/%s' % (ncbibase, species, filename)
-    outfile = '%s/%s/%s' % (workdir, label, filename)
-    if dryrun is True:
-        return url, outfile
-    else:  # pragma: no cover
-        genhub.download.url_download(url, outfile)
-
-
-def download_annotation(label, config, workdir='.', logstream=sys.stderr,
-                        dryrun=False):
-    """Download a genome annotation from NCBI."""
-
-    assert 'source' in config, 'Data source unconfigured'
-    assert config['source'] == 'ncbi'
-    assert 'annotation' in config, 'Genome annotation unconfigured'
-
-    if logstream is not None:  # pragma: no cover
-        logmsg = '[GenHub: %s] ' % config['species']
-        logmsg += 'download annotation from NCBI'
-        print(logmsg, file=logstream)
-
-    species = config['species'].replace(' ', '_')
-    filename = config['annotation']
-    url = '%s/%s/GFF/%s' % (ncbibase, species, filename)
-    outfile = '%s/%s/%s' % (workdir, label, filename)
-    if dryrun is True:
-        return url, outfile
-    else:  # pragma: no cover
-        genhub.download.url_download(url, outfile)
-
-
-def download_proteins(label, config, workdir='.', logstream=sys.stderr,
-                      dryrun=False):
-    """Download gene model translation sequences from NCBI."""
-
-    assert 'source' in config, 'Data source unconfigured'
-    assert config['source'] == 'ncbi'
-
-    if logstream is not None:  # pragma: no cover
-        logmsg = '[GenHub: %s] ' % config['species']
-        logmsg += 'download protein sequences from NCBI'
-        print(logmsg, file=logstream)
-
-    species = config['species'].replace(' ', '_')
-    url = '%s/%s/protein/protein.fa.gz' % (ncbibase, species)
-    outfile = '%s/%s/protein.fa.gz' % (workdir, label)
-    if dryrun is True:
-        return url, outfile
-    else:  # pragma: no cover
-        genhub.download.url_download(url, outfile)
-
-
-def download_flybase(label, config, workdir='.', logstream=sys.stderr,
-                     dryrun=False):
-    """
-    Download Drosophila data from NCBI.
-
-    Genome sequences and annotations for Drosophila melanogaster in NCBI are
-    organized differently than for most other species, presumably since they
-    are sourced from FlyBase. This function downloads all of the genome
-    sequences, annotations, and protein sequences for Dmel.
-    """
-    assert 'source' in config, 'Data source unconfigured'
-    assert config['source'] == 'ncbi_flybase'
-
-    if logstream is not None:  # pragma: no cover
-        logmsg = '[GenHub: %s] ' % config['species']
-        logmsg += 'download genome data from NCBI'
-        print(logmsg, file=logstream)
-
-    species = config['species'].replace(' ', '_')
-    chrs, anns, tmps, prts = list(), list(), list(), list()
-    chrout = '%s/%s/%s.orig.fa.gz' % (workdir, label, label)
-    prtout = '%s/%s/protein.fa.gz' % (workdir, label)
-    annout = '%s/%s/%s' % (workdir, label, config['annotation'])
-    for acc in config['accessions']:
-        base = '%s/%s/%s/%s' % (ncbibase, species, config['prefix'], acc)
-        chrs.append(base + '.fna')
-        prts.append(base + '.faa')
-        anns.append(base + '.gff')
-        tmps.append('%s/%s/%s.gff.gz' % (workdir, label,
-                    acc.split('/')[1]))
-    if dryrun is True:
-        return (chrs, anns, prts, chrout, annout, prtout)
-    else:  # pragma: no cover
-        genhub.download.url_download(chrs, chrout, compress=True)
-        genhub.download.url_download(prts, prtout, compress=True)
-        for annremote, annlocal in zip(anns, tmps):
-            genhub.download.url_download(annremote, annlocal, compress=True)
-
-        with gzip.open(annout, 'wb') as outfile:
-            cmd = 'gt gff3 -sort -tidy ' + ' '.join(tmps)
-            proc = subprocess.Popen(cmd.split(' '), stdout=subprocess.PIPE)
-            for line in proc.stdout:
-                outfile.write(line)
+        commands = ' | '.join(cmds)
+        if debug:  # pragma: no cover
+            print('DEBUG: running command: %s' % commands, file=logstream)
+        proc = subprocess.Popen(commands, shell=True, universal_newlines=True,
+                                stderr=subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+        for line in stderr.split('\n'):  # pragma: no cover
+            if 'has not been previously introduced' not in line and \
+               'does not begin with "##gff-version"' not in line and \
+               line != '':
+                print(line, file=logstream)
+        assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
+        if 'annotfilter' in self.config:
+            os.unlink(excludefile.name)
 
 
 # -----------------------------------------------------------------------------
@@ -168,39 +93,43 @@ def download_flybase(label, config, workdir='.', logstream=sys.stderr,
 # -----------------------------------------------------------------------------
 
 
-def test_scaffolds():
+def test_scaffolds_download():
     """NCBI scaffolds download"""
 
     label, config = genhub.conf.load_one('conf/test/Emon.yml')
-    testscaf = ('ftp://ftp.ncbi.nih.gov/genomes/Equus_monoceros/CHR_Un/'
-                'emon_ref_3.4_chrUn.fa.gz')
-    testann = './Emon/emon_ref_3.4_chrUn.fa.gz'
-    testresult = (testscaf, testann)
-    result = download_scaffolds(label, config, dryrun=True, logstream=None)
-    assert result == testresult, \
-        'filenames do not match\n%s\n%s\n' % (result, testresult)
+    testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Equus_monoceros/CHR_Un/'
+               'emon_ref_3.4_chrUn.fa.gz')
+    testpath = './Emon/emon_ref_3.4_chrUn.fa.gz'
+    emon_db = NcbiDB(label, config)
+    assert emon_db.gdnaurl == testurl, \
+        'scaffold URL mismatch\n%s\n%s' % (emon_db.gdnaurl, testurl)
+    assert emon_db.gdnapath == testpath, \
+        'scaffold path mismatch\n%s\n%s' % (emon_db.gdnapath, testpath)
 
     label, config = genhub.conf.load_one('conf/test/Bvul.yml')
-    testscaf = ('ftp://ftp.ncbi.nih.gov/genomes/Basiliscus_vulgaris/CHR_Un/'
-                'bv_ref_1.1_chrUn.fa.gz')
-    testann = '/some/path/Bvul/bv_ref_1.1_chrUn.fa.gz'
-    testresult = (testscaf, testann)
-    result = download_scaffolds(label, config, workdir='/some/path',
-                                dryrun=True, logstream=None)
-    assert result == testresult, \
-        'filenames do not match\n%s\n%s\n' % (result, testresult)
+    testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Basiliscus_vulgaris/CHR_Un/'
+               'bv_ref_1.1_chrUn.fa.gz')
+    testpath = '/some/path/Bvul/bv_ref_1.1_chrUn.fa.gz'
+    bvul_db = NcbiDB(label, config, workdir='/some/path')
+    assert bvul_db.gdnaurl == testurl, \
+        'scaffold URL mismatch\n%s\n%s' % (bvul_db.gdnaurl, testurl)
+    assert bvul_db.gdnapath == testpath, \
+        'scaffold path mismatch\n%s\n%s' % (bvul_db.gdnapath, testpath)
 
     label, config = genhub.conf.load_one('conf/HymHub/Ador.yml')
-    testscaf = ('ftp://ftp.ncbi.nih.gov/genomes/Apis_dorsata/CHR_Un/'
-                'ado_ref_Apis_dorsata_1.3_chrUn.fa.gz')
-    testann = './Ador/ado_ref_Apis_dorsata_1.3_chrUn.fa.gz'
-    testresult = (testscaf, testann)
-    result = download_scaffolds(label, config, dryrun=True, logstream=None)
-    assert result == testresult, \
-        'filenames do not match\n%s\n%s\n' % (result, testresult)
+    testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Apis_dorsata/CHR_Un/'
+               'ado_ref_Apis_dorsata_1.3_chrUn.fa.gz')
+    testpath = './Ador/ado_ref_Apis_dorsata_1.3_chrUn.fa.gz'
+    ador_db = NcbiDB(label, config)
+    assert '%r' % ador_db == 'NCBI'
+    assert ador_db.gdnaurl == testurl, \
+        'scaffold URL mismatch\n%s\n%s' % (ador_db.gdnaurl, testurl)
+    assert ador_db.gdnapath == testpath, \
+        'scaffold path mismatch\n%s\n%s' % (ador_db.gdnapath, testpath)
+    assert ador_db.compress_gdna is False
 
 
-def test_chromosomes():
+def test_chromosomes_download():
     """NCBI chromosome download"""
 
     label, config = genhub.conf.load_one('conf/test/Docc.yml')
@@ -210,10 +139,13 @@ def test_chromosomes():
             'docc_ref_1.6_7.fa.gz', 'docc_ref_1.6_8.fa.gz']
     prefix = ('ftp://ftp.ncbi.nih.gov/genomes/Draconis_occidentalis/'
               'Assembled_chromosomes/seq/')
-    urls = [prefix + x for x in urls]
-    test = (urls, './Docc/Docc.orig.fa.gz')
-    result = download_chromosomes(label, config, dryrun=True, logstream=None)
-    assert result == test, 'filenames do not match\n%s\n%s\n' % (result, test)
+    testurls = [prefix + x for x in urls]
+    testpath = './Docc/Docc.orig.fa.gz'
+    docc_db = NcbiDB(label, config)
+    assert docc_db.gdnaurl == testurls, \
+        'chromosome URL mismatch\n%s\n%s' % (docc_db.gdnaurl, testurls)
+    assert docc_db.gdnapath == testpath, \
+        'chromosome path mismatch\n%s\n%s' % (docc_db.gdnapath, chrmpath)
 
     label, config = genhub.conf.load_one('conf/test/Epeg.yml')
     urls = ['epeg_reg_Epe_2.1_01.fa.gz', 'epeg_reg_Epe_2.1_02.fa.gz',
@@ -224,10 +156,13 @@ def test_chromosomes():
             'epeg_reg_Epe_2.1_11.fa.gz', 'epeg_reg_Epe_2.1_12.fa.gz']
     prefix = ('ftp://ftp.ncbi.nih.gov/genomes/Equus_pegasus/'
               'Assembled_chromosomes/seq/')
-    urls = [prefix + x for x in urls]
-    test = (urls, './Epeg/Epeg.orig.fa.gz')
-    result = download_chromosomes(label, config, dryrun=True, logstream=None)
-    assert result == test, 'filenames do not match\n%s\n%s\n' % (result, test)
+    testurls = [prefix + x for x in urls]
+    testpath = './Epeg/Epeg.orig.fa.gz'
+    epeg_db = NcbiDB(label, config)
+    assert epeg_db.gdnaurl == testurls, \
+        'chromosome URL mismatch\n%s\n%s' % (epeg_db.gdnaurl, testurls)
+    assert epeg_db.gdnapath == testpath, \
+        'chromosome path mismatch\n%s\n%s' % (epeg_db.gdnapath, chrmpath)
 
     label, config = genhub.conf.load_one('conf/HymHub/Amel.yml')
     urls = ['ame_ref_Amel_4.5_unplaced.fa.gz', 'ame_ref_Amel_4.5_chrLG1.fa.gz',
@@ -241,85 +176,135 @@ def test_chromosomes():
             'ame_ref_Amel_4.5_chrLG16.fa.gz']
     prefix = ('ftp://ftp.ncbi.nih.gov/genomes/Apis_mellifera/'
               'Assembled_chromosomes/seq/')
-    urls = [prefix + x for x in urls]
-    test = (urls, '/home/student/data/Amel/Amel.orig.fa.gz')
-    result = download_chromosomes(label, config, workdir='/home/student/data',
-                                  dryrun=True, logstream=None)
-    assert result == test, 'filenames do not match\n%s\n%s\n' % (result, test)
+    testurls = [prefix + x for x in urls]
+    testpath = '/home/student/data/Amel/Amel.orig.fa.gz'
+    amel_db = NcbiDB(label, config, workdir='/home/student/data')
+    assert amel_db.gdnaurl == testurls, \
+        'chromosome URL mismatch\n%s\n%s' % (amel_db.gdnaurl, testurls)
+    assert amel_db.gdnapath == testpath, \
+        'chromosome path mismatch\n%s\n%s' % (amel_db.gdnapath, chrmpath)
 
 
-def test_annot():
+def test_annot_download():
     """NCBI annotation download"""
 
     label, config = genhub.conf.load_one('conf/test/Bvul.yml')
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Basiliscus_vulgaris/GFF/'
                'ref_Basiliscus_vulgaris_1.1_top_level.gff3.gz')
-    testfile = ('/another/path//Bvul/'
+    testpath = ('/another/path//Bvul/'
                 'ref_Basiliscus_vulgaris_1.1_top_level.gff3.gz')
-    test = (testurl, testfile)
-    result = download_annotation(label, config, workdir='/another/path/',
-                                 dryrun=True, logstream=None)
-    assert result == test, 'filenames do not match\n%s\n%s\n' % (result, test)
+    bvul_db = NcbiDB(label, config, workdir='/another/path/')
+    assert bvul_db.gff3url == testurl, \
+        'annotation URL mismatch\n%s\n%s' % (bvul_db.gff3url, testurl)
+    assert bvul_db.gff3path == testpath, \
+        'annotation path mismatch\n%s\n%s' % (bvul_db.gff3path, testpath)
 
     label, config = genhub.conf.load_one('conf/test/Epeg.yml')
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Equus_pegasus/GFF/'
                'ref_EPEG_2.1_top_level.gff3.gz')
-    testfile = './Epeg/ref_EPEG_2.1_top_level.gff3.gz'
-    test = (testurl, testfile)
-    result = download_annotation(label, config, dryrun=True, logstream=None)
-    assert result == test, 'filenames do not match\n%s\n%s\n' % (result, test)
+    testpath = './Epeg/ref_EPEG_2.1_top_level.gff3.gz'
+    epeg_db = NcbiDB(label, config)
+    assert epeg_db.gff3url == testurl, \
+        'annotation URL mismatch\n%s\n%s' % (epeg_db.gff3url, testurl)
+    assert epeg_db.gff3path == testpath, \
+        'annotation path mismatch\n%s\n%s' % (epeg_db.gff3path, testpath)
 
     label, config = genhub.conf.load_one('conf/HymHub/Ador.yml')
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Apis_dorsata/GFF/'
                'ref_Apis_dorsata_1.3_top_level.gff3.gz')
-    testfile = './Ador/ref_Apis_dorsata_1.3_top_level.gff3.gz'
-    test = (testurl, testfile)
-    result = download_annotation(label, config, dryrun=True, logstream=None)
-    assert result == test, 'filenames do not match\n%s\n%s\n' % (result, test)
+    testpath = './Ador/ref_Apis_dorsata_1.3_top_level.gff3.gz'
+    ador_db = NcbiDB(label, config)
+    assert ador_db.gff3url == testurl, \
+        'annotation URL mismatch\n%s\n%s' % (ador_db.gff3url, testurl)
+    assert ador_db.gff3path == testpath, \
+        'annotation path mismatch\n%s\n%s' % (ador_db.gff3path, testpath)
+    assert ador_db.compress_gff3 is False
 
 
-def test_proteins():
+def test_proteins_download():
     """NCBI protein download"""
 
     label, config = genhub.conf.load_one('conf/test/Emon.yml')
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Equus_monoceros/protein/'
                'protein.fa.gz')
-    testfile = './Emon/protein.fa.gz'
-    test = (testurl, testfile)
-    result = download_proteins(label, config, dryrun=True, logstream=None)
-    assert result == test, 'filenames do not match\n%s\n%s\n' % (result, test)
+    testpath = './Emon/protein.fa.gz'
+    emon_db = NcbiDB(label, config)
+    assert emon_db.proturl == testurl, \
+        'protein URL mismatch\n%s\n%s' % (emon_db.proturl, testurl)
+    assert emon_db.protpath == testpath, \
+        'protein path mismatch\n%s\n%s' % (emon_db.protpath, testpath)
 
     label, config = genhub.conf.load_one('conf/test/Bvul.yml')
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Basiliscus_vulgaris/protein/'
                'protein.fa.gz')
-    testfile = './Bvul/protein.fa.gz'
-    test = (testurl, testfile)
-    result = download_proteins(label, config, dryrun=True, logstream=None)
-    assert result == test, 'filenames do not match\n%s\n%s\n' % (result, test)
+    testpath = './Bvul/protein.fa.gz'
+    bvul_db = NcbiDB(label, config)
+    assert bvul_db.proturl == testurl, \
+        'protein URL mismatch\n%s\n%s' % (bvul_db.proturl, testurl)
+    assert bvul_db.protpath == testpath, \
+        'protein path mismatch\n%s\n%s' % (bvul_db.protpath, testpath)
 
     label, config = genhub.conf.load_one('conf/HymHub/Ador.yml')
     testurl = ('ftp://ftp.ncbi.nih.gov/genomes/Apis_dorsata/protein/'
                'protein.fa.gz')
-    testfile = '/home/gandalf/HymHub/Ador/protein.fa.gz'
-    test = (testurl, testfile)
-    result = download_proteins(label, config, workdir='/home/gandalf/HymHub',
-                               dryrun=True, logstream=None)
-    assert result == test, 'filenames do not match\n%s\n%s\n' % (result, test)
+    testpath = '/home/gandalf/HymHub/Ador/protein.fa.gz'
+    ador_db = NcbiDB(label, config, workdir='/home/gandalf/HymHub')
+    assert ador_db.proturl == testurl, \
+        'protein URL mismatch\n%s\n%s' % (ador_db.proturl, testurl)
+    assert ador_db.protpath == testpath, \
+        'protein path mismatch\n%s\n%s' % (ador_db.protpath, testpath)
+    assert ador_db.compress_prot is False
 
 
-def test_flybase():
-    """NCBI FlyBase data download"""
+def test_gdna_format():
+    """NCBI gDNA formatting"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Dmel.yml')
-    bases = ['CHR_X/NC_004354', 'CHR_2/NT_033778', 'CHR_2/NT_033779',
-             'CHR_3/NT_033777', 'CHR_3/NT_037436', 'CHR_4/NC_004353']
-    prefix = ('ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-              'RELEASE_5_48/')
-    chrs = [prefix + x + '.fna' for x in bases]
-    anns = [prefix + x + '.gff' for x in bases]
-    prts = [prefix + x + '.faa' for x in bases]
-    test = (chrs, anns, prts, './Dmel/Dmel.orig.fa.gz',
-            './Dmel/dmel-5.48-ncbi.gff3.gz',
-            './Dmel/protein.fa.gz')
-    result = download_flybase(label, config, dryrun=True, logstream=None)
-    assert result == test, 'filenames do not match\n%s\n%s\n' % (result, test)
+    label, conf = genhub.conf.load_one('conf/HymHub/Hsal.yml')
+    hsal_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
+    hsal_db.preprocess_gdna(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Hsal/Hsal.gdna.fa'
+    testoutfile = 'testdata/fasta/hsal-first-7-out.fa'
+    assert filecmp.cmp(testoutfile, outfile), 'Hsal gDNA formatting failed'
+
+    label, conf = genhub.conf.load_one('conf/HymHub/Tcas.yml')
+    tcas_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
+    tcas_db.preprocess_gdna(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Tcas/Tcas.gdna.fa'
+    testoutfile = 'testdata/fasta/tcas-first-33-out.fa'
+    assert filecmp.cmp(testoutfile, outfile), 'Tcas gDNA formatting failed'
+
+
+def test_annot_format():
+    """NCBI annotation formatting"""
+
+    label, conf = genhub.conf.load_one('conf/test2/Aech.yml')
+    aech_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
+    aech_db.preprocess_gff3(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Aech/Aech.gff3'
+    testfile = 'testdata/gff3/ncbi-format-aech.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Aech annotation formatting failed'
+
+    label, conf = genhub.conf.load_one('conf/test2/Pbar.yml')
+    pbar_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
+    pbar_db.preprocess_gff3(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Pbar/Pbar.gff3'
+    testfile = 'testdata/gff3/ncbi-format-pbar.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Pbar annotation formatting failed'
+
+    label, conf = genhub.conf.load_one('conf/test2/Ador.yml')
+    ador_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
+    ador_db.preprocess_gff3(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Ador/Ador.gff3'
+    testfile = 'testdata/gff3/ncbi-format-ador.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Ador annotation formatting failed'
+
+
+def test_prot_ncbi():
+    """NCBI protein formatting"""
+
+    label, conf = genhub.conf.load_one('conf/HymHub/Hsal.yml')
+    hsal_db = NcbiDB(label, conf, workdir='testdata/demo-workdir')
+    hsal_db.preprocess_prot(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Hsal/Hsal.all.prot.fa'
+    testoutfile = 'testdata/fasta/hsal-13-prot-out.fa'
+    assert filecmp.cmp(testoutfile, outfile), 'Hsal protein formatting failed'

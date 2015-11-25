@@ -13,6 +13,8 @@ Nvit:
         - nvi_ref_Nvit_2.1_unplaced.fa.gz
     prefix: Assembled_chromosomes/seq
     annotation: ref_Nvit_2.1_top_level.gff3.gz
+    annotfilter:
+        - 'GeneID:100498670'
     checksums:
         gdna: dcaa9994616e4339824873ddfed79fd7bd8a74d4
         gff3: 9ac909a9b85f685335fe71b48c9c7ebd7c675088
