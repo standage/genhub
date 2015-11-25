@@ -134,43 +134,18 @@ def test_proteins_download():
 def test_gdna_format():
     """BeeBase gDNA formatting"""
 
+    label, conf = genhub.conf.load_one('conf/HymHub/Hlab.yml')
+    hlab_db = BeeBaseDB(label, conf, workdir='testdata/demo-workdir')
+    hlab_db.preprocess_gdna(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Hlab/Hlab.gdna.fa'
     testoutfile = 'testdata/fasta/hlab-first-6-out.fa'
-    label, conf = genhub.conf.load_one('conf/test2/Hlab.yml')
-
-    infile = 'testdata/fasta/hlab-first-6.fa.gz'
-    instream = gzip.open(infile, 'rt')
-    outfile = 'testdata/scratch/hlab-first-6.fa'
-    outstream = open(outfile, 'w')
-    hlab_db = BeeBaseDB(label, conf)
-    hlab_db.preprocess_gdna(instream, outstream, logstream=None, verify=False)
-    instream.close()
-    outstream.close()
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Hlab gDNA formatting failed (instream --> outstream)'
-
-    wd = 'testdata/demo-workdir'
-    outstream = open(outfile, 'w')
-    hlab_db = BeeBaseDB(label, conf, workdir=wd)
-    hlab_db.preprocess_gdna(None, outstream, logstream=None, verify=False)
-    outstream.close()
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Hlab gDNA formatting failed (dir --> outstream)'
-
-    wd = 'testdata/scratch'
-    subprocess.call(['mkdir', '-p', 'testdata/scratch/Hlab'])
-    instream = gzip.open(infile, 'rt')
-    hlab_db = BeeBaseDB(label, conf, workdir=wd)
-    hlab_db.preprocess_gdna(instream, None, logstream=None, verify=False)
-    instream.close()
-    outfile = 'testdata/scratch/Hlab/Hlab.gdna.fa'
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Hlab gDNA formatting failed (instream --> dir)'
+    assert filecmp.cmp(testoutfile, outfile), 'Hlab gDNA formatting failed'
 
 
 def test_annotation_beebase():
     """BeeBase annotation formatting"""
 
-    label, conf = genhub.conf.load_one('conf/test2/Hlab.yml')
+    label, conf = genhub.conf.load_one('conf/HymHub/Hlab.yml')
     hlab_db = BeeBaseDB(label, conf, workdir='testdata/demo-workdir')
     hlab_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.gff3'
@@ -181,34 +156,9 @@ def test_annotation_beebase():
 def test_proteins_beebase():
     """BeeBase protein formatting"""
 
-    label, conf = genhub.conf.load_one('conf/test2/Hlab.yml')
+    label, conf = genhub.conf.load_one('conf/HymHub/Hlab.yml')
+    hlab_db = BeeBaseDB(label, conf, workdir='testdata/demo-workdir')
+    hlab_db.preprocess_prot(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Hlab/Hlab.all.prot.fa'
     testoutfile = 'testdata/fasta/hlab-first-20-prot-out.fa'
-
-    infile = 'testdata/fasta/hlab-first-20-prot.fa.gz'
-    instream = gzip.open(infile, 'rt')
-    outfile = 'testdata/scratch/hlab-first-20-prot.fa'
-    outstream = open(outfile, 'w')
-    hlab_db = BeeBaseDB(label, conf)
-    hlab_db.preprocess_prot(instream, outstream, logstream=None, verify=False)
-    instream.close()
-    outstream.close()
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Hlab protein formatting failed (instream --> outstream)'
-
-    wd = 'testdata/demo-workdir'
-    outstream = open(outfile, 'w')
-    hlab_db = BeeBaseDB(label, conf, workdir=wd)
-    hlab_db.preprocess_prot(None, outstream, logstream=None, verify=False)
-    outstream.close()
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Hlab protein formatting failed (dir --> outstream)'
-
-    wd = 'testdata/scratch'
-    subprocess.call(['mkdir', '-p', 'testdata/scratch/Hsal'])
-    instream = gzip.open(infile, 'rt')
-    hlab_db = BeeBaseDB(label, conf, workdir=wd)
-    hlab_db.preprocess_prot(instream, None, logstream=None, verify=False)
-    instream.close()
-    outfile = 'testdata/scratch/Hlab/Hlab.all.prot.fa'
-    assert filecmp.cmp(testoutfile, outfile), \
-        'Hlab gDNA formatting failed (instream --> dir)'
+    assert filecmp.cmp(testoutfile, outfile), 'Hlab protein formatting failed'

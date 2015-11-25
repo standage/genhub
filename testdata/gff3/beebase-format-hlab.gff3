@@ -1,5 +1,11 @@
 ##gff-version   3
+##sequence-region   HlabScf_1 1 517
+##sequence-region   HlabScf_21 1 521
+##sequence-region   HlabScf_27 1 261
 ##sequence-region   HlabScf_32 37719 907555
+##sequence-region   HlabScf_6 1 235
+##sequence-region   HlabScf_7 1 532
+##sequence-region   HlabScf_8 1 202
 HlabScf_32	AEGeAn::tidygff3	gene	37719	101885	.	-	.	ID=gene1
 HlabScf_32	GLEAN	mRNA	37719	101885	0.241	-	.	ID=mRNA1;Parent=gene1;source_id=Hlab_GLEAN_10004065;part_support_id=CUFF.12483.1;Name=Hlab06250;accession=Hlab06250
 HlabScf_32	GLEAN	CDS	37719	38856	.	-	1	Parent=mRNA1;accession=Hlab06250

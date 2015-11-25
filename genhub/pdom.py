@@ -85,8 +85,7 @@ def test_format():
     """Pdom formatting task"""
 
     label, conf = genhub.conf.load_one('conf/Pdom-ut.yml')
-    wd = 'testdata/demo-workdir'
-    pdom_db = PdomDB(label, conf, workdir=wd)
+    pdom_db = PdomDB(label, conf, workdir='testdata/demo-workdir')
     pdom_db.preprocess_gdna(logstream=None)
     pdom_db.preprocess_gff3(logstream=None)
     pdom_db.preprocess_prot(logstream=None)
