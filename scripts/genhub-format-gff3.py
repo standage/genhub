@@ -14,11 +14,8 @@ import sys
 import re
 
 
-sources = ['ncbi', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
-ncbifilterstrings = ['\tregion\t', '\tmatch\t', '\tcDNA_match\t', '##species']
-
-
 def parse_args():
+    sources = ['ncbi', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
     desc = 'Preliminary clean up / processing of GFF3 files'
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('-o', '--outfile', type=argparse.FileType('w'))
@@ -32,8 +29,8 @@ def parse_args():
 
 def match_filter(line, source):
     if source in ['ncbi', 'ncbi_flybase']:
-        for fs in ncbifilterstrings:
-            if fs in line:
+        for filt in ['\tregion\t', '\tmatch\t', '\tcDNA_match\t', '##species']:
+            if filt in line:
                 return True
     return False
 
