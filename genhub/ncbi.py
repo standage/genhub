@@ -69,7 +69,7 @@ class NcbiDB(genhub.genomedb.GenomeDB):
             excludefile = genhub.conf.conf_filter_file(self.config)
             cmds.append('grep -vf %s' % excludefile.name)
         cmds.append('tidygff3')
-        cmds.append('genhub-format-gff3.py -')
+        cmds.append('genhub-format-gff3.py --source ncbi -')
         cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
 
         commands = ' | '.join(cmds)
@@ -83,7 +83,8 @@ class NcbiDB(genhub.genomedb.GenomeDB):
                'does not begin with "##gff-version"' not in line and \
                line != '':
                 print(line, file=logstream)
-        assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
+        assert proc.returncode == 0, \
+            'annot cleanup command failed: %s' % commands
         if 'annotfilter' in self.config:
             os.unlink(excludefile.name)
 

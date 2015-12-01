@@ -62,12 +62,10 @@ class CrgDB(genhub.genomedb.GenomeDB):
     def format_gff3(self, logstream=sys.stderr, debug=False):
         cmds = list()
         cmds.append('gunzip -c %s' % self.gff3path)
-        cmds.append('genhub-namedup.py')
         cmds.append("sed $'s/\ttranscript\t/\tmRNA\t/'")
         cmds.append("sed 's/scaffold_/%sScf_/'" % self.label)
         cmds.append("sed 's/scaffold/%sScf_/'" % self.label)
-        cmds.append('tidygff3')
-        cmds.append('genhub-format-gff3.py -')
+        cmds.append('genhub-format-gff3.py --source crg -')
         cmds.append('seq-reg.py - %s' % self.gdnafile)
         cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
 
@@ -82,7 +80,8 @@ class CrgDB(genhub.genomedb.GenomeDB):
                'does not begin with "##gff-version"' not in line and \
                line != '':
                 print(line, file=logstream)
-        assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
+        assert proc.returncode == 0, \
+            'annot cleanup command failed: %s' % commands
 
 
 # -----------------------------------------------------------------------------

@@ -100,7 +100,7 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
         cmds.append('grep -vf %s' % excludefile.name)
         cmds.append('genhub-fix-trna.py')
         cmds.append('tidygff3')
-        cmds.append('genhub-format-gff3.py -')
+        cmds.append('genhub-format-gff3.py --source ncbi_flybase -')
         cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
 
         commands = ' | '.join(cmds)
@@ -114,7 +114,8 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
                'does not begin with "##gff-version"' not in line and \
                line != '':
                 print(line, file=logstream)
-        assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
+        assert proc.returncode == 0, \
+            'annot cleanup command failed: %s' % commands
         os.unlink(excludefile.name)
 
 

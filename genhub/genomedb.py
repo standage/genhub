@@ -226,7 +226,8 @@ class GenomeDB(object):
             sha1 = self.config['checksums'][datatype]
             testsha1 = genhub.file_sha1(outfile)
             assert testsha1 == sha1, ('%s %s integrity check failed\n%s\n%s' %
-                                      (self.label, datatypes[datatype]))
+                                      (self.label, datatypes[datatype],
+                                       testsha1, sha1))
         else:  # pragma: no cover
             message = 'Cannot verify integrity of %s ' % self.label
             message += '%s without a checksum' % datatypes[datatype]
