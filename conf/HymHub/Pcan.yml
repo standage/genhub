@@ -8,7 +8,7 @@ Pcan:
     proteins: PCAN.v01.pep.fa.gz
     checksums:
         gdna: 28a691db588413e97e2041faa381b2e72b8928d0
-        gff3: ed4b07d4c50b34edf243307d4b0faa0e0ff80600
+        gff3: 27b1d2baa6f4c0d03b899b564c21b93e063dcf1e
         prot: a2cb40bd4ad9ff9defffbeecdd71514511e8d892
     compress:
         - gff3

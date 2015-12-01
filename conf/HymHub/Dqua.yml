@@ -7,7 +7,7 @@ Dqua:
     proteins: DQUA.v01.pep.fa.gz
     checksums:
         gdna: 1c28029476393c6f19a9a44ecb29b2ee95dbd46a
-        gff3: f3d8c0d2dae0c8ff7ad52399bc92985088965ea6
+        gff3: b7afe6cd908c7659a44ecdf4edabc75aebea6aeb
         prot: 3f153ff22ba057b3d5114f7142796df9898f2f50
     compress:
         - gff3

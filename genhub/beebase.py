@@ -60,7 +60,7 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
         cmds.append('genhub-namedup.py')
         cmds.append("sed 's/scaffold/%sScf_/'" % self.label)
         cmds.append('tidygff3')
-        cmds.append('genhub-format-gff3.py -')
+        cmds.append('genhub-format-gff3.py --source beebase -')
         cmds.append('seq-reg.py - %s' % self.gdnafile)
         cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
 
@@ -77,7 +77,8 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
                'has the wrong phase' not in line and \
                line != '':
                 print(line, file=logstream)
-        assert proc.returncode == 0, 'annot cleanup command failed: %s' % cmd
+        assert proc.returncode == 0, \
+            'annot cleanup command failed: %s' % commands
 
 
 # -----------------------------------------------------------------------------

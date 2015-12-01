@@ -56,8 +56,8 @@ class PdomDB(genhub.genomedb.GenomeDB):
             print(line, end='', file=outstream)
 
     def format_gff3(self, logstream=sys.stderr):
-        command = ['genhub-format-gff3.py', '--outfile', self.gff3file,
-                   self.gff3path]
+        command = ['genhub-format-gff3.py', '--source', 'pdom', '--outfile',
+                   self.gff3file, self.gff3path]
         subprocess.check_call(command)
 
 
