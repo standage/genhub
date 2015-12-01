@@ -10,17 +10,18 @@
 
 from __future__ import print_function
 import argparse
-import sys
 import re
+import sys
 
 
 def parse_args():
     sources = ['ncbi', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
-    desc = 'Preliminary clean up / processing of GFF3 files'
+    desc = 'Filter features and parse accession values'
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('-o', '--outfile', type=argparse.FileType('w'))
-    parser.add_argument('-p', '--prefix', default=None, help='attach the given'
-                        ' prefix to each sequence ID')
+    parser.add_argument('-o', '--outfile', type=argparse.FileType('w'),
+                        default=sys.stdout)
+    parser.add_argument('-p', '--prefix', default=None,
+                        help='attach the given prefix to each sequence ID')
     parser.add_argument('-s', '--source', default='ncbi', choices=sources,
                         help='data source; default is "ncbi"')
     parser.add_argument('gff3', type=argparse.FileType('r'))
@@ -35,7 +36,7 @@ def match_filter(line, source):
     return False
 
 
-def process_gene(line, source):
+def parse_gene_accession(line, source):
     if '\tgene\t' not in line or source == 'beebase':
         return line
 
@@ -52,7 +53,7 @@ def process_gene(line, source):
     return line + ';accession=' + accmatch.group(1)
 
 
-def process_rna(line, source, rnaid_to_accession):
+def parse_transcript_accession(line, source, rnaid_to_accession):
     fields = line.split('\t')
     if len(fields) != 9:
         return line
@@ -87,7 +88,7 @@ def process_rna(line, source, rnaid_to_accession):
     return line
 
 
-def process_rna_feature(line, source, rnaid_to_accession):
+def parse_transcript_feature_accession(line, source, rnaid_to_accession):
     fields = line.split('\t')
     if len(fields) != 9:
         return line
@@ -111,15 +112,15 @@ def format_prefix(line, prefix):
 
 
 def format_gff3(instream, source, prefix=None):
-    rnaid_to_accession = dict()
+    id2acc = dict()
     for line in args.gff3:
         line = line.rstrip()
         if match_filter(line, source):
             continue
 
-        line = process_gene(line, source)
-        line = process_rna(line, source, rnaid_to_accession)
-        line = process_rna_feature(line, source, rnaid_to_accession)
+        line = parse_gene_accession(line, source)
+        line = parse_transcript_accession(line, source, id2acc)
+        line = parse_transcript_feature_accession(line, source, id2acc)
         if args.prefix:
             line = process_prefix(line, args.prefix)
 
