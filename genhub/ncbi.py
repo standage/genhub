@@ -28,15 +28,17 @@ class NcbiDB(genhub.genomedb.GenomeDB):
         assert self.config['source'] == 'ncbi'
         assert 'branch' in self.config
         assert 'species' in self.config
-        assert 'accession_name' in self.config
+        assert 'accession' in self.config
+        assert 'build' in self.config
 
         species = self.config['species'].replace(' ', '_')
-        self.acc = self.config['accession_name']
+        self.acc = self.config['accession'] + '_' + self.config['build']
 
-        base = 'ftp://ftp.ncbi.nih.gov/genomes/genbank'
+        base = 'ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq'
         url_parts = [base, self.config['branch'], species,
                      'all_assembly_versions', self.acc]
         self.specbase = '/'.join(url_parts + [self.acc])
+        print('DEBUG: %s' % self.specbase, file=sys.stderr)
         self.format_gdna = self.format_fasta
         self.format_prot = self.format_fasta
 
@@ -53,7 +55,7 @@ class NcbiDB(genhub.genomedb.GenomeDB):
 
     @property
     def protfilename(self):
-        return '%s_genomic.faa.gz' % self.acc
+        return '%s_protein.faa.gz' % self.acc
 
     @property
     def gdnaurl(self):
@@ -65,7 +67,7 @@ class NcbiDB(genhub.genomedb.GenomeDB):
 
     @property
     def proturl(self):
-        return '%s_genomic.faa.gz' % self.specbase
+        return '%s_protein.faa.gz' % self.specbase
 
     def format_fasta(self, instream, outstream, logstream=sys.stderr):
         for line in instream:

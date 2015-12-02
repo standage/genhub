@@ -4,7 +4,8 @@ Cbir:
     clade: ant
     source: ncbi
     branch: invertebrate
-    accession_name: GCA_000611835.1_CerBir1.0
+    accession: GCF_000611835.1
+    build: CerBir1.0
     checksums:
         gdna: 42faab6f3ad52f4715c181423538f546fc5f3f0c
         gff3: ae3cfb30430af10a4010bdb679eb3dd751ac2692
