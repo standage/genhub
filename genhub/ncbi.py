@@ -24,10 +24,19 @@ class NcbiDB(genhub.genomedb.GenomeDB):
 
     def __init__(self, label, conf, workdir='.'):
         super(NcbiDB, self).__init__(label, conf, workdir)
+
         assert self.config['source'] == 'ncbi'
+        assert 'branch' in self.config
         assert 'species' in self.config
+        assert 'accession_name' in self.config
+
         species = self.config['species'].replace(' ', '_')
-        self.specbase = 'ftp://ftp.ncbi.nih.gov/genomes/%s' % species
+        self.acc = self.config['accession_name']
+
+        base = 'ftp://ftp.ncbi.nih.gov/genomes/genbank'
+        url_parts = [base, self.config['branch'], species,
+                     'all_assembly_versions', self.acc]
+        self.specbase = '/'.join(url_parts + [self.acc])
         self.format_gdna = self.format_fasta
         self.format_prot = self.format_fasta
 
@@ -35,25 +44,28 @@ class NcbiDB(genhub.genomedb.GenomeDB):
         return 'NCBI'
 
     @property
+    def gdnafilename(self):
+        return '%s_genomic.fna.gz' % self.acc
+
+    @property
+    def gff3filename(self):
+        return '%s_genomic.gff.gz' % self.acc
+
+    @property
+    def protfilename(self):
+        return '%s_genomic.faa.gz' % self.acc
+
+    @property
     def gdnaurl(self):
-        if 'scaffolds' in self.config:
-            return '%s/CHR_Un/%s' % (self.specbase, self.gdnafilename)
-        else:
-            assert 'chromosomes' in self.config
-            urls = list()
-            prefix = self.config['prefix']
-            for chrmfile in self.config['chromosomes']:
-                url = '%s/%s/%s' % (self.specbase, prefix, chrmfile)
-                urls.append(url)
-            return urls
+        return '%s_genomic.fna.gz' % self.specbase
 
     @property
     def gff3url(self):
-        return '%s/GFF/%s' % (self.specbase, self.config['annotation'])
+        return '%s_genomic.gff.gz' % self.specbase
 
     @property
     def proturl(self):
-        return '%s/protein/protein.fa.gz' % self.specbase
+        return '%s_genomic.faa.gz' % self.specbase
 
     def format_fasta(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
