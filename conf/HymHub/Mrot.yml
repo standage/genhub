@@ -2,11 +2,12 @@ Mrot:
     species: Megachile rotundata
     common: alfalfa leafcutting bee
     clade: bee
-    source: ncbi
-    scaffolds: mro_ref_MROT_1.0_chrUn.fa.gz
-    annotation: ref_MROT_1.0_top_level.gff3.gz
+    source: refseq
+    branch: invertebrate
+    accession: GCF_000220905.1
+    build: MROT_1.0
     checksums:
-        gdna: c603b9af806bd3477ed3419df70f0f61fed4c620
-        gff3: 53b2b049a4526b8e56074862661a25a42861f783
+        gdna: 94837ed0a2ec223505a5a5d23f391f7afe39ed73
+        gff3: 9d91bc40dce56408c7641d6e08e9e666b7b28aa6
         prot: 71263714badd2e63a5f3da820071fada9a653659
-    description: NCBI annotation release 101
+    description: MROT_1.0 from the University of Maryland

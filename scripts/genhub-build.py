@@ -17,8 +17,8 @@ import sys
 import genhub
 
 buildcmds = 'download format datatypes stats cleanup'.split(' ')
-sources = ['ncbi', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
-dbtype = {'ncbi': genhub.ncbi.NcbiDB,
+sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
+dbtype = {'refseq': genhub.refseq.RefSeqDB,
           'ncbi_flybase': genhub.ncbi_flybase.FlyBaseDB,
           'beebase': genhub.beebase.BeeBaseDB,
           'crg': genhub.crg.CrgDB,

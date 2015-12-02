@@ -87,28 +87,24 @@ def conf_filter_file(conf):
 
 def test_load_file():
     """Loading genome configurations from a single file"""
-    fh = open('conf/test/Emon.yml', 'r')
+    fh = open('conf/HymHub/Pbar.yml', 'r')
     conf = load_file(fh)
     assert len(conf) == 1
-    assert 'Emon' in conf
-    assert conf['Emon']['species'] == 'Equus monoceros'
+    assert 'Pbar' in conf
+    assert conf['Pbar']['species'] == 'Pogonomyrmex barbatus'
 
-    conf = load_file('conf/test/Docc.yml')
+    conf = load_file('conf/HymHub/Hlab.yml')
     assert len(conf) == 1
-    assert 'Docc' in conf
-    assert conf['Docc']['common'] == 'red dragon'
+    assert 'Hlab' in conf
+    assert conf['Hlab']['common'] == 'blueberry bee'
 
-    label, conf = load_one('conf/test/Bvul.yml')
-    assert label == 'Bvul'
-    assert conf['source'] == 'ncbi'
+    label, conf = load_one('conf/HymHub/Tcas.yml')
+    assert label == 'Tcas'
+    assert conf['source'] == 'refseq'
 
 
 def test_load_dir():
     """Loading genome configurations from a directory"""
-    conf = load_dir('conf/test')
-    assert len(conf) == 4
-    assert sorted(conf) == ['Bvul', 'Docc', 'Emon', 'Epeg']
-
     conf = load_dir('conf/HymHub')
     assert len(conf) == 25
     assert sorted(conf)[0:4] == ['Acep', 'Ador', 'Aech', 'Aflo']

@@ -1,7 +1,0 @@
-Bvul:
-    species: Basiliscus vulgaris
-    common: basilisk
-    source: ncbi
-    scaffolds: bv_ref_1.1_chrUn.fa.gz
-    annotation: ref_Basiliscus_vulgaris_1.1_top_level.gff3.gz
-    description: bogus NCBI annotation for software testing

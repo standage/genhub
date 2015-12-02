@@ -2,11 +2,12 @@ Acep:
     species: Atta cephalotes
     common: leafcutter ant
     clade: ant
-    source: ncbi
-    scaffolds: acp_ref_Attacep1.0_chrUn.fa.gz
-    annotation: ref_Attacep1.0_top_level.gff3.gz
+    source: refseq
+    branch: invertebrate
+    accession: GCF_000143395.1
+    build: Attacep1.0
     checksums:
-        gdna: adc0f9f92ecdefbcf82c5b4b4ac064f449d9f6a5
-        gff3: eb17e19358661a9a14db63bc9f77f3389a1a06e1
+        gdna: 473902070fe165f0f8a8e5a64edf2509b11af72b
+        gff3: bdd2b32612b81d12fd69d03f3477d9aad6833263
         prot: 7189f913eade26a7879d2b38b0c64ce167991fb4
-    description: NCBI annotation release 102
+    description: AttaCep1.0 from WashU GSC

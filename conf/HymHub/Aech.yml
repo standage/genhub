@@ -2,11 +2,12 @@ Aech:
     species: Acromyrmex echinatior
     common: Panamanian leafcutter ant
     clade: ant
-    source: ncbi
-    scaffolds: 103372_ref_Aech_3.9_chrUn.fa.gz
-    annotation: ref_Aech_3.9_top_level.gff3.gz
+    source: refseq
+    branch: invertebrate
+    accession: GCF_000204515.1
+    build: Aech_3.9
     checksums:
-        gdna: bf13c827e75de7c2aabb71af3333240917f2524d
-        gff3: dfcfe33110d0936f7eb05668de216e8810027ab5
+        gdna: 7085caf56df9f094aed4cfff0d9ef34509db9a3d
+        gff3: acacbd25488ca5d48115e388b538f833ffc166c2
         prot: 0d4fb622bae6941e1ebd2b228f22141741e3943a
-    description: NCBI annotation release 100
+    description: Aech_3.9 from BGI-Shenzhen

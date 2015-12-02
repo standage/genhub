@@ -4,31 +4,14 @@ Amel:
     clade:
         - bee
         - honeybee
-    source: ncbi
-    chromosomes:
-        - ame_ref_Amel_4.5_unplaced.fa.gz
-        - ame_ref_Amel_4.5_chrLG1.fa.gz
-        - ame_ref_Amel_4.5_chrLG2.fa.gz
-        - ame_ref_Amel_4.5_chrLG3.fa.gz
-        - ame_ref_Amel_4.5_chrLG4.fa.gz
-        - ame_ref_Amel_4.5_chrLG5.fa.gz
-        - ame_ref_Amel_4.5_chrLG6.fa.gz
-        - ame_ref_Amel_4.5_chrLG7.fa.gz
-        - ame_ref_Amel_4.5_chrLG8.fa.gz
-        - ame_ref_Amel_4.5_chrLG9.fa.gz
-        - ame_ref_Amel_4.5_chrLG10.fa.gz
-        - ame_ref_Amel_4.5_chrLG11.fa.gz
-        - ame_ref_Amel_4.5_chrLG12.fa.gz
-        - ame_ref_Amel_4.5_chrLG13.fa.gz
-        - ame_ref_Amel_4.5_chrLG14.fa.gz
-        - ame_ref_Amel_4.5_chrLG15.fa.gz
-        - ame_ref_Amel_4.5_chrLG16.fa.gz
-    prefix: Assembled_chromosomes/seq
-    annotation: ref_Amel_4.5_top_level.gff3.gz
+    source: refseq
+    branch: invertebrate
+    accession: GCF_000002195.4
+    build: Amel_4.5
     annotfilter:
         - NC_001566.1
     checksums:
-        gdna: f235b5115b2625550328a618b8317d6eaa2cf87d
-        gff3: 74f5eae43bb4ea7ed5199e67178dd130f93b4d37
+        gdna: d4f0d97a76136c13c2c86ef44e6ebc928be681e4
+        gff3: 100862519d2d823e0f04bb9abebfee4b489d8417
         prot: 421b55ba166b7c65858b16c99339379b05f0af33
-    description: NCBI annotation release 102
+    description: Amel_4.5 from HGSC@Baylor

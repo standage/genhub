@@ -4,11 +4,12 @@ Ador:
     clade:
         - bee
         - honeybee
-    source: ncbi
-    scaffolds: ado_ref_Apis_dorsata_1.3_chrUn.fa.gz
-    annotation: ref_Apis_dorsata_1.3_top_level.gff3.gz
+    source: refseq
+    branch: invertebrate
+    accession: GCF_000469605.1
+    build: Apis_dorsata_1.3
     checksums:
-        gdna: 5587d68781e8c5b834849457a0af1652b548bf34
-        gff3: 07aea920d51ab322361201f760cd979863215cf4
+        gdna: 4eac29771d018d9a1f7f67bccbdeb7dace37f74c
+        gff3: 41cc021ed3624db8347c3d00ef039f89853dddd0
         prot: 2ba3c7f9fdc2d25e9a386437077f6c7f1559adda
-    description: NCBI annotation release 100
+    description: Apis_dorsata_1.3 from CSHL

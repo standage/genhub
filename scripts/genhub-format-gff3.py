@@ -15,21 +15,21 @@ import sys
 
 
 def parse_args():
-    sources = ['ncbi', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
+    sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
     desc = 'Filter features and parse accession values'
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('-o', '--outfile', type=argparse.FileType('w'),
                         default=sys.stdout)
     parser.add_argument('-p', '--prefix', default=None,
                         help='attach the given prefix to each sequence ID')
-    parser.add_argument('-s', '--source', default='ncbi', choices=sources,
-                        help='data source; default is "ncbi"')
+    parser.add_argument('-s', '--source', default='refseq', choices=sources,
+                        help='data source; default is "refseq"')
     parser.add_argument('gff3', type=argparse.FileType('r'))
     return parser.parse_args()
 
 
 def match_filter(line, source):
-    if source in ['ncbi', 'ncbi_flybase']:
+    if source in ['refseq', 'ncbi_flybase']:
         for filt in ['\tregion\t', '\tmatch\t', '\tcDNA_match\t', '##species']:
             if filt in line:
                 return True
@@ -41,7 +41,7 @@ def parse_gene_accession(line, source):
         return line
 
     accmatch = None
-    if source in ['ncbi', 'ncbi_flybase']:
+    if source in ['refseq', 'ncbi_flybase']:
         accmatch = re.search('GeneID:([^;,\n]+)', line)
     elif source == 'crg':
         accmatch = re.search('ID=([^;\n]+)', line)
@@ -65,7 +65,7 @@ def parse_transcript_accession(line, source, rnaid_to_accession):
 
     accmatch = None
     idmatch = None
-    if source in ['ncbi', 'ncbi_flybase']:
+    if source in ['refseq', 'ncbi_flybase']:
         accmatch = re.search('transcript_id=([^;\n]+)', line)
         idmatch = re.search('GeneID:([^;,\n]+)', line)
     elif source == 'crg':
