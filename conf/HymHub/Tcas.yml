@@ -11,5 +11,5 @@ Tcas:
     checksums:
         gdna: e92a8d8cc1ce7be61947df722e802870b41e9fa4
         gff3: 80a43332105fb3807d6dd8084742ab1392e6f918
-        prot: 90560510bb25f8ed2b9b2e6bd6447e837394219d
+        prot: 62f982eacabf141cc75a46ec9fb4b4104f641a4b
     description: Tcas_3.0 from Baylor

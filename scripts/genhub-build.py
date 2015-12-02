@@ -66,6 +66,9 @@ def main(parser=get_parser()):
         if 'format' in args.task:
             db.format()
 
+        print('[GenHub: %s] build complete!' % config['species'],
+              file=sys.stderr)
+
 
 if __name__ == '__main__':
     main()

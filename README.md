@@ -7,7 +7,7 @@ variety of sources, and it is easy to extend with recipes for additional data.
 
 * Built by Daniel Standage <daniel.standage@gmail.com>
 * Available at https://github.com/standage/genhub
-* [![GenHub build status](https://api.travis-ci.org/standage/genhub.svg?branch=master)](https://travis-ci.org/standage/genhub)
+* [![GenHub build status](travisbadge)](https://travis-ci.org/standage/genhub)
 
 ## Obtaining GenHub
 
@@ -42,12 +42,13 @@ or within a user-controlled [virtual environment][venv] will install the
 prerequisite Python packages, and installation instructions for GenomeTools and
 AEGeAn are available from the corresponding source code distributions.
 
-**Special note about PycURL**: There appear to be some issues installing PycURL
-in a virtual environment. If you are having issues installing PycURL, the
-[following workaround][curl] worked for me: deactivate the virtualenv, install
-PycURL system-wide (or in a directory you control), and then copy the pycurl
-files into your virtualenv site-packages.
+**Special note about PycURL**: There are (or have been) some issues installing
+PycURL in a virtual environment. If you are having issues installing PycURL,
+the [following workaround][curl] worked for me: deactivate the virtualenv,
+install PycURL system-wide (or in a directory you control), and then copy the
+pycurl files into your virtualenv site-packages.
 
+[travisbadge]: https://api.travis-ci.org/standage/genhub.svg?branch=master
 [gt]: http://genometools.org
 [agn]: http://standage.github.io/AEGeAn
 [venv]: http://docs.python-guide.org/en/latest/dev/virtualenvs/
