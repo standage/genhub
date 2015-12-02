@@ -2,21 +2,14 @@ Nvit:
     species: Nasonia vitripennis
     common: jewel wasp
     clade: chalcid
-    source: ncbi
-    chromosomes:
-        - nvi_ref_Nvit_2.1_chr1.fa.gz
-        - nvi_ref_Nvit_2.1_chr2.fa.gz
-        - nvi_ref_Nvit_2.1_chr3.fa.gz
-        - nvi_ref_Nvit_2.1_chr4.fa.gz
-        - nvi_ref_Nvit_2.1_chr5.fa.gz
-        - nvi_ref_Nvit_2.1_unlocalized.fa.gz
-        - nvi_ref_Nvit_2.1_unplaced.fa.gz
-    prefix: Assembled_chromosomes/seq
-    annotation: ref_Nvit_2.1_top_level.gff3.gz
+    source: refseq
+    branch: invertebrate
+    accession: GCF_000002325.3
+    build: Nvit_2.1
     annotfilter:
         - 'GeneID:100498670'
     checksums:
-        gdna: dcaa9994616e4339824873ddfed79fd7bd8a74d4
-        gff3: 9ac909a9b85f685335fe71b48c9c7ebd7c675088
-        prot: 22bc99bc894d215fd01f2ccab82b50e3276ad4c1
-    description: NCBI annotation release 101
+        gdna: 9918e764c51a1e7c4e9b0712b388339a127dd216
+        gff3: 03c9c48dd01ef854e64749549342e4c0570837c7
+        prot: 3d94322bb538e0af59437b857874eeb177555eed
+    description: Nvit_2.1 from Baylor

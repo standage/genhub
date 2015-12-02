@@ -1,7 +1,0 @@
-Emon:
-    species: Equus monoceros
-    common: unicorn
-    source: ncbi
-    scaffolds: emon_ref_3.4_chrUn.fa.gz
-    annotation: ref_Equus_monoceros_3.4_top_level.gff3.gz
-    description: bogus NCBI annotation for software testing

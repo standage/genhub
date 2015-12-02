@@ -42,8 +42,6 @@ class GenomeDB(object):
     def gdnafilename(self):
         if 'scaffolds' in self.config:
             return self.config['scaffolds']
-        elif 'chromosomes' in self.config:
-            return '%s.orig.fa.gz' % self.label
         return None  # pragma: no cover
 
     @property
@@ -255,7 +253,7 @@ def test_props():
     assert db.gdnafile == './Bimp/Bimp.gdna.fa'
     assert db.gff3file == './Bimp/Bimp.gff3'
     assert db.protfile == './Bimp/Bimp.all.prot.fa'
-    assert db.source == 'ncbi'
+    assert db.source == 'refseq'
 
     label, config = genhub.conf.load_one('conf/HymHub/Dqua.yml')
     db = GenomeDB(label, config, workdir='/opt/data/genomes')

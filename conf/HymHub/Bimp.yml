@@ -4,11 +4,12 @@ Bimp:
     clade:
         - bee
         - bumblebee
-    source: ncbi
-    scaffolds: bim_ref_BIMP_2.0_chrUn.fa.gz
-    annotation: ref_BIMP_2.0_top_level.gff3.gz
+    source: refseq
+    branch: invertebrate
+    accession: GCF_000188095.1
+    build: BIMP_2.0
     checksums:
-        gdna: a5f5133af4c4322a94df2984fbe514032897f948
-        gff3: 6eb476a42793d6a9f684c27de2c5423afee81cb1
-        prot: 85a14d0f2efa2a0935b81cb1158f3bf85d881be8
-    description: NCBI annotation release 101
+        gdna: 311bb5a6f3caf75c48b7c83ead6fdcb7b6bbb4a2
+        gff3: a92efa3192a122589276e864841468b8ea666c14
+        prot: b694e018b0c8a5194746e6ac52eca34df0385154
+    description: BIMP_2.0 from University of Illinois
