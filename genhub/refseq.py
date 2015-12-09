@@ -95,6 +95,7 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
         for line in stderr.split('\n'):  # pragma: no cover
             if 'has not been previously introduced' not in line and \
                'does not begin with "##gff-version"' not in line and \
+               'more than one pseudogene attribute' not in line and \
                line != '':
                 print(line, file=logstream)
         assert proc.returncode == 0, \

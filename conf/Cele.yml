@@ -1,0 +1,11 @@
+Cele:
+    species: Caenorhabditis elegans
+    common: roundworm
+    clade: nematode
+    source: refseq
+    branch: invertebrate
+    accession: GCF_000002985.6
+    build: WBcel235
+    annotfilter:
+        - NC_001328.1
+    description: WBcel235 from the C. elegans sequencing consortium

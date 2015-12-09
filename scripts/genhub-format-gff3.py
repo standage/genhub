@@ -36,6 +36,18 @@ def match_filter(line, source):
     return False
 
 
+def pseudogenic_cds(line):
+    fields = line.split('\t')
+    if len(fields) != 9:
+        return False
+
+    ftype = fields[2]
+    attributes = fields[8]
+    if ftype == 'CDS' and 'pseudo=true' in attributes:
+        return True
+    return False
+
+
 def parse_gene_accession(line, source):
     if '\tgene\t' not in line or source == 'beebase':
         return line
@@ -83,8 +95,12 @@ def parse_transcript_accession(line, source, rnaid_to_accession):
     else:
         accession = '%s:%s' % (idmatch.group(1), ftype)
     line += ';accession=' + accession
-    rnaid = re.search('ID=([^;\n]+)', line).group(1)
-    rnaid_to_accession[rnaid] = accession
+    rnaidmatch = re.search('ID=([^;\n]+)', line)
+    if rnaidmatch:
+        rnaid = rnaidmatch.group(1)
+        rnaid_to_accession[rnaid] = accession
+    else:
+        print('Warning: RNA has no ID: %s' % line, file=sys.stderr)
     return line
 
 
@@ -116,6 +132,8 @@ def format_gff3(instream, source, prefix=None):
     for line in args.gff3:
         line = line.rstrip()
         if match_filter(line, source):
+            continue
+        if pseudogenic_cds(line):
             continue
 
         line = parse_gene_accession(line, source)
