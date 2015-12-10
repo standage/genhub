@@ -1,0 +1,15 @@
+Drer:
+    species: Danio rerio
+    common: zebrafish
+    clade: fish
+    source: refseq
+    branch: vertebrate_other
+    accession: GCF_000002035.5
+    build: GRCz10
+    annotfilter:
+        - NC_002333.2
+    checksums:
+        gdna: 17e46c9bba342e0fb6b0bfc19707852124149752
+        gff3: 5d91e678603ff8b2892ee1313ff4bf9186f1789f
+        prot: 51ecdf02b022799598ba4770fbb4def25c535bb2
+    description: GRCz10 from the Genome Reference Consortium
