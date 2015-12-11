@@ -18,5 +18,6 @@ before_script:
     - export PATH=$(pwd)/scripts:$PATH
     - export PYTHONPATH=$(pwd)
     - export LD_LIBRARY_PATH=$HOME/local/lib
+    - export SHELLOPTS=errexit:pipefail
     - make check-dev
 script: make test testmore

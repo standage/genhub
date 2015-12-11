@@ -211,7 +211,7 @@ class GenomeDB(object):
         elif datatype == 'prot':
             self.format_prot(instream, outstream, logstream)
         else:
-            self.format_gff3(logstream)
+            self.format_gff3(logstream, debug=True)
 
         if datatype != 'gff3':
             instream.close()
