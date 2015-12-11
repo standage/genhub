@@ -14,6 +14,179 @@ import re
 import sys
 
 
+class FeatureFormatter(object):
+    """Load features from GFF3, parse and (re-)attach accession numbers."""
+
+    def __init__(self, instream, source):
+        self.instream = instream
+        self.source = source
+
+        self.id2type = dict()
+        self.id2acc = dict()
+        self.filters = ['\tregion\t', '\tmatch\t', '\tcDNA_match\t',
+                        '##species']
+
+    def __iter__(self):
+        for line in self.instream:
+            line = line.rstrip()
+            if self.match_filter(line):
+                continue
+            if self.pseudogenic_cds(line):
+                continue
+
+            self.parse_type(line)
+            line = self.parse_gene(line)
+            line = self.parse_transcript(line)
+            line = self.parse_vdj(line)
+            line = self.parse_feature(line)
+
+            yield line
+
+    def parse_type(self, line):
+        fields = line.split('\t')
+        if len(fields) != 9:
+            return False
+
+        ftype = fields[2]
+        attributes = fields[8]
+        idmatch = re.search('ID=([^;\n]+)', attributes)
+        if idmatch:
+            featureid = idmatch.group(1)
+            self.id2type[featureid] = ftype
+
+    def match_filter(self, line):
+        for filt in self.filters:
+            if filt in line:
+                return True
+        return False
+
+    def pseudogenic_cds(self, line):
+        """
+        Test whether the given entry is a pseudogene-associated CDS.
+
+        We want to ignore these!
+        """
+        fields = line.split('\t')
+        if len(fields) != 9:
+            return False
+
+        ftype = fields[2]
+        attributes = fields[8]
+        if ftype != 'CDS':
+            return False
+
+        parentmatch = re.search('Parent=([^;\n]+)', attributes)
+        assert parentmatch, attributes
+        parentid = parentmatch.group(1)
+        if self.id2type[parentid] == 'pseudogene':
+            return True
+        return False
+
+    def parse_gene(self, line):
+        """Parse accession for gene features."""
+        fields = line.split('\t')
+        if len(fields) != 9:
+            return line
+
+        ftype = fields[2]
+        attributes = fields[8]
+        if ftype != 'gene' or self.source == 'beebase':
+            return line
+
+        accmatch = None
+        if self.source in ['refseq', 'ncbi_flybase']:
+            accmatch = re.search('GeneID:([^;,\n]+)', line)
+        elif self.source == 'crg':
+            accmatch = re.search('ID=([^;\n]+)', line)
+        elif self.source == 'pdom':
+            accmatch = re.search('Name=([^;\n]+)', line)
+        else:
+            pass
+        assert accmatch, 'unable to parse gene accession: %s' % line
+        accession = accmatch.group(1)
+
+        idmatch = re.search('ID=([^;\n]+)', attributes)
+        if idmatch:
+            geneid = idmatch.group(1)
+            self.id2acc[geneid] = accession
+        else:
+            print('Warning: gene has no ID: %s' % attributes, file=sys.stderr)
+
+        return line + ';accession=' + accession
+
+    def parse_transcript(self, line):
+        """Parse accession for transcript features."""
+        fields = line.split('\t')
+        if len(fields) != 9:
+            return line
+
+        ftype = fields[2]
+        attributes = fields[8]
+        if ftype not in ['mRNA', 'tRNA', 'rRNA', 'ncRNA', 'transcript',
+                         'primary_transcript']:
+            return line
+
+        accmatch = None
+        idmatch = None
+        if self.source in ['refseq', 'ncbi_flybase']:
+            accmatch = re.search('transcript_id=([^;\n]+)', attributes)
+            idmatch = re.search('GeneID:([^;,\n]+)', attributes)
+        elif self.source in ['crg', 'pdom']:
+            accmatch = re.search('ID=([^;\n]+)', attributes)
+        elif self.source == 'beebase':
+            accmatch = re.search('Name=([^;\n]+)', attributes)
+        else:
+            pass
+        assert accmatch or idmatch, \
+            'unable to parse transcript accession: %s' % line
+        if accmatch:
+            accession = accmatch.group(1)
+        else:
+            accession = '%s:%s' % (idmatch.group(1), ftype)
+
+        rnaidmatch = re.search('ID=([^;\n]+)', attributes)
+        if rnaidmatch:
+            rnaid = rnaidmatch.group(1)
+            self.id2acc[rnaid] = accession
+        else:
+            print('Warning: RNA has no ID: %s' % attributes, file=sys.stderr)
+
+        return line + ';accession=' + accession
+
+    def parse_vdj(self, line):
+        """Parse accessions for features of V(D)J genes."""
+        fields = line.split('\t')
+        if len(fields) != 9:
+            return line
+
+        ftype = fields[2]
+        if ftype not in ['V_gene_segment', 'D_gene_segment', 'J_gene_segment',
+                         'C_gene_segment']:
+            return line
+
+        vdjid = re.search('ID=([^;\n]+)', line).group(1)
+        accession = re.search('GeneID:([^;,\n]+)', line).group(1)
+        self.id2acc[vdjid] = accession
+
+        return line + ';accession=' + accession
+
+    def parse_feature(self, line):
+        """Parse accession for exons, introns, and coding sequences"""
+        fields = line.split('\t')
+        if len(fields) != 9:
+            return line
+
+        ftype = fields[2]
+        if ftype not in ['exon', 'intron', 'CDS']:
+            return line
+
+        parentid = re.search('Parent=([^;\n]+)', line).group(1)
+        assert ',' not in parentid, parentid
+        assert parentid in self.id2acc, parentid
+        accession = self.id2acc[parentid]
+        return line + ';accession=' + accession
+
+
 def parse_args():
     """Define the command-line interface."""
     sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
@@ -29,147 +202,6 @@ def parse_args():
     return parser.parse_args()
 
 
-def match_filter(line, source):
-    if source in ['refseq', 'ncbi_flybase']:
-        for filt in ['\tregion\t', '\tmatch\t', '\tcDNA_match\t', '##species']:
-            if filt in line:
-                return True
-    return False
-
-
-def pseudogenic_cds(line):
-    """
-    Test whether the given entry is a pseudogene-associated CDS.
-
-    We want to ignore these!
-    """
-    fields = line.split('\t')
-    if len(fields) != 9:
-        return False
-
-    ftype = fields[2]
-    attributes = fields[8]
-    if ftype == 'CDS' and 'pseudo=true' in attributes:
-        return True
-    return False
-
-
-def parse_gene_accession(line, source, vdj_segments):
-    """
-    Parse accession for gene features.
-
-    Note that for genes involved in V(D)J recombination, the CDS sub-features
-    are direct children. `vdj_segments` is provided to query these
-    relationships.
-    """
-    if '\tgene\t' not in line or source == 'beebase':
-        return line
-
-    accmatch = None
-    if source in ['refseq', 'ncbi_flybase']:
-        accmatch = re.search('GeneID:([^;,\n]+)', line)
-    elif source == 'crg':
-        accmatch = re.search('ID=([^;\n]+)', line)
-    elif source == 'pdom':
-        accmatch = re.search('Name=([^;\n]+)', line)
-    else:
-        pass
-    assert accmatch, 'unable to parse gene accession: %s' % line
-    accession = accmatch.group(1)
-
-    if 'gene_biotype=V_segment' in line or \
-       'gene_biotype=C_region' in line:
-        geneid = re.search('ID=([^;\n]+)', line).group(1)
-        vdj_segments[geneid] = accession
-
-    return line + ';accession=' + accession
-
-
-def parse_transcript_accession(line, source, rnaid_to_accession):
-    """Parse accession for transcript features."""
-    fields = line.split('\t')
-    if len(fields) != 9:
-        return line
-
-    ftype = fields[2]
-    if ftype not in ['mRNA', 'tRNA', 'rRNA', 'ncRNA', 'transcript',
-                     'primary_transcript']:
-        return line
-
-    accmatch = None
-    idmatch = None
-    if source in ['refseq', 'ncbi_flybase']:
-        accmatch = re.search('transcript_id=([^;\n]+)', line)
-        idmatch = re.search('GeneID:([^;,\n]+)', line)
-    elif source in ['crg', 'pdom']:
-        accmatch = re.search('ID=([^;\n]+)', line)
-    elif source == 'beebase':
-        accmatch = re.search('Name=([^;\n]+)', line)
-    else:
-        pass
-    assert accmatch or idmatch, \
-        'unable to parse transcript accession: %s' % line
-
-    if accmatch:
-        accession = accmatch.group(1)
-    else:
-        accession = '%s:%s' % (idmatch.group(1), ftype)
-    line += ';accession=' + accession
-
-    rnaidmatch = re.search('ID=([^;\n]+)', line)
-    if rnaidmatch:
-        rnaid = rnaidmatch.group(1)
-        rnaid_to_accession[rnaid] = accession
-    else:
-        print('Warning: RNA has no ID: %s' % line, file=sys.stderr)
-    return line
-
-
-def parse_vdj_features(line, rnaid_to_accession):
-    """Parse accessions for features of V(D)J genes."""
-    fields = line.split('\t')
-    if len(fields) != 9:
-        return line
-
-    ftype = fields[2]
-    if ftype not in ['V_gene_segment', 'C_gene_segment']:
-        return line
-
-    vdjid = re.search('ID=([^;\n]+)', line).group(1)
-    geneid = re.search('Parent=([^;\n]+)', line).group(1)
-    accession = re.search('GeneID:([^;,\n]+)', line).group(1)
-    rnaid_to_accession[vdjid] = accession
-    rnaid_to_accession[geneid] = accession
-
-    return line + ';accession=' + accession
-
-
-def parse_transcript_feature_accession(line, source, rnaid_to_accession,
-                                       vdj_segments):
-    """
-    Parse accession for exons, introns, and coding sequences
-
-    For genes involved in V(D)J recombination, exons are children of the
-    V_segment or C_segment, while CDS features are direct children of the gene.
-    """
-    fields = line.split('\t')
-    if len(fields) != 9:
-        return line
-
-    ftype = fields[2]
-    if ftype not in ['exon', 'intron', 'CDS']:
-        return line
-
-    parentid = re.search('Parent=([^;\n]+)', line).group(1)
-    assert ',' not in parentid, parentid
-    assert parentid in rnaid_to_accession or parentid in vdj_segments, parentid
-    if parentid in rnaid_to_accession:
-        accession = rnaid_to_accession[parentid]
-    elif parentid in vdj_segments:
-        accession = vdj_segments[parentid]
-    return line + ';accession=' + accession
-
-
 def format_prefix(line, prefix):
     """Apply a prefix to each sequence ID."""
     if len(line.split('\t')) == 9:
@@ -179,28 +211,10 @@ def format_prefix(line, prefix):
                       '##sequence-region\g<1>%s\g<2>' % args.prefix, line)
 
 
-def format_gff3(instream, source, prefix=None):
-    vdj_segments = dict()
-    id2acc = dict()
-    for line in args.gff3:
-        line = line.rstrip()
-        if match_filter(line, source):
-            continue
-        if pseudogenic_cds(line):
-            continue
-
-        line = parse_gene_accession(line, source, vdj_segments)
-        line = parse_transcript_accession(line, source, id2acc)
-        line = parse_vdj_features(line, id2acc)
-        line = parse_transcript_feature_accession(line, source, id2acc,
-                                                  vdj_segments)
-        if args.prefix:
-            line = process_prefix(line, args.prefix)
-
-        yield line
-
-
 if __name__ == '__main__':
     args = parse_args()
-    for line in format_gff3(args.gff3, args.source):
+    formatter = FeatureFormatter(args.gff3, args.source)
+    for line in formatter:
+        if args.prefix:
+            line = format_prefix(line, args.prefix)
         print(line, file=args.outfile)
