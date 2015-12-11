@@ -211,7 +211,7 @@ class GenomeDB(object):
         elif datatype == 'prot':
             self.format_prot(instream, outstream, logstream)
         else:
-            self.format_gff3(logstream, debug=True)
+            self.format_gff3(logstream)
 
         if datatype != 'gff3':
             instream.close()
@@ -221,9 +221,6 @@ class GenomeDB(object):
             return
 
         if 'checksums' in self.config and datatype in self.config['checksums']:
-            if datatype == 'gff3':
-                subprocess.call('grep -v sequence-region %s | head -n 1000'
-                                % outfile, shell=True)
             sha1 = self.config['checksums'][datatype]
             testsha1 = genhub.file_sha1(outfile)
             assert testsha1 == sha1, ('%s %s integrity check failed\n%s\n%s' %
