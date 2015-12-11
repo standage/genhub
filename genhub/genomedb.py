@@ -223,7 +223,7 @@ class GenomeDB(object):
         if 'checksums' in self.config and datatype in self.config['checksums']:
             if datatype == 'gff3':
                 subprocess.call('grep -v sequence-region %s | head -n 1000'
-                                % outfile)
+                                % outfile, shell=True)
             sha1 = self.config['checksums'][datatype]
             testsha1 = genhub.file_sha1(outfile)
             assert testsha1 == sha1, ('%s %s integrity check failed\n%s\n%s' %
