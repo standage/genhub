@@ -62,7 +62,7 @@ class CrgDB(genhub.genomedb.GenomeDB):
     def format_gff3(self, logstream=sys.stderr, debug=False):
         cmds = list()
         cmds.append('gunzip -c %s' % self.gff3path)
-        cmds.append("sed $'s/\ttranscript\t/\tmRNA\t/'")
+        cmds.append("sed $'s/	transcript	/	mRNA	/'")
         cmds.append("sed 's/scaffold_/%sScf_/'" % self.label)
         cmds.append("sed 's/scaffold/%sScf_/'" % self.label)
         cmds.append('genhub-format-gff3.py --source crg -')

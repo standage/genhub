@@ -211,10 +211,13 @@ def format_prefix(line, prefix):
                       '##sequence-region\g<1>%s\g<2>' % args.prefix, line)
 
 
-if __name__ == '__main__':
+def main():
     args = parse_args()
     formatter = FeatureFormatter(args.gff3, args.source)
     for line in formatter:
         if args.prefix:
             line = format_prefix(line, args.prefix)
         print(line, file=args.outfile)
+
+if __name__ == '__main__':
+    main()
