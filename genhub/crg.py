@@ -132,6 +132,6 @@ def test_proteins():
 
 def test_format():
     """GenomeDB task drivers"""
-    label, conf = genhub.conf.load_one('conf/Pcan-ut.yml')
+    label, conf = genhub.conf.load_one('testdata/conf/Pcan.yml')
     pcan_db = CrgDB(label, conf, workdir='testdata/demo-workdir')
     pcan_db.format(logstream=None)
