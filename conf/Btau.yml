@@ -1,0 +1,14 @@
+Btau:
+    species: Bos taurus
+    common: cattle
+    source: refseq
+    branch: vertebrate_mammalian
+    accession: GCF_000003055.6
+    build: Bos_taurus_UMD_3.1.1
+    annotfilter:
+        - NC_006853.1
+    checksums:
+        gdna: bf89196e4832d4c8c751681c1970263754f3404c
+        gff3: 9097916d018c2b16460bf1d5b7dc18c47e844071
+        prot: 1efe53ac2266c65b2cb6177c6580aca4eb19dc49
+    description: Bos_taurus_UMD_3.1.1 from the University of Maryland
