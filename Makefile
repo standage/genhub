@@ -16,7 +16,7 @@ test:
 	@ nosetests -v --with-coverage --cover-package=genhub genhub/*.py
 
 testmore:
-	@ for conf in $$(find conf -type f -name "*.yml" | $(shufcmd) | head -2); do echo genhub-build.py --cfg $$conf --workdir scratch/ download format; done
+	@ for conf in $$(find conf -type f -name "*.yml" | $(shufcmd) | head -2); do genhub-build.py --cfg $$conf --workdir scratch/ download format; done
 
 style:
 	@ pep8 genhub/*.py scripts/*.py
