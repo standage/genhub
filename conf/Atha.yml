@@ -1,0 +1,19 @@
+Atha:
+    species: Arabidopsis thaliana
+    common: thale cress
+    clade: dicot
+    source: refseq
+    branch: plant
+    accession: GCF_000001735.3
+    build: TAIR10
+    annotfilter:
+        - GeneID:6240780
+        - GeneID:6240304
+        - GeneID:6240913
+        - NC_001284.2
+        - NC_000932.1
+    checksums:
+        gdna: 332dc85d30d297ca140d3e6dc87911747ebb4818
+        gff3: 58b57f7142a16d05c6480a5536d8fddececc1f2f
+        prot: 55cefaf86350639f77c520887e37c1a6a4e87451
+    description: TAIR10 from TAIR

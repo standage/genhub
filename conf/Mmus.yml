@@ -1,0 +1,10 @@
+Mmus:
+    species: Mus musculus
+    common: house mouse
+    source: refseq
+    branch: vertebrate_mammalian
+    accession: GCF_000001635.24
+    build: GRCm38.p4
+    annotfilter:
+        - NC_005089.1
+    description: GRCm38.p4 from the Genome Reference Consortium

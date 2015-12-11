@@ -1,0 +1,15 @@
+Xtro:
+    species: Xenopus (Silurana) tropicalis
+    common: western clawed frog
+    clade: amphibian
+    source: refseq
+    branch: vertebrate_other
+    accession: GCF_000004195.2
+    annotfilter:
+        - NC_006839.1
+    checksums:
+        gdna: f17891f19ba8f20d2fb0f99d14bf29a80eff0f45
+        gff3: fe4ffea0d212c3409dc869467c263107b5261a76
+        prot: eea517f4d86a3e884edf63d7324c0b97615ddec1
+    build: Xtropicalis_v7
+    description: Xtropicalis_v7 from JGI
