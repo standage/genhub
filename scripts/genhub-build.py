@@ -65,6 +65,8 @@ def main(parser=get_parser()):
             db.download()
         if 'format' in args.task:
             db.format()
+        if 'datatypes' in args.task:
+            genhub.datatypes.get_iloci(db)
 
         print('[GenHub: %s] build complete!' % config['species'],
               file=sys.stderr)

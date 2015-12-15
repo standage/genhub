@@ -22,6 +22,7 @@ from . import refseq
 from . import ncbi_flybase
 from . import beebase
 from . import crg
+from . import datatypes
 
 # Custom modules
 from . import pdom

@@ -1,0 +1,4 @@
+NW_014576703.1	AEGeAn::LocusPocus	locus	1	2842	.	.	.	gene=1;mRNA=1;effective_length=2842;iLocus_type=piLocus
+NW_014576703.1	AEGeAn::LocusPocus	locus	2843	23566	.	.	.	fragment=true;effective_length=20724;iLocus_type=iiLocus
+NW_014576707.1	AEGeAn::LocusPocus	locus	1	6765	.	.	.	fragment=true;effective_length=6765;iLocus_type=iiLocus
+NW_014576707.1	AEGeAn::miloci.py	locus	6766	16400	3	.	.	merged=true;iLocus_type=miLocus;effective_length=9635;gene=3;liil=0;mRNA=6;ncRNA=1;riil=0
