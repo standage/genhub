@@ -68,6 +68,7 @@ def main(parser=get_parser()):
         if 'datatypes' in args.task:
             genhub.datatypes.get_iloci(db)
             genhub.datatypes.get_proteins(db)
+            genhub.datatypes.get_mrnas(db)
 
         print('[GenHub: %s] build complete!' % config['species'],
               file=sys.stderr)

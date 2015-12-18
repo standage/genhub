@@ -136,15 +136,17 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
                     locusid2name[locusid] = locusname
             elif feattype == 'gene':
                 idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
-                assert idmatch, \
-                    'Unable to parse gene and iLocus IDs: %s' % attrs
-                geneid = idmatch.group(1)
-                ilocusid = idmatch.group(2)
-                gene2loci[geneid] = ilocusid
+                if idmatch:
+                    geneid = idmatch.group(1)
+                    ilocusid = idmatch.group(2)
+                    gene2loci[geneid] = ilocusid
+                else:
+                    print('Unable to parse gene and iLocus IDs: %s' % attrs,
+                          file=sys.stderr)
             elif feattype == 'mRNA':
                 idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
                 assert idmatch, \
-                    'Unable to parse mRNA and gene IDs: %s' % attrs
+                    'Unable to parse mRNA and gene IDs: %s' % attrs.rstrip()
                 mrnaid = idmatch.group(1)
                 geneid = idmatch.group(2)
                 mrna2gene[mrnaid] = geneid

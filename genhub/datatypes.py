@@ -171,6 +171,121 @@ def protein_mapping(db, logstream=sys.stderr):  # pragma: no cover
             print(protid, ilocusid, sep='\t', file=outstream)
 
 
+def mrna_exons(instream, convert=False, keepMrnas=False):
+    mrnaids = {}
+    for line in instream:
+        line = line.rstrip()
+        fields = line.split('\t')
+        if len(fields) != 9:
+            continue
+
+        if fields[2] == 'mRNA':
+            mrnaid = re.search('ID=([^;\n]+)', fields[8]).group(1)
+            accmatch = re.search('accession=([^;\n]+)', fields[8])
+            assert accmatch, 'Unable to parse mRNA accession: %s' % fields[8]
+            mrnaacc = accmatch.group(1)
+            mrnaids[mrnaid] = 1
+            if not convert and keepMrnas:
+                fields[8] = re.sub('Parent=[^;\n]+;*', '', fields[8])
+                yield '\t'.join(fields)
+
+        elif fields[2] == 'exon':
+            parentid = re.search('Parent=([^;\n]+)', fields[8]).group(1)
+            if parentid in mrnaids:
+                if convert:
+                    fields[2] = 'mRNA'
+                    fields[8] = re.sub('ID=[^;\n]+;*', '', fields[8])
+                    fields[8] = fields[8].replace('Parent=', 'ID=')
+                    if 'accession=' not in fields[8]:
+                        fields[8] += ';accession=' + mrnaacc
+                else:
+                    if not keepMrnas:
+                        fields[8] = re.sub('Parent=[^;\n]+;*', '', fields[8])
+                yield '\t'.join(fields)
+
+
+def mature_mrna_intervals(db, logstream=sys.stderr):
+    if logstream is not None:  # pragma: no cover
+        logmsg = '[GenHub: %s] ' % db.config['species']
+        logmsg += 'calculating mature mRNA intervals'
+        print(logmsg, file=logstream)
+    specdir = '%s/%s' % (db.workdir, db.label)
+
+    infile = '%s/%s.gff3' % (specdir, db.label)
+    outfile = '%s/%s.mrnas.temp' % (specdir, db.label)
+    with open(infile, 'r') as instream, open(outfile, 'w') as outstream:
+        for exon in mrna_exons(instream, convert=True):
+            print(exon, file=outstream)
+
+    infile = '%s/%s.ilocus.mrnas.gff3' % (specdir, db.label)
+    outfile = '%s/%s.ilocus.mrnas.temp' % (specdir, db.label)
+    with open(infile, 'r') as instream, open(outfile, 'w') as outstream:
+        for exon in mrna_exons(instream, convert=True):
+            print(exon, file=outstream)
+
+    for outfilepattern in ['%s/%s.mrnas.gff3', '%s/%s.all.mrnas.gff3']:
+        outfile = outfilepattern % (specdir, db.label)
+        infile = '%s/%s.mrnas.temp' % (specdir, db.label)
+        command = 'gt gff3 -sort -tidy -force -o %s %s' % (outfile, infile)
+        cmd = command.split(' ')
+        with subprocess.Popen(cmd, stderr=subprocess.PIPE,
+                              universal_newlines=True) as proc:
+            _, stderr = proc.communicate()
+            for line in stderr.split('\n'):
+                if 'has not been previously introduced' not in line and \
+                   'does not begin with "##gff-version"' not in line and \
+                   line != '':
+                    print(line, file=logstream)
+
+
+def mrna_sequences(db, logstream=sys.stderr):
+    if logstream is not None:  # pragma: no cover
+        logmsg = '[GenHub: %s] ' % db.config['species']
+        logmsg += 'extracting pre-mRNA and mature mRNA sequences'
+        print(logmsg, file=logstream)
+    specdir = '%s/%s' % (db.workdir, db.label)
+
+    # All pre-mRNA sequences
+    gff3infile = '%s/%s.gff3' % (specdir, db.label)
+    fastainfile = '%s/%s.gdna.fa' % (specdir, db.label)
+    outfile = '%s/%s.all.pre-mrnas.fa' % (specdir, db.label)
+    command = 'xtractore --type=mRNA --outfile=%s ' % outfile
+    command += '%s %s' % (gff3infile, fastainfile)
+    cmd = command.split(' ')
+    subprocess.check_call(cmd)
+
+    # All mature mRNA sequences
+    gff3infile = '%s/%s.all.mrnas.gff3' % (specdir, db.label)
+    fastainfile = '%s/%s.gdna.fa' % (specdir, db.label)
+    outfile = '%s/%s.all.mrnas.fa' % (specdir, db.label)
+    command = 'xtractore --type=mRNA --outfile=%s ' % outfile
+    command += '%s %s' % (gff3infile, fastainfile)
+    cmd = command.split(' ')
+    subprocess.check_call(cmd)
+
+    # Representative pre-mRNA sequences
+    idfile = '%s/%s.mrnas.txt' % (specdir, db.label)
+    seqfile = '%s/%s.all.pre-mrnas.fa' % (specdir, db.label)
+    outfile = '%s/%s.pre-mrnas.fa' % (specdir, db.label)
+    with open(idfile, 'r') as idstream, \
+            open(seqfile, 'r') as seqstream, \
+            open(outfile, 'w') as outstream:
+        for defline, seq in genhub.fasta.select(idstream, seqstream):
+            print(defline, file=outstream)
+            genhub.fasta.format(seq, outstream=outstream)
+
+    # Representative mature mRNA sequences
+    idfile = '%s/%s.mrnas.txt' % (specdir, db.label)
+    seqfile = '%s/%s.all.mrnas.fa' % (specdir, db.label)
+    outfile = '%s/%s.mrnas.fa' % (specdir, db.label)
+    with open(idfile, 'r') as idstream, \
+            open(seqfile, 'r') as seqstream, \
+            open(outfile, 'w') as outstream:
+        for defline, seq in genhub.fasta.select(idstream, seqstream):
+            print(defline, file=outstream)
+            genhub.fasta.format(seq, outstream=outstream)
+
+
 # -----------------------------------------------------------------------------
 # Driver functions
 # -----------------------------------------------------------------------------
@@ -181,10 +296,15 @@ def get_iloci(db, delta=500, logstream=sys.stderr):  # pragma: no cover
     ilocus_representatives(db, logstream=logstream)
 
 
-def get_proteins(db, delta=500, logstream=sys.stderr):  # pragma: no cover
+def get_proteins(db, logstream=sys.stderr):  # pragma: no cover
     protein_ids(db, logstream=logstream)
     protein_sequences(db, logstream=logstream)
     protein_mapping(db, logstream=logstream)
+
+
+def get_mrnas(db, logstream=sys.stderr):  # pragma: no cover
+    mature_mrna_intervals(db, logstream=logstream)
+    mrna_sequences(db, logstream=logstream)
 
 
 # -----------------------------------------------------------------------------
