@@ -61,14 +61,14 @@ def ilocus_sequences(db, logstream=sys.stderr):
 
     specdir = '%s/%s' % (db.workdir, db.label)
     outfile = '%s/%s.iloci.fa' % (specdir, db.label)
-    command = 'xtractore --type=locus --outfile=%s' % outfile
+    command = 'xtractore --debug --type=locus --outfile=%s' % outfile
     command += ' %s/%s.iloci.gff3' % (specdir, db.label)
     command += ' %s/%s.gdna.fa' % (specdir, db.label)
     cmd = command.split(' ')
     subprocess.check_call(cmd)
 
     outfile = '%s/%s.miloci.fa' % (specdir, db.label)
-    command = 'xtractore --type=locus --outfile=%s' % outfile
+    command = 'xtractore --debug --type=locus --outfile=%s' % outfile
     command += ' %s/%s.miloci.gff3' % (specdir, db.label)
     command += ' %s/%s.gdna.fa' % (specdir, db.label)
     cmd = command.split(' ')
