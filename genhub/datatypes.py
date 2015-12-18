@@ -286,6 +286,97 @@ def mrna_sequences(db, logstream=sys.stderr):
             genhub.fasta.format(seq, outstream=outstream)
 
 
+def cds_sequences(db, logstream=sys.stderr):
+    if logstream is not None:  # pragma: no cover
+        logmsg = '[GenHub: %s] ' % db.config['species']
+        logmsg += 'extracting coding sequences'
+        print(logmsg, file=logstream)
+    specdir = '%s/%s' % (db.workdir, db.label)
+
+    gff3infile = '%s/%s.gff3' % (specdir, db.label)
+    fastainfile = '%s/%s.gdna.fa' % (specdir, db.label)
+    outfile = '%s/%s.all.cds.fa' % (specdir, db.label)
+    command = 'xtractore --type=CDS --outfile=%s ' % outfile
+    command += '%s %s' % (gff3infile, fastainfile)
+    cmd = command.split(' ')
+    subprocess.check_call(cmd)
+
+    gff3infile = '%s/%s.ilocus.mrnas.gff3' % (specdir, db.label)
+    fastainfile = '%s/%s.gdna.fa' % (specdir, db.label)
+    outfile = '%s/%s.cds.fa' % (specdir, db.label)
+    command = 'xtractore --type=CDS --outfile=%s ' % outfile
+    command += '%s %s' % (gff3infile, fastainfile)
+    cmd = command.split(' ')
+    subprocess.check_call(cmd)
+
+
+def exon_sequences(db, logstream=sys.stderr):
+    if logstream is not None:  # pragma: no cover
+        logmsg = '[GenHub: %s] ' % db.config['species']
+        logmsg += 'extracting exon sequences'
+        print(logmsg, file=logstream)
+    specdir = '%s/%s' % (db.workdir, db.label)
+
+    gff3infile = '%s/%s.ilocus.mrnas.gff3' % (specdir, db.label)
+    fastainfile = '%s/%s.gdna.fa' % (specdir, db.label)
+    outfile = '%s/%s.exons.fa' % (specdir, db.label)
+    command = 'xtractore --type=exon --outfile=%s ' % outfile
+    command += '%s %s' % (gff3infile, fastainfile)
+    cmd = command.split(' ')
+    subprocess.check_call(cmd)
+
+
+def parse_intron_accessions(instream):
+    moltypes = ['mRNA', 'tRNA', 'ncRNA', 'transcript', 'primary_transcript',
+                'V_gene_segment', 'D_gene_segment', 'J_gene_segment',
+                'C_gene_segment']
+    id_to_accession = dict()
+    for line in instream:
+        line = line.rstrip()
+        idmatch = re.search('ID=([^;\n]+)', line)
+        accmatch = re.search('accession=([^;\n]+)', line)
+        if idmatch and accmatch:
+            molid = idmatch.group(1)
+            accession = accmatch.group(1)
+            id_to_accession[molid] = accession
+
+        if '\tintron\t' in line:
+            parentid = re.search('Parent=([^;\n]+)', line).group(1)
+            assert ',' not in parentid, parentid
+            accession = id_to_accession[parentid]
+            line += ';accession=%s' % accession
+
+        yield(line)
+
+
+def intron_sequences(db, logstream=sys.stderr):
+    if logstream is not None:  # pragma: no cover
+        logmsg = '[GenHub: %s] ' % db.config['species']
+        logmsg += 'extracting intron sequences'
+        print(logmsg, file=logstream)
+    specdir = '%s/%s' % (db.workdir, db.label)
+
+    infile = '%s/%s.ilocus.mrnas.gff3' % (specdir, db.label)
+    outfile = '%s/%s.with-introns.gff3' % (specdir, db.label)
+    command = 'canon-gff3 --outfile=%s %s' % (outfile, infile)
+    cmd = command.split(' ')
+    subprocess.check_call(cmd)
+
+    infile = '%s/%s.ilocus.mrnas.gff3' % (specdir, db.label)
+    outfile = '%s/%s.with-introns.gff3' % (specdir, db.label)
+    with open(infile, 'r') as instream, open(outfile, 'w') as outstream:
+        for line in parse_intron_accessions(instream):
+            print(line, file=outstream)
+
+    gff3infile = '%s/%s.with-introns.gff3' % (specdir, db.label)
+    fastainfile = '%s/%s.gdna.fa' % (specdir, db.label)
+    outfile = '%s/%s.introns.fa' % (specdir, db.label)
+    command = 'xtractore --type=intron --outfile=%s ' % outfile
+    command += '%s %s' % (gff3infile, fastainfile)
+    cmd = command.split(' ')
+    subprocess.check_call(cmd)
+
+
 # -----------------------------------------------------------------------------
 # Driver functions
 # -----------------------------------------------------------------------------
@@ -305,6 +396,12 @@ def get_proteins(db, logstream=sys.stderr):  # pragma: no cover
 def get_mrnas(db, logstream=sys.stderr):  # pragma: no cover
     mature_mrna_intervals(db, logstream=logstream)
     mrna_sequences(db, logstream=logstream)
+
+
+def get_exons(db, logstream=sys.stderr):  # pragma: no cover
+    exon_sequences(db, logstream=logstream)
+    intron_sequences(db, logstream=logstream)
+    cds_sequences(db, logstream=logstream)
 
 
 # -----------------------------------------------------------------------------

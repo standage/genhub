@@ -69,6 +69,7 @@ def main(parser=get_parser()):
             genhub.datatypes.get_iloci(db)
             genhub.datatypes.get_proteins(db)
             genhub.datatypes.get_mrnas(db)
+            genhub.datatypes.get_exons(db)
 
         print('[GenHub: %s] build complete!' % config['species'],
               file=sys.stderr)
