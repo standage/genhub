@@ -61,7 +61,7 @@ def ilocus_sequences(db, logstream=sys.stderr):
 
     specdir = '%s/%s' % (db.workdir, db.label)
     outfile = '%s/%s.iloci.fa' % (specdir, db.label)
-    command = 'xtractore --nameisid --type=locus --outfile=%s' % outfile
+    command = 'xtractore --type=locus --outfile=%s' % outfile
     command += ' %s/%s.iloci.gff3' % (specdir, db.label)
     command += ' %s/%s.gdna.fa' % (specdir, db.label)
     cmd = command.split(' ')
@@ -105,8 +105,7 @@ def ilocus_representatives(db, logstream=sys.stderr):
     grepproc = subprocess.Popen(['grep', '-v', '\tintron\t', infile],
                                 stdout=subprocess.PIPE,
                                 universal_newlines=True)
-    pmrnaproc = subprocess.Popen(['pmrna', '--locus', '--accession',
-                                  '--map=%s' % mapfile],
+    pmrnaproc = subprocess.Popen(['pmrna', '--locus', '--map=%s' % mapfile],
                                  stdin=grepproc.stdout,
                                  stdout=subprocess.PIPE,
                                  universal_newlines=True)
@@ -126,8 +125,8 @@ def ilocus_representatives(db, logstream=sys.stderr):
         subprocess.check_call(['cut', '-f', '2', infile], stdout=outstream)
 
 
-def protein_ids(db, logstream=sys.stderr):
-    if logstream is not None:  # pragma: no cover
+def protein_ids(db, logstream=sys.stderr):  # pragma: no cover
+    if logstream is not None:
         logmsg = '[GenHub: %s] selecting protein IDs' % db.config['species']
         print(logmsg, file=logstream)
 
@@ -154,12 +153,12 @@ def protein_sequences(db, logstream=sys.stderr):
             open(outfile, 'w') as outstream:
         for defline, seq in genhub.fasta.select(idstream, seqstream):
             defline = '>gnl|%s|%s' % (db.label, defline[1:])
-            print(defline, end='', file=outstream)
+            print(defline, file=outstream)
             genhub.fasta.format(seq, outstream=outstream)
 
 
-def protein_mapping(db, logstream=sys.stderr):
-    if logstream is not None:  # pragma: no cover
+def protein_mapping(db, logstream=sys.stderr):  # pragma: no cover
+    if logstream is not None:
         logmsg = '[GenHub: %s] ' % db.config['species']
         logmsg += 'parsing protein->iLocus mapping'
         print(logmsg, file=logstream)
@@ -253,3 +252,14 @@ def test_ilocus_reps():
     outfile = 'testdata/demo-workdir/Bdis/Bdis.mrnas.txt'
     testfile = 'testdata/misc/bdis-mrnas.txt'
     assert filecmp.cmp(outfile, testfile), 'iLocus rep (mRNA) ID failed'
+
+
+def test_protein_sequence():
+    """Select protein sequences"""
+    label, config = genhub.conf.load_one('conf/Scer.yml')
+    db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
+    protein_sequences(db, logstream=None)
+
+    outfile = 'testdata/demo-workdir/Scer/Scer.prot.fa'
+    testfile = 'testdata/fasta/scer-few-prots.fa'
+    assert filecmp.cmp(outfile, testfile), 'Protein sequence selection failed'
