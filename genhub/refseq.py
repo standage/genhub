@@ -103,6 +103,67 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
         if 'annotfilter' in self.config:
             os.unlink(excludefile.name)
 
+    def gff3_protids(self, instream):
+        protids = dict()
+        for line in instream:
+            if '\tCDS\t' not in line:
+                continue
+            idmatch = re.search('protein_id=([^;\n]+)', line)
+            assert idmatch, 'cannot parse protein_id: ' + line
+            protid = idmatch.group(1)
+            if protid not in protids:
+                protids[protid] = True
+                yield protid
+
+    def protein_mapping(self, instream):
+        locusid2name = dict()
+        gene2loci = dict()
+        mrna2gene = dict()
+        proteins = dict()
+        protdups = dict()
+        for line in instream:
+            fields = line.split('\t')
+            if len(fields) != 9:
+                continue
+            feattype = fields[2]
+            attrs = fields[8]
+
+            if feattype == 'locus':
+                idmatch = re.search('ID=([^;\n]+);.*Name=([^;\n]+)', attrs)
+                if idmatch:
+                    locusid = idmatch.group(1)
+                    locusname = idmatch.group(2)
+                    locusid2name[locusid] = locusname
+            elif feattype == 'gene':
+                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                assert idmatch, \
+                    'Unable to parse gene and iLocus IDs: %s' % attrs
+                geneid = idmatch.group(1)
+                ilocusid = idmatch.group(2)
+                gene2loci[geneid] = ilocusid
+            elif feattype == 'mRNA':
+                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                assert idmatch, \
+                    'Unable to parse mRNA and gene IDs: %s' % attrs
+                mrnaid = idmatch.group(1)
+                geneid = idmatch.group(2)
+                mrna2gene[mrnaid] = geneid
+            elif feattype == 'CDS':
+                if 'exception=rearrangement required for product' in attrs:
+                    continue
+                idmatch = re.search('Parent=([^;\n]+).*protein_id=([^;\n]+)',
+                                    attrs)
+                assert idmatch, \
+                    'Unable to parse protein and mRNA IDs: %s' % attrs
+                mrnaid = idmatch.group(1)
+                proteinid = idmatch.group(2)
+                if proteinid not in proteins:
+                    geneid = mrna2gene[mrnaid]
+                    proteins[proteinid] = mrnaid
+                    ilocusid = gene2loci[geneid]
+                    ilocusname = locusid2name[ilocusid]
+                    yield proteinid, ilocusname
+
 
 # -----------------------------------------------------------------------------
 # Unit tests
@@ -141,6 +202,7 @@ def test_genome_download():
 
 
 def test_annot_download():
+    """RefSeq annotation download"""
 
     label, config = genhub.conf.load_one('conf/HymHub/Ador.yml')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
@@ -228,3 +290,37 @@ def test_prot_ncbi():
     outfile = 'testdata/demo-workdir/Hsal/Hsal.all.prot.fa'
     testoutfile = 'testdata/fasta/hsal-13-prot-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Hsal protein formatting failed'
+
+
+def test_protids():
+    """RefSeq: extract protein IDs from GFF3"""
+
+    label, conf = genhub.conf.load_one('conf/Xtro.yml')
+    db = RefSeqDB(label, conf)
+    protids = ['XP_012809995.1', 'XP_012809996.1', 'XP_012809997.1',
+               'XP_012809998.1']
+    infile = 'testdata/gff3/xtro-3genes.gff3'
+    testids = list()
+    with open(infile, 'r') as instream:
+        for protid in db.gff3_protids(instream):
+            testids.append(protid)
+    assert sorted(protids) == sorted(testids), \
+        'protein ID mismatch: %r %r' % (protids, testids)
+
+
+def test_protmap():
+    """RefSeq: extract protein-->iLocus mapping from GFF3"""
+
+    label, conf = genhub.conf.load_one('conf/Xtro.yml')
+    db = RefSeqDB(label, conf)
+    mapping = {'XP_012809997.1': 'XtroILC-43374',
+               'XP_012809996.1': 'XtroILC-43374',
+               'XP_012809995.1': 'XtroILC-43373',
+               'XP_012809998.1': 'XtroILC-43374'}
+    infile = 'testdata/gff3/xtro-3genes-loci.gff3'
+    testmap = dict()
+    with open(infile, 'r') as instream:
+        for protid, locid in db.protein_mapping(instream):
+            testmap[protid] = locid
+    assert mapping == testmap, \
+        'protein mapping mismatch: %r %r' % (mapping, testmap)

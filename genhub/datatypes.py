@@ -126,10 +126,71 @@ def ilocus_representatives(db, logstream=sys.stderr):
         subprocess.check_call(['cut', '-f', '2', infile], stdout=outstream)
 
 
+def protein_ids(db, logstream=sys.stderr):
+    if logstream is not None:  # pragma: no cover
+        logmsg = '[GenHub: %s] selecting protein IDs' % db.config['species']
+        print(logmsg, file=logstream)
+
+    specdir = '%s/%s' % (db.workdir, db.label)
+    infile = '%s/%s.ilocus.mrnas.gff3' % (specdir, db.label)
+    outfile = '%s/%s.protids.txt' % (specdir, db.label)
+    with open(infile, 'r') as instream, open(outfile, 'w') as outstream:
+        for protid in db.gff3_protids(instream):
+            print(protid, file=outstream)
+
+
+def protein_sequences(db, logstream=sys.stderr):
+    if logstream is not None:  # pragma: no cover
+        logmsg = '[GenHub: %s] ' % db.config['species']
+        logmsg += 'extracting protein sequences'
+        print(logmsg, file=logstream)
+
+    specdir = '%s/%s' % (db.workdir, db.label)
+    idfile = '%s/%s.protids.txt' % (specdir, db.label)
+    seqfile = '%s/%s.all.prot.fa' % (specdir, db.label)
+    outfile = '%s/%s.prot.fa' % (specdir, db.label)
+    with open(idfile, 'r') as idstream, \
+            open(seqfile, 'r') as seqstream, \
+            open(outfile, 'w') as outstream:
+        for defline, seq in genhub.fasta.select(idstream, seqstream):
+            defline = '>gnl|%s|%s' % (db.label, defline[1:])
+            print(defline, end='', file=outstream)
+            genhub.fasta.format(seq, outstream=outstream)
+
+
+def protein_mapping(db, logstream=sys.stderr):
+    if logstream is not None:  # pragma: no cover
+        logmsg = '[GenHub: %s] ' % db.config['species']
+        logmsg += 'parsing protein->iLocus mapping'
+        print(logmsg, file=logstream)
+
+    specdir = '%s/%s' % (db.workdir, db.label)
+    infile = '%s/%s.iloci.gff3' % (specdir, db.label)
+    outfile = '%s/%s.protein2ilocus.txt' % (specdir, db.label)
+    with open(infile, 'r') as instream, open(outfile, 'w') as outstream:
+        for protid, ilocusid in db.protein_mapping(instream):
+            print(protid, ilocusid, sep='\t', file=outstream)
+
+
+# -----------------------------------------------------------------------------
+# Driver functions
+# -----------------------------------------------------------------------------
+
 def get_iloci(db, delta=500, logstream=sys.stderr):  # pragma: no cover
     ilocus_intervals(db, delta=delta, logstream=logstream)
     ilocus_sequences(db, logstream=logstream)
     ilocus_representatives(db, logstream=logstream)
+
+
+def get_proteins(db, delta=500, logstream=sys.stderr):  # pragma: no cover
+    protein_ids(db, logstream=logstream)
+    protein_sequences(db, logstream=logstream)
+    protein_mapping(db, logstream=logstream)
+
+
+# -----------------------------------------------------------------------------
+# Unit tests
+# -----------------------------------------------------------------------------
 
 
 def test_ilocus_intervals():

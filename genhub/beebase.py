@@ -13,6 +13,7 @@
 from __future__ import print_function
 import filecmp
 import gzip
+import re
 import subprocess
 import sys
 import genhub
@@ -79,6 +80,48 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
                 print(line, file=logstream)
         assert proc.returncode == 0, \
             'annot cleanup command failed: %s' % commands
+
+    def gff3_protids(self, instream):
+        for line in instream:
+            if '\tmRNA\t' not in line:
+                continue
+            namematch = re.search('Name=([^;\n]+)', line)
+            assert namematch, 'cannot parse mRNA name: ' + line
+            yield namematch.group(1)
+
+    def protein_mapping(self, instream):
+        locusid2name = dict()
+        gene2loci = dict()
+        for line in instream:
+            fields = line.split('\t')
+            if len(fields) != 9:
+                continue
+            feattype = fields[2]
+            attrs = fields[8]
+
+            if feattype == 'locus':
+                idmatch = re.search('ID=([^;\n]+);.*Name=([^;\n]+)', attrs)
+                if idmatch:
+                    locusid = idmatch.group(1)
+                    locusname = idmatch.group(2)
+                    locusid2name[locusid] = locusname
+            elif feattype == 'gene':
+                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                assert idmatch, \
+                    'Unable to parse gene and iLocus IDs: %s' % attrs
+                geneid = idmatch.group(1)
+                ilocusid = idmatch.group(2)
+                gene2loci[geneid] = ilocusid
+            elif feattype == 'mRNA':
+                pattern = 'Parent=([^;\n]+);.*Name=([^;\n]+)'
+                idmatch = re.search(pattern, attrs)
+                assert idmatch, \
+                    'Unable to parse mRNA and gene IDs: %s' % attrs
+                protid = idmatch.group(2)
+                geneid = idmatch.group(1)
+                locusid = gene2loci[geneid]
+                locusname = locusid2name[locusid]
+                yield protid, locusname
 
 
 # -----------------------------------------------------------------------------
@@ -163,3 +206,39 @@ def test_proteins_beebase():
     outfile = 'testdata/demo-workdir/Hlab/Hlab.all.prot.fa'
     testoutfile = 'testdata/fasta/hlab-first-20-prot-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Hlab protein formatting failed'
+
+
+def test_protids():
+    """BeeBase: extract protein IDs from GFF3"""
+
+    label, conf = genhub.conf.load_one('conf/HymHub/Hlab.yml')
+    db = BeeBaseDB(label, conf)
+    protids = ['Hlab050%d' % x for x in range(62, 75)]
+    infile = 'testdata/gff3/hlab-238.gff3'
+    testids = list()
+    with open(infile, 'r') as instream:
+        for protid in db.gff3_protids(instream):
+            testids.append(protid)
+    assert sorted(protids) == sorted(testids), \
+        'protein ID mismatch: %r %r' % (protids, testids)
+
+
+def test_protmap():
+    """BeeBase: extract protein-->iLocus mapping from GFF3"""
+
+    label, conf = genhub.conf.load_one('conf/HymHub/Hlab.yml')
+    db = BeeBaseDB(label, conf)
+    mapping = {'Hlab05074': 'HlabILC-653102', 'Hlab05071': 'HlabILC-653096',
+               'Hlab05062': 'HlabILC-653079', 'Hlab05068': 'HlabILC-653090',
+               'Hlab05072': 'HlabILC-653098', 'Hlab05070': 'HlabILC-653094',
+               'Hlab05066': 'HlabILC-653086', 'Hlab05067': 'HlabILC-653088',
+               'Hlab05069': 'HlabILC-653092', 'Hlab05073': 'HlabILC-653100',
+               'Hlab05064': 'HlabILC-653083', 'Hlab05065': 'HlabILC-653085',
+               'Hlab05063': 'HlabILC-653081'}
+    infile = 'testdata/gff3/hlab-238-loci.gff3'
+    testmap = dict()
+    with open(infile, 'r') as instream:
+        for protid, locid in db.protein_mapping(instream):
+            testmap[protid] = locid
+    assert mapping == testmap, \
+        'protein mapping mismatch: %r %r' % (mapping, testmap)
