@@ -171,13 +171,16 @@ def protein_mapping(db, logstream=sys.stderr):  # pragma: no cover
             print(protid, ilocusid, sep='\t', file=outstream)
 
 
-def mrna_exons(instream, convert=False, keepMrnas=False):
+def mrna_exons(instream, convert=False, keepMrnas=False, usecds=False):
     mrnaids = {}
     for line in instream:
         line = line.rstrip()
         fields = line.split('\t')
         if len(fields) != 9:
             continue
+        exontype = 'exon'
+        if usecds:
+            exontype = 'CDS'
 
         if fields[2] == 'mRNA':
             mrnaid = re.search('ID=([^;\n]+)', fields[8]).group(1)
@@ -189,7 +192,7 @@ def mrna_exons(instream, convert=False, keepMrnas=False):
                 fields[8] = re.sub('Parent=[^;\n]+;*', '', fields[8])
                 yield '\t'.join(fields)
 
-        elif fields[2] == 'exon':
+        elif fields[2] == exontype:
             parentid = re.search('Parent=([^;\n]+)', fields[8]).group(1)
             if parentid in mrnaids:
                 if convert:
@@ -213,8 +216,11 @@ def mature_mrna_intervals(db, logstream=sys.stderr):
 
     infile = '%s/%s.gff3' % (specdir, db.label)
     outfile = '%s/%s.mrnas.temp' % (specdir, db.label)
+    usecds = False
+    if repr(db) == 'BeeBase':
+        usecds = True
     with open(infile, 'r') as instream, open(outfile, 'w') as outstream:
-        for exon in mrna_exons(instream, convert=True):
+        for exon in mrna_exons(instream, convert=True, usecds=usecds):
             print(exon, file=outstream)
 
     infile = '%s/%s.ilocus.mrnas.gff3' % (specdir, db.label)
