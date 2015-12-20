@@ -255,7 +255,7 @@ def mrna_sequences(db, logstream=sys.stderr):
     gff3infile = '%s/%s.gff3' % (specdir, db.label)
     fastainfile = '%s/%s.gdna.fa' % (specdir, db.label)
     outfile = '%s/%s.all.pre-mrnas.fa' % (specdir, db.label)
-    command = 'xtractore --type=mRNA --outfile=%s ' % outfile
+    command = 'xtractore --debug --type=mRNA --outfile=%s ' % outfile
     command += '%s %s' % (gff3infile, fastainfile)
     cmd = command.split(' ')
     subprocess.check_call(cmd)
@@ -264,7 +264,7 @@ def mrna_sequences(db, logstream=sys.stderr):
     gff3infile = '%s/%s.all.mrnas.gff3' % (specdir, db.label)
     fastainfile = '%s/%s.gdna.fa' % (specdir, db.label)
     outfile = '%s/%s.all.mrnas.fa' % (specdir, db.label)
-    command = 'xtractore --type=mRNA --outfile=%s ' % outfile
+    command = 'xtractore --debug --type=mRNA --outfile=%s ' % outfile
     command += '%s %s' % (gff3infile, fastainfile)
     cmd = command.split(' ')
     subprocess.check_call(cmd)
