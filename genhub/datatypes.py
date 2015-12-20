@@ -234,14 +234,14 @@ def mature_mrna_intervals(db, logstream=sys.stderr):
         infile = '%s/%s.mrnas.temp' % (specdir, db.label)
         command = 'gt gff3 -sort -tidy -force -o %s %s' % (outfile, infile)
         cmd = command.split(' ')
-        with subprocess.Popen(cmd, stderr=subprocess.PIPE,
-                              universal_newlines=True) as proc:
-            _, stderr = proc.communicate()
-            for line in stderr.split('\n'):
-                if 'has not been previously introduced' not in line and \
-                   'does not begin with "##gff-version"' not in line and \
-                   line != '':
-                    print(line, file=logstream)
+        proc = subprocess.Popen(cmd, stderr=subprocess.PIPE,
+                                universal_newlines=True)
+        _, stderr = proc.communicate()
+        for line in stderr.split('\n'):
+            if 'has not been previously introduced' not in line and \
+               'does not begin with "##gff-version"' not in line and \
+               line != '':
+                print(line, file=logstream)
 
 
 def mrna_sequences(db, logstream=sys.stderr):
