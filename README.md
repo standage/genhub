@@ -7,7 +7,7 @@ variety of sources, and it is easy to extend with recipes for additional data.
 
 * Built by Daniel Standage <daniel.standage@gmail.com>
 * Available at https://github.com/standage/genhub
-* [![GenHub build status](travisbadge)](https://travis-ci.org/standage/genhub)
+* [![GenHub build status][travisbadge]](https://travis-ci.org/standage/genhub)
 
 ## Obtaining GenHub
 
