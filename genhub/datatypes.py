@@ -188,12 +188,13 @@ def mrna_exons(instream, convert=False, keepMrnas=False, usecds=False):
             assert accmatch, 'Unable to parse mRNA accession: %s' % fields[8]
             mrnaacc = accmatch.group(1)
             mrnaids[mrnaid] = 1
-            if not convert and keepMrnas:
+            if not convert and keepMrnas:  # pragma: no cover
                 fields[8] = re.sub('Parent=[^;\n]+;*', '', fields[8])
                 yield '\t'.join(fields)
 
         elif fields[2] == exontype:
             parentid = re.search('Parent=([^;\n]+)', fields[8]).group(1)
+            fields[7] = '.'
             if parentid in mrnaids:
                 if convert:
                     fields[2] = 'mRNA'
@@ -202,7 +203,7 @@ def mrna_exons(instream, convert=False, keepMrnas=False, usecds=False):
                     if 'accession=' not in fields[8]:
                         fields[8] += ';accession=' + mrnaacc
                 else:
-                    if not keepMrnas:
+                    if not keepMrnas:  # pragma: no cover
                         fields[8] = re.sub('Parent=[^;\n]+;*', '', fields[8])
                 yield '\t'.join(fields)
 
@@ -229,15 +230,17 @@ def mature_mrna_intervals(db, logstream=sys.stderr):
         for exon in mrna_exons(instream, convert=True):
             print(exon, file=outstream)
 
-    for outfilepattern in ['%s/%s.mrnas.gff3', '%s/%s.all.mrnas.gff3']:
-        outfile = outfilepattern % (specdir, db.label)
-        infile = '%s/%s.mrnas.temp' % (specdir, db.label)
+    inpatterns = ['%s/%s.mrnas.temp', '%s/%s.ilocus.mrnas.temp']
+    outpatterns = ['%s/%s.mrnas.gff3', '%s/%s.all.mrnas.gff3']
+    for inpattern, outpattern in zip(inpatterns, outpatterns):
+        infile = inpattern % (specdir, db.label)
+        outfile = outpattern % (specdir, db.label)
         command = 'gt gff3 -sort -tidy -force -o %s %s' % (outfile, infile)
         cmd = command.split(' ')
         proc = subprocess.Popen(cmd, stderr=subprocess.PIPE,
                                 universal_newlines=True)
         _, stderr = proc.communicate()
-        for line in stderr.split('\n'):
+        for line in stderr.split('\n'):  # pragma: no cover
             if 'has not been previously introduced' not in line and \
                'does not begin with "##gff-version"' not in line and \
                line != '':
@@ -494,7 +497,23 @@ def test_mature_mrna_intervals():
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     mature_mrna_intervals(db, logstream=None)
 
-    for of in ['Atha.all.mrnas.gff3', 'Atha.mrnas.gff3']:
-        outfile = 'testdata/demo-workdir/Atha/' + of
-        testfile = 'testdata/gff3/atha-all-mrnas.gff3'
-        assert filecmp.cmp(outfile, testfile), 'mature mRNA interval ID failed'
+    outfile = 'testdata/demo-workdir/Atha/Atha.all.mrnas.gff3'
+    testfile = 'testdata/gff3/atha-all-mrnas.gff3'
+    assert filecmp.cmp(outfile, testfile), 'mature mRNA interval ID failed'
+
+    outfile = 'testdata/demo-workdir/Atha/Atha.mrnas.gff3'
+    testfile = 'testdata/gff3/atha-mrnas.gff3'
+    assert filecmp.cmp(outfile, testfile), 'mature mRNA interval ID failed'
+
+    label, config = genhub.conf.load_one('conf/hym/Dnov.yml')
+    db = genhub.beebase.BeeBaseDB(label, config,
+                                  workdir='testdata/demo-workdir')
+    mature_mrna_intervals(db, logstream=None)
+
+    outfile = 'testdata/demo-workdir/Dnov/Dnov.all.mrnas.gff3'
+    testfile = 'testdata/gff3/dnov-all-mrnas.gff3'
+    assert filecmp.cmp(outfile, testfile), 'mature mRNA interval ID failed'
+
+    outfile = 'testdata/demo-workdir/Dnov/Dnov.mrnas.gff3'
+    testfile = 'testdata/gff3/dnov-mrnas.gff3'
+    assert filecmp.cmp(outfile, testfile), 'mature mRNA interval ID failed'
