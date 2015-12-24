@@ -132,7 +132,7 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
 def test_scaffolds_download():
     """BeeBase consortium scaffolds download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Emex.yml')
+    label, config = genhub.conf.load_one('conf/hym/Emex.yml')
     testurl = ('http://hymenopteragenome.org/beebase/sites/'
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
                'Eufriesea_mexicana.v1.0.fa.gz')
@@ -148,7 +148,7 @@ def test_scaffolds_download():
 def test_annot_download():
     """BeeBase consortium annotation download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Dnov.yml')
+    label, config = genhub.conf.load_one('conf/hym/Dnov.yml')
     testurl = ('http://hymenopteragenome.org/beebase/sites/'
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
                'Dufourea_novaeangliae_v1.1.gff.gz')
@@ -163,7 +163,7 @@ def test_annot_download():
 def test_proteins_download():
     """BeeBase consortium protein download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Hlab.yml')
+    label, config = genhub.conf.load_one('conf/hym/Hlab.yml')
     testurl = ('http://hymenopteragenome.org/beebase/sites/'
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
                'Habropoda_laboriosa_v1.2.pep.fa.gz')
@@ -178,7 +178,7 @@ def test_proteins_download():
 def test_gdna_format():
     """BeeBase gDNA formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Hlab.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Hlab.yml')
     hlab_db = BeeBaseDB(label, conf, workdir='testdata/demo-workdir')
     hlab_db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.gdna.fa'
@@ -189,7 +189,7 @@ def test_gdna_format():
 def test_annotation_beebase():
     """BeeBase annotation formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Hlab.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Hlab.yml')
     hlab_db = BeeBaseDB(label, conf, workdir='testdata/demo-workdir')
     hlab_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.gff3'
@@ -200,7 +200,7 @@ def test_annotation_beebase():
 def test_proteins_beebase():
     """BeeBase protein formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Hlab.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Hlab.yml')
     hlab_db = BeeBaseDB(label, conf, workdir='testdata/demo-workdir')
     hlab_db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.all.prot.fa'
@@ -211,7 +211,7 @@ def test_proteins_beebase():
 def test_protids():
     """BeeBase: extract protein IDs from GFF3"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Hlab.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Hlab.yml')
     db = BeeBaseDB(label, conf)
     protids = ['Hlab050%d' % x for x in range(62, 75)]
     infile = 'testdata/gff3/hlab-238.gff3'
@@ -226,7 +226,7 @@ def test_protids():
 def test_protmap():
     """BeeBase: extract protein-->iLocus mapping from GFF3"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Hlab.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Hlab.yml')
     db = BeeBaseDB(label, conf)
     mapping = {'Hlab05074': 'HlabILC-653102', 'Hlab05071': 'HlabILC-653096',
                'Hlab05062': 'HlabILC-653079', 'Hlab05068': 'HlabILC-653090',

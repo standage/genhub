@@ -185,7 +185,7 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
 def test_chromosomes():
     """NCBI/FlyBase chromosome download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, config = genhub.conf.load_one('conf/modorg/Dmel.yml')
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
                 'RELEASE_5_48/CHR_X/NC_004354.fna',
                 'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
@@ -211,7 +211,7 @@ def test_chromosomes():
 def test_annot():
     """NCBI/FlyBase annotation download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, config = genhub.conf.load_one('conf/modorg/Dmel.yml')
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
                 'RELEASE_5_48/CHR_X/NC_004354.gff',
                 'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
@@ -235,7 +235,7 @@ def test_annot():
 
 def test_proteins():
     """NCBI/FlyBase protein download"""
-    label, config = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, config = genhub.conf.load_one('conf/modorg/Dmel.yml')
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
                 'RELEASE_5_48/CHR_X/NC_004354.faa',
                 'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
@@ -259,7 +259,7 @@ def test_proteins():
 
 def test_format():
     """Task drivers"""
-    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
     dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
     dmel_db.format(logstream=None, verify=False)
 
@@ -267,7 +267,7 @@ def test_format():
 def test_gdna_format():
     """NCBI/FlyBase gDNA formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
     dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
     dmel_db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Dmel/Dmel.gdna.fa'
@@ -278,7 +278,7 @@ def test_gdna_format():
 def test_annot_format():
     """NCBI/FlyBase annotation formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
     aech_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
     aech_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Dmel/Dmel.gff3'
@@ -289,7 +289,7 @@ def test_annot_format():
 def test_prot_format():
     """NCBI/FlyBase protein formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
     dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
     dmel_db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Dmel/Dmel.all.prot.fa'
@@ -300,7 +300,7 @@ def test_prot_format():
 def test_protids():
     """NCBI/FlyBase: extract protein IDs from GFF3"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
     db = FlyBaseDB(label, conf)
     protids = ['NP_524820.2', 'NP_001259789.1', 'NP_608489.2']
     infile = 'testdata/gff3/dmel-net.gff3'
@@ -315,7 +315,7 @@ def test_protids():
 def test_protmap():
     """NCBI/FlyBase: extract protein-->iLocus mapping from GFF3"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
     db = FlyBaseDB(label, conf)
     mapping = {'NP_001259789.1': 'DmelILC-10965',
                'NP_524820.2': 'DmelILC-10965',

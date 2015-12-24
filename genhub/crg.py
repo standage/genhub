@@ -150,7 +150,7 @@ class CrgDB(genhub.genomedb.GenomeDB):
 def test_scaffolds():
     """CRG scaffolds download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Dqua.yml')
+    label, config = genhub.conf.load_one('conf/hym/Dqua.yml')
     testurl = 'http://wasp.crg.eu/DQUA.v01.fa.gz'
     testpath = './Dqua/DQUA.v01.fa.gz'
     dqua_db = CrgDB(label, config)
@@ -164,7 +164,7 @@ def test_scaffolds():
 def test_annot():
     """CRG annotation download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Dqua.yml')
+    label, config = genhub.conf.load_one('conf/hym/Dqua.yml')
     testurl = 'http://wasp.crg.eu/DQUA.v01.gff3'
     testpath = 'CRG/Dqua/DQUA.v01.gff3.gz'
     testresult = (testurl, testpath)
@@ -178,7 +178,7 @@ def test_annot():
 def test_proteins():
     """CRG protein download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Dqua.yml')
+    label, config = genhub.conf.load_one('conf/hym/Dqua.yml')
     testurl = 'http://wasp.crg.eu/DQUA.v01.pep.fa.gz'
     testpath = '/opt/db/genhub/Dqua/DQUA.v01.pep.fa.gz'
     dqua_db = CrgDB(label, config, workdir='/opt/db/genhub')
@@ -191,7 +191,7 @@ def test_proteins():
 def test_protids():
     """CRG: extract protein IDs from GFF3"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Dqua.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Dqua.yml')
     db = CrgDB(label, conf)
     protids = ['DQUA011a006022P1', 'DQUA011a006023P1', 'DQUA011a006024P1']
     infile = 'testdata/gff3/dqua-275.gff3'
@@ -206,7 +206,7 @@ def test_protids():
 def test_protmap():
     """CRG: extract protein-->iLocus mapping from GFF3"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Dqua.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Dqua.yml')
     db = CrgDB(label, conf)
     mapping = {'DQUA011a006022P1': 'DquaILC-14465',
                'DQUA011a006023P1': 'DquaILC-14466',

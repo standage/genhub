@@ -175,7 +175,7 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
 def test_genome_download():
     """RefSeq chromosomes/scaffolds download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Ador.yml')
+    label, config = genhub.conf.load_one('conf/hym/Ador.yml')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
@@ -189,7 +189,7 @@ def test_genome_download():
         'scaffold path mismatch\n%s\n%s' % (ador_db.gdnapath, testpath)
     assert ador_db.compress_gdna is False
 
-    label, config = genhub.conf.load_one('conf/HymHub/Amel.yml')
+    label, config = genhub.conf.load_one('conf/hym/Amel.yml')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_mellifera/all_assembly_versions/'
                'GCF_000002195.4_Amel_4.5/'
@@ -206,7 +206,7 @@ def test_genome_download():
 def test_annot_download():
     """RefSeq annotation download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Ador.yml')
+    label, config = genhub.conf.load_one('conf/hym/Ador.yml')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
@@ -223,7 +223,7 @@ def test_annot_download():
 def test_proteins_download():
     """RefSeq protein download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Ador.yml')
+    label, config = genhub.conf.load_one('conf/hym/Ador.yml')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
@@ -241,14 +241,14 @@ def test_proteins_download():
 def test_gdna_format():
     """RefSeq gDNA formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Hsal.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Hsal.yml')
     hsal_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
     hsal_db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hsal/Hsal.gdna.fa'
     testoutfile = 'testdata/fasta/hsal-first-7-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Hsal gDNA formatting failed'
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Tcas.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Tcas.yml')
     tcas_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
     tcas_db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Tcas/Tcas.gdna.fa'
@@ -259,14 +259,14 @@ def test_gdna_format():
 def test_annot_format():
     """RefSeq annotation formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Aech.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Aech.yml')
     aech_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
     aech_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Aech/Aech.gff3'
     testfile = 'testdata/gff3/ncbi-format-aech.gff3'
     assert filecmp.cmp(outfile, testfile), 'Aech annotation formatting failed'
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Pbar.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Pbar.yml')
     conf['annotfilter'] = 'NW_011933506.1'
     pbar_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
     pbar_db.preprocess_gff3(logstream=None, verify=False)
@@ -274,7 +274,7 @@ def test_annot_format():
     testfile = 'testdata/gff3/ncbi-format-pbar.gff3'
     assert filecmp.cmp(outfile, testfile), 'Pbar annotation formatting failed'
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Ador.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Ador.yml')
     conf['annotfilter'] = ['NW_006264094.1', 'NW_006263516.1']
     ador_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
     ador_db.preprocess_gff3(logstream=None, verify=False)
@@ -286,7 +286,7 @@ def test_annot_format():
 def test_prot_ncbi():
     """RefSeq protein formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Hsal.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Hsal.yml')
     hsal_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
     hsal_db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hsal/Hsal.all.prot.fa'
@@ -297,7 +297,7 @@ def test_prot_ncbi():
 def test_protids():
     """RefSeq: extract protein IDs from GFF3"""
 
-    label, conf = genhub.conf.load_one('conf/Xtro.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Xtro.yml')
     db = RefSeqDB(label, conf)
     protids = ['XP_012809995.1', 'XP_012809996.1', 'XP_012809997.1',
                'XP_012809998.1']
@@ -313,7 +313,7 @@ def test_protids():
 def test_protmap():
     """RefSeq: extract protein-->iLocus mapping from GFF3"""
 
-    label, conf = genhub.conf.load_one('conf/Xtro.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Xtro.yml')
     db = RefSeqDB(label, conf)
     mapping = {'XP_012809997.1': 'XtroILC-43374',
                'XP_012809996.1': 'XtroILC-43374',

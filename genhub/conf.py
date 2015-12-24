@@ -87,26 +87,26 @@ def conf_filter_file(conf):
 
 def test_load_file():
     """Loading genome configurations from a single file"""
-    fh = open('conf/HymHub/Pbar.yml', 'r')
+    fh = open('conf/hym/Pbar.yml', 'r')
     conf = load_file(fh)
     assert len(conf) == 1
     assert 'Pbar' in conf
     assert conf['Pbar']['species'] == 'Pogonomyrmex barbatus'
 
-    conf = load_file('conf/HymHub/Hlab.yml')
+    conf = load_file('conf/hym/Hlab.yml')
     assert len(conf) == 1
     assert 'Hlab' in conf
     assert conf['Hlab']['common'] == 'blueberry bee'
 
-    label, conf = load_one('conf/HymHub/Tcas.yml')
+    label, conf = load_one('conf/modorg/Tcas.yml')
     assert label == 'Tcas'
     assert conf['source'] == 'refseq'
 
 
 def test_load_dir():
     """Loading genome configurations from a directory"""
-    conf = load_dir('conf/HymHub')
-    assert len(conf) == 25
+    conf = load_dir('conf/hym')
+    assert len(conf) == 23
     assert sorted(conf)[0:4] == ['Acep', 'Ador', 'Aech', 'Aflo']
 
 

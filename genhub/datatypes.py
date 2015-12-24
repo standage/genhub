@@ -417,7 +417,7 @@ def get_exons(db, logstream=sys.stderr):  # pragma: no cover
 
 def test_ilocus_intervals():
     """Parse iLocus intervals"""
-    label, config = genhub.conf.load_one('conf/Bdis.yml')
+    label, config = genhub.conf.load_one('conf/modorg/Bdis.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     ilocus_intervals(db, logstream=None)
 
@@ -441,7 +441,7 @@ def test_ilocus_intervals():
 
 def test_ilocus_sequence():
     """Extract iLocus sequences"""
-    label, config = genhub.conf.load_one('conf/Bdis.yml')
+    label, config = genhub.conf.load_one('conf/modorg/Bdis.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     ilocus_sequences(db, logstream=None)
 
@@ -456,7 +456,7 @@ def test_ilocus_sequence():
 
 def test_ilocus_reps():
     """Identify iLocus representatives"""
-    label, config = genhub.conf.load_one('conf/Bdis.yml')
+    label, config = genhub.conf.load_one('conf/modorg/Bdis.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     ilocus_representatives(db, logstream=None)
 
@@ -479,7 +479,7 @@ def test_ilocus_reps():
 
 def test_protein_sequence():
     """Select protein sequences"""
-    label, config = genhub.conf.load_one('conf/Scer.yml')
+    label, config = genhub.conf.load_one('conf/modorg/Scer.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     protein_sequences(db, logstream=None)
 
@@ -490,7 +490,7 @@ def test_protein_sequence():
 
 def test_mature_mrna_intervals():
     """Define mature mRNA intervals"""
-    label, config = genhub.conf.load_one('conf/Atha.yml')
+    label, config = genhub.conf.load_one('conf/modorg/Atha.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     mature_mrna_intervals(db, logstream=None)
 
