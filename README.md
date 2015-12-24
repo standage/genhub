@@ -48,7 +48,7 @@ the [following workaround][curl] worked for me: deactivate the virtualenv,
 install PycURL system-wide (or in a directory you control), and then copy the
 pycurl files into your virtualenv site-packages.
 
-[travisbadge]: https://api.travis-ci.org/standage/genhub.svg?branch=master
+[travisbadge]: https://travis-ci.org/standage/genhub.png?branch=master
 [gt]: http://genometools.org
 [agn]: http://standage.github.io/AEGeAn
 [venv]: http://docs.python-guide.org/en/latest/dev/virtualenvs/
