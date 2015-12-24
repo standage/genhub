@@ -140,7 +140,7 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
                     geneid = idmatch.group(1)
                     ilocusid = idmatch.group(2)
                     gene2loci[geneid] = ilocusid
-                else:
+                else:  # pragma: no cover
                     print('Unable to parse gene and iLocus IDs: %s' % attrs,
                           file=sys.stderr)
             elif feattype == 'mRNA':

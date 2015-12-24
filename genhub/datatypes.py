@@ -200,7 +200,7 @@ def mrna_exons(instream, convert=False, keepMrnas=False, usecds=False):
                     fields[2] = 'mRNA'
                     fields[8] = re.sub('ID=[^;\n]+;*', '', fields[8])
                     fields[8] = fields[8].replace('Parent=', 'ID=')
-                    if 'accession=' not in fields[8]:
+                    if 'accession=' not in fields[8]:  # pragma: no cover
                         fields[8] += ';accession=' + mrnaacc
                 else:
                     if not keepMrnas:  # pragma: no cover
@@ -227,7 +227,7 @@ def mature_mrna_intervals(db, logstream=sys.stderr):
     infile = '%s/%s.ilocus.mrnas.gff3' % (specdir, db.label)
     outfile = '%s/%s.ilocus.mrnas.temp' % (specdir, db.label)
     with open(infile, 'r') as instream, open(outfile, 'w') as outstream:
-        for exon in mrna_exons(instream, convert=True):
+        for exon in mrna_exons(instream, convert=True, usecds=usecds):
             print(exon, file=outstream)
 
     inpatterns = ['%s/%s.mrnas.temp', '%s/%s.ilocus.mrnas.temp']
