@@ -486,3 +486,15 @@ def test_protein_sequence():
     outfile = 'testdata/demo-workdir/Scer/Scer.prot.fa'
     testfile = 'testdata/fasta/scer-few-prots.fa'
     assert filecmp.cmp(outfile, testfile), 'Protein sequence selection failed'
+
+
+def test_mature_mrna_intervals():
+    """Define mature mRNA intervals"""
+    label, config = genhub.conf.load_one('conf/Atha.yml')
+    db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
+    mature_mrna_intervals(db, logstream=None)
+
+    for of in ['Atha.all.mrnas.gff3', 'Atha.mrnas.gff3']:
+        outfile = 'testdata/demo-workdir/Atha/' + of
+        testfile = 'testdata/gff3/atha-all-mrnas.gff3'
+        assert filecmp.cmp(outfile, testfile), 'mature mRNA interval ID failed'
