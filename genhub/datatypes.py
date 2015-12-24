@@ -540,3 +540,14 @@ def test_mrna_sequences():
     outfile = 'testdata/demo-workdir/Atha/Atha.mrnas.fa'
     testfile = 'testdata/fasta/atha-mrnas.fa'
     assert filecmp.cmp(outfile, testfile), 'mature mRNA seq extraction failed'
+
+
+def test_coding_sequences():
+    """Extract coding sequences"""
+    label, config = genhub.conf.load_one('conf/modorg/Atha.yml')
+    db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
+    cds_sequences(db, logstream=None)
+
+    outfile = 'testdata/demo-workdir/Atha/Atha.cds.fa'
+    testfile = 'testdata/fasta/atha-cds.fa'
+    assert filecmp.cmp(outfile, testfile), 'coding sequence extraction failed'
