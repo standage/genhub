@@ -517,3 +517,26 @@ def test_mature_mrna_intervals():
     outfile = 'testdata/demo-workdir/Dnov/Dnov.mrnas.gff3'
     testfile = 'testdata/gff3/dnov-mrnas.gff3'
     assert filecmp.cmp(outfile, testfile), 'mature mRNA interval ID failed'
+
+
+def test_mrna_sequences():
+    """Extract mRNA sequences"""
+    label, config = genhub.conf.load_one('conf/modorg/Atha.yml')
+    db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
+    mrna_sequences(db, logstream=None)
+
+    outfile = 'testdata/demo-workdir/Atha/Atha.all.pre-mrnas.fa'
+    testfile = 'testdata/fasta/atha-all-pre-mrnas.fa'
+    assert filecmp.cmp(outfile, testfile), 'all pre-mRNA seq extraction failed'
+
+    outfile = 'testdata/demo-workdir/Atha/Atha.pre-mrnas.fa'
+    testfile = 'testdata/fasta/atha-pre-mrnas.fa'
+    assert filecmp.cmp(outfile, testfile), 'pre-mRNA seq extraction failed'
+
+    outfile = 'testdata/demo-workdir/Atha/Atha.all.pre-mrnas.fa'
+    testfile = 'testdata/fasta/atha-all-pre-mrnas.fa'
+    assert filecmp.cmp(outfile, testfile), 'all mRNA seq extraction failed'
+
+    outfile = 'testdata/demo-workdir/Atha/Atha.mrnas.fa'
+    testfile = 'testdata/fasta/atha-mrnas.fa'
+    assert filecmp.cmp(outfile, testfile), 'mature mRNA seq extraction failed'
