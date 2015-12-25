@@ -527,7 +527,9 @@ def test_mrna_sequences():
 
     outfile = 'testdata/demo-workdir/Atha/Atha.all.pre-mrnas.fa'
     testfile = 'testdata/fasta/atha-all-pre-mrnas.fa'
-    assert filecmp.cmp(outfile, testfile), 'all pre-mRNA seq extraction failed'
+    with open(outfile, 'r') as out, open(testfile, 'r') as test:
+        assert genhub.fasta.compare(out, test) is True, \
+            'all pre-mRNA seq extraction failed'
 
     outfile = 'testdata/demo-workdir/Atha/Atha.pre-mrnas.fa'
     testfile = 'testdata/fasta/atha-pre-mrnas.fa'

@@ -61,6 +61,16 @@ def select(idstream, seqstream):
             yield defline, seq
 
 
+def compare(stream1, stream2):
+    seqs1 = dict()
+    seqs2 = dict()
+    for defline, seq in parse(stream1):
+        seqs1[defline] = seq
+    for defline, seq in parse(stream2):
+        seqs2[defline] = seq
+    return seqs1 == seqs2
+
+
 def test_parse():
     """Fasta parsing"""
     data = ('>seq1\n'
@@ -134,3 +144,20 @@ def test_select():
         testseqs[defline] = seq
     assert seqs == testseqs, \
         'extracted sequence mismatch: %r %r' % (seqs, testseqs)
+
+
+def test_compare():
+    """Order-independent sequence comparison"""
+    data1 = ('>seq1\n'
+             'ACGT\n'
+             '>seq2\n'
+             'ACGTACGTACGTACGT\n'
+             'ACGTACGTACGTACGT')
+    data2 = ('>seq2\n'
+             'ACGTACGTACGTACGT\n'
+             'ACGTACGTACGTACGT\n'
+             '>seq1\n'
+             'ACGT')
+
+    assert compare(data1.split('\n'), data2.split('\n')), \
+        'sequence comparison failed'
