@@ -167,15 +167,6 @@ def test_intervals():
     testfile = 'testdata/gff3/bdis-iloci.gff3'
     assert filecmp.cmp(outfile, testfile), 'iLocus parsing failed'
 
-    outfile = 'testdata/demo-workdir/Bdis/Bdis.ilens.tsv'
-    testfile = 'testdata/misc/bdis-ilens.tsv'
-    assert filecmp.cmp(outfile, testfile), 'iLocus length reporting failed'
-
-    outfile = 'testdata/demo-workdir/Bdis/Bdis.filens.tsv'
-    testfile = 'testdata/misc/bdis-filens.tsv'
-    assert filecmp.cmp(outfile, testfile), \
-        'flanking iLocus length reporting failed'
-
     outfile = 'testdata/demo-workdir/Bdis/Bdis.miloci.gff3'
     testfile = 'testdata/gff3/bdis-miloci.gff3'
     assert filecmp.cmp(outfile, testfile), 'miLocus parsing failed'
