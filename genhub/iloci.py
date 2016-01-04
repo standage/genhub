@@ -47,6 +47,7 @@ def intervals(db, delta=500, logstream=sys.stderr):
 
 
 def simple(db, logstream=sys.stderr):
+    """Determine simple iLoci (those containing a single gene)."""
     if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] determining simple iLoci' % db.config['species']
         print(logmsg, file=logstream)
@@ -64,6 +65,7 @@ def simple(db, logstream=sys.stderr):
 
 
 def representatives(db, logstream=sys.stderr):
+    """Select a single representative gene model for each iLocus."""
     if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] ' % db.config['species']
         logmsg += 'selecting iLocus representatives'
