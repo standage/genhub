@@ -24,6 +24,7 @@ from . import ncbi_flybase
 from . import beebase
 from . import crg
 from . import datatypes
+from . import iloci
 
 # Custom modules
 from . import pdom
