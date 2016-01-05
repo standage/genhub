@@ -25,6 +25,8 @@ from . import beebase
 from . import crg
 from . import datatypes
 from . import iloci
+from . import proteins
+from . import mrnas
 
 # Custom modules
 from . import pdom

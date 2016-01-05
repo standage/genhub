@@ -67,8 +67,8 @@ def main(parser=get_parser()):
             db.format()
         if 'prepare' in args.task:
             genhub.iloci.prepare(db)
-            genhub.datatypes.get_proteins(db)
-            genhub.datatypes.get_mrnas(db)
+            genhub.proteins.prepare(db)
+            genhub.mrnas.prepare(db)
             genhub.datatypes.get_exons(db)
 
         print('[GenHub: %s] build complete!' % config['species'],
