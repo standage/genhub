@@ -8,8 +8,5 @@ Cele:
     build: WBcel235
     annotfilter:
         - NC_001328.1
-    checksums:
-        gdna: 38ab90233d5cd0e425ca0786d74a7902c6cf2295
-        gff3: c51d189e9c3d689fe25809eda7457cb7c3735c8c
-        prot: ded241f1c87f3905758952e529d2147422acc03a
+    fixseqreg: true
     description: WBcel235 from the C. elegans sequencing consortium

@@ -1,7 +1,5 @@
 ##gff-version   3
-##sequence-region   NW_006263516.1 1 1179170
 ##sequence-region   NW_006263600.1 1 226046
-##sequence-region   NW_006264094.1 1 185857
 NW_006263600.1	Gnomon	gene	12948	37479	.	+	.	ID=gene1;Name=LOC102674495;Dbxref=GeneID:102674495;gbkey=Gene;gene=LOC102674495;accession=102674495
 NW_006263600.1	Gnomon	mRNA	12948	37479	.	+	.	ID=mRNA1;Parent=gene1;Name=XM_006617971.1;Dbxref=GeneID:102674495,Genbank:XM_006617971.1;gbkey=mRNA;gene=LOC102674495;product=uncharacterized LOC102674495%2C transcript variant X1;transcript_id=XM_006617971.1;accession=XM_006617971.1
 NW_006263600.1	Gnomon	exon	12948	14024	.	+	.	Parent=mRNA1;Dbxref=GeneID:102674495,Genbank:XM_006617971.1;gbkey=mRNA;gene=LOC102674495;product=uncharacterized LOC102674495%2C transcript variant X1;transcript_id=XM_006617971.1;accession=XM_006617971.1

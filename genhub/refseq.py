@@ -84,7 +84,8 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
             cmds.append('grep -vf %s' % excludefile.name)
         cmds.append('tidygff3')
         cmds.append('genhub-format-gff3.py --source refseq -')
-        cmds.append('seq-reg.py - %s' % self.gdnafile)
+        if 'fixseqreg' in self.config and self.config['fixseqreg'] is True:
+            cmds.append('seq-reg.py - %s' % self.gdnafile)  # pragma: no cover
         cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
 
         commands = ' | '.join(cmds)
