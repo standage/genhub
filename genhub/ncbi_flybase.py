@@ -186,18 +186,18 @@ def test_chromosomes():
     """NCBI/FlyBase chromosome download"""
 
     label, config = genhub.conf.load_one('conf/modorg/Dmel.yml')
-    testurls = ['ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_X/NC_004354.fna',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_2/NT_033778.fna',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_2/NT_033779.fna',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_3/NT_033777.fna',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_3/NT_037436.fna',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_4/NC_004353.fna']
+    testurls = ['ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_X/NC_004354.fna',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_2/NT_033778.fna',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_2/NT_033779.fna',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_3/NT_033777.fna',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_3/NT_037436.fna',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_4/NC_004353.fna']
     testpath = './Dmel/Dmel.orig.fa.gz'
     dmel_db = FlyBaseDB(label, config)
     assert dmel_db.gdnaurl == testurls, \
@@ -212,18 +212,18 @@ def test_annot():
     """NCBI/FlyBase annotation download"""
 
     label, config = genhub.conf.load_one('conf/modorg/Dmel.yml')
-    testurls = ['ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_X/NC_004354.gff',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_2/NT_033778.gff',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_2/NT_033779.gff',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_3/NT_033777.gff',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_3/NT_037436.gff',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_4/NC_004353.gff']
+    testurls = ['ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_X/NC_004354.gff',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_2/NT_033778.gff',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_2/NT_033779.gff',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_3/NT_033777.gff',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_3/NT_037436.gff',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_4/NC_004353.gff']
     testpath = './Dmel/dmel-5.48-ncbi.gff3.gz'
     dmel_db = FlyBaseDB(label, config)
     assert dmel_db.gff3url == testurls, \
@@ -236,18 +236,18 @@ def test_annot():
 def test_proteins():
     """NCBI/FlyBase protein download"""
     label, config = genhub.conf.load_one('conf/modorg/Dmel.yml')
-    testurls = ['ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_X/NC_004354.faa',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_2/NT_033778.faa',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_2/NT_033779.faa',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_3/NT_033777.faa',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_3/NT_037436.faa',
-                'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
-                'RELEASE_5_48/CHR_4/NC_004353.faa']
+    testurls = ['ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_X/NC_004354.faa',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_2/NT_033778.faa',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_2/NT_033779.faa',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_3/NT_033777.faa',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_3/NT_037436.faa',
+                'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
+                'Drosophila_melanogaster/RELEASE_5_48/CHR_4/NC_004353.faa']
     testpath = './Dmel/protein.fa.gz'
     dmel_db = FlyBaseDB(label, config)
     assert dmel_db.proturl == testurls, \
