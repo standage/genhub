@@ -27,7 +27,7 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
         assert self.config['source'] == 'ncbi_flybase'
         assert 'species' in self.config
         species = self.config['species'].replace(' ', '_')
-        self.specbase = ('ftp://ftp.ncbi.nih.gov/genomes/'
+        self.specbase = ('ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                          'Drosophila_melanogaster/RELEASE_5_48')
         self.format_gdna = self.format_fasta
         self.format_prot = self.format_fasta
