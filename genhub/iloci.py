@@ -121,7 +121,7 @@ def sequences(db, logstream=sys.stderr):
 def ancillary(db, logstream=sys.stderr):
     """Process iLocus ancillary data."""
     if logstream is not None:  # pragma: no cover
-        logmsg = '[GenHub: %s] computing interval loci' % db.config['species']
+        logmsg = '[GenHub: %s] iLoci ancillary data' % db.config['species']
         print(logmsg, file=logstream)
 
     specdir = '%s/%s' % (db.workdir, db.label)
