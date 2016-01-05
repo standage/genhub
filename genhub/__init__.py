@@ -26,6 +26,7 @@ from . import crg
 from . import iloci
 from . import proteins
 from . import mrnas
+from . import exons
 
 # Custom modules
 from . import pdom
