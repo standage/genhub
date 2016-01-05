@@ -104,7 +104,7 @@ def sequences(db, logstream=sys.stderr):
     for ltype in ['iloci', 'miloci']:
         outfile = '%s/%s.%s.fa' % (specdir, db.label, ltype)
         gff3in = '%s/%s.%s.gff3' % (specdir, db.label, ltype)
-        command = 'xtractore --debug --type=locus '
+        command = 'xtractore --type=locus '
         command += '--outfile=%s %s %s' % (outfile, gff3in, fastain)
         cmd = command.split(' ')
         proc = subprocess.Popen(cmd, stderr=subprocess.PIPE,
