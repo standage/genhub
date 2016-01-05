@@ -22,7 +22,6 @@ def url_download(urldata, localpath, compress=False, follow=True):
     - localpath: path of the filename to which output will be written
     - compress: output compression
     """
-    print('DEBUG: %r' % urldata)
     urls = urldata
     if isinstance(urldata, str):
         urls = [urldata]
