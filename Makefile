@@ -1,5 +1,6 @@
 shufcmd := $(shell which shuf || which gshuf)
 SHELL := bash
+SHELLOPTS := errexit:pipefail
 
 check:
 	python scripts/genhub-check.py
