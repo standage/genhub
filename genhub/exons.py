@@ -1,27 +1,12 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015-2016   Indiana University
+# Copyright (c) 2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2016   Indiana University
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
-
-"""
-Module for extracting various data types from a genome annotation.
-
-Extract sequences and, if necessary, compute intervals for the following data
-types in the annotated genome.
-
-- interval loci (iLoci)
-- proteins
-- pre mRNAs
-- mature mRNAs
-- coding sequences
-- exons
-- introns
-"""
 
 from __future__ import print_function
 import filecmp
@@ -123,11 +108,11 @@ def intron_sequences(db, logstream=sys.stderr):
 
 
 # -----------------------------------------------------------------------------
-# Driver functions
+# Driver function
 # -----------------------------------------------------------------------------
 
 
-def get_exons(db, logstream=sys.stderr):  # pragma: no cover
+def prepare(db, logstream=sys.stderr):  # pragma: no cover
     exon_sequences(db, logstream=logstream)
     intron_sequences(db, logstream=logstream)
     cds_sequences(db, logstream=logstream)
