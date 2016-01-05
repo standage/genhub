@@ -9,12 +9,14 @@
 # -----------------------------------------------------------------------------
 
 """
-Genome database implementation for data from CRG.
+Retrieve and format data from CRG.
 
-Two aculeate insect data sets from the Centre de Regulacio Genomica.
+GenomeDB implementation for two data sets residing in an unofficial
+distribution site at the Centre de Regulacio Genomica.
 """
 
 from __future__ import print_function
+import re
 import subprocess
 import sys
 import genhub
@@ -83,6 +85,63 @@ class CrgDB(genhub.genomedb.GenomeDB):
         assert proc.returncode == 0, \
             'annot cleanup command failed: %s' % commands
 
+    def gff3_protids(self, instream):
+        protids = dict()
+        for line in instream:
+            if '\tCDS\t' not in line:
+                continue
+            idmatch = re.search('Target=(\S+)', line)
+            assert idmatch, 'cannot parse protein_id: ' + line
+            protid = idmatch.group(1)
+            if protid not in protids:
+                protids[protid] = True
+                yield protid
+
+    def protein_mapping(self, instream):
+        locusid2name = dict()
+        gene2loci = dict()
+        mrna2gene = dict()
+        proteins = dict()
+        for line in instream:
+            fields = line.split('\t')
+            if len(fields) != 9:
+                continue
+            feattype = fields[2]
+            attrs = fields[8]
+
+            if feattype == 'locus':
+                idmatch = re.search('ID=([^;\n]+);.*Name=([^;\n]+)', attrs)
+                if idmatch:
+                    locusid = idmatch.group(1)
+                    locusname = idmatch.group(2)
+                    locusid2name[locusid] = locusname
+            elif feattype == 'gene':
+                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                assert idmatch, \
+                    'Unable to parse gene and iLocus IDs: %s' % attrs
+                geneid = idmatch.group(1)
+                ilocusid = idmatch.group(2)
+                gene2loci[geneid] = ilocusid
+            elif feattype == 'mRNA':
+                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                assert idmatch, \
+                    'Unable to parse mRNA and gene IDs: %s' % attrs
+                mrnaid = idmatch.group(1)
+                geneid = idmatch.group(2)
+                mrna2gene[mrnaid] = geneid
+            elif feattype == 'CDS':
+                idmatch = re.search('Parent=([^;\n]+).*Target=(\S+)', attrs)
+                assert idmatch, \
+                    'Unable to parse protein and mRNA IDs: %s' % attrs
+                mrnaid = idmatch.group(1)
+                proteinid = idmatch.group(2)
+                if proteinid not in proteins:
+                    geneid = mrna2gene[mrnaid]
+                    ilocusid = gene2loci[geneid]
+                    ilocusname = locusid2name[ilocusid]
+                    proteins[proteinid] = mrnaid
+                    yield proteinid, ilocusname
+
 
 # -----------------------------------------------------------------------------
 # Unit tests
@@ -92,7 +151,7 @@ class CrgDB(genhub.genomedb.GenomeDB):
 def test_scaffolds():
     """CRG scaffolds download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Dqua.yml')
+    label, config = genhub.conf.load_one('conf/hym/Dqua.yml')
     testurl = 'http://wasp.crg.eu/DQUA.v01.fa.gz'
     testpath = './Dqua/DQUA.v01.fa.gz'
     dqua_db = CrgDB(label, config)
@@ -106,7 +165,7 @@ def test_scaffolds():
 def test_annot():
     """CRG annotation download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Dqua.yml')
+    label, config = genhub.conf.load_one('conf/hym/Dqua.yml')
     testurl = 'http://wasp.crg.eu/DQUA.v01.gff3'
     testpath = 'CRG/Dqua/DQUA.v01.gff3.gz'
     testresult = (testurl, testpath)
@@ -120,7 +179,7 @@ def test_annot():
 def test_proteins():
     """CRG protein download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Dqua.yml')
+    label, config = genhub.conf.load_one('conf/hym/Dqua.yml')
     testurl = 'http://wasp.crg.eu/DQUA.v01.pep.fa.gz'
     testpath = '/opt/db/genhub/Dqua/DQUA.v01.pep.fa.gz'
     dqua_db = CrgDB(label, config, workdir='/opt/db/genhub')
@@ -128,6 +187,38 @@ def test_proteins():
         'protein URL mismatch\n%s\n%s' % (dqua_db.proturl, testurl)
     assert dqua_db.protpath == testpath, \
         'protein path mismatch\n%s\n%s' % (dqua_db.protpath, testpath)
+
+
+def test_protids():
+    """CRG: extract protein IDs from GFF3"""
+
+    label, conf = genhub.conf.load_one('conf/hym/Dqua.yml')
+    db = CrgDB(label, conf)
+    protids = ['DQUA011a006022P1', 'DQUA011a006023P1', 'DQUA011a006024P1']
+    infile = 'testdata/gff3/dqua-275.gff3'
+    testids = list()
+    with open(infile, 'r') as instream:
+        for protid in db.gff3_protids(instream):
+            testids.append(protid)
+    assert sorted(protids) == sorted(testids), \
+        'protein ID mismatch: %r %r' % (protids, testids)
+
+
+def test_protmap():
+    """CRG: extract protein-->iLocus mapping from GFF3"""
+
+    label, conf = genhub.conf.load_one('conf/hym/Dqua.yml')
+    db = CrgDB(label, conf)
+    mapping = {'DQUA011a006022P1': 'DquaILC-14465',
+               'DQUA011a006023P1': 'DquaILC-14466',
+               'DQUA011a006024P1': 'DquaILC-14467'}
+    infile = 'testdata/gff3/dqua-275-loci.gff3'
+    testmap = dict()
+    with open(infile, 'r') as instream:
+        for protid, locid in db.protein_mapping(instream):
+            testmap[protid] = locid
+    assert mapping == testmap, \
+        'protein mapping mismatch: %r %r' % (mapping, testmap)
 
 
 def test_format():

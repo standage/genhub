@@ -17,11 +17,16 @@ import os
 import sys
 from . import conf
 from . import download
+from . import fasta
 from . import genomedb
 from . import refseq
 from . import ncbi_flybase
 from . import beebase
 from . import crg
+from . import iloci
+from . import proteins
+from . import mrnas
+from . import exons
 
 # Custom modules
 from . import pdom

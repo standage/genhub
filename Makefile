@@ -1,5 +1,6 @@
 shufcmd := $(shell which shuf || which gshuf)
 SHELL := bash
+SHELLOPTS := errexit:pipefail
 
 check:
 	python scripts/genhub-check.py
@@ -17,7 +18,7 @@ test:
 	@ nosetests -v --with-coverage --cover-package=genhub genhub/*.py
 
 testmore:
-	@ for conf in $$(find conf -type f -name "????.yml" | $(shufcmd) | head -2); do echo $$conf; genhub-build.py --cfg $$conf --workdir scratch/testmore/ download format; rm -r scratch/testmore/; done
+	@ set -e && for conf in $$(find conf -type f -name "????.yml" | grep -v -e Mmus -e Btau | $(shufcmd) | head -2); do echo $$conf; genhub-build.py --cfg $$conf --workdir scratch/testmore/ download format prepare; rm -r scratch/testmore/; done
 
 style:
 	@ pep8 genhub/*.py scripts/*.py

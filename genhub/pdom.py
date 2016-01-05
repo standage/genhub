@@ -13,6 +13,7 @@
 from __future__ import print_function
 import filecmp
 import gzip
+import re
 import subprocess
 import sys
 import genhub
@@ -60,6 +61,48 @@ class PdomDB(genhub.genomedb.GenomeDB):
                    self.gff3file, self.gff3path]
         subprocess.check_call(command)
 
+    def gff3_protids(self, instream):
+        for line in instream:
+            if '\tmRNA\t' not in line:
+                continue
+            namematch = re.search('Name=([^;\n]+)', line)
+            assert namematch, 'cannot parse mRNA name: ' + line
+            yield namematch.group(1)
+
+    def protein_mapping(self, instream):
+        locusid2name = dict()
+        gene2loci = dict()
+        for line in instream:
+            fields = line.split('\t')
+            if len(fields) != 9:
+                continue
+            feattype = fields[2]
+            attrs = fields[8]
+
+            if feattype == 'locus':
+                idmatch = re.search('ID=([^;\n]+);.*Name=([^;\n]+)', attrs)
+                if idmatch:
+                    locusid = idmatch.group(1)
+                    locusname = idmatch.group(2)
+                    locusid2name[locusid] = locusname
+            elif feattype == 'gene':
+                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                assert idmatch, \
+                    'Unable to parse gene and iLocus IDs: %s' % attrs
+                geneid = idmatch.group(1)
+                ilocusid = idmatch.group(2)
+                gene2loci[geneid] = ilocusid
+            elif feattype == 'mRNA':
+                pattern = 'Parent=([^;\n]+);.*Name=([^;\n]+)'
+                idmatch = re.search(pattern, attrs)
+                assert idmatch, \
+                    'Unable to parse mRNA and gene IDs: %s' % attrs
+                protid = idmatch.group(2)
+                geneid = idmatch.group(1)
+                locusid = gene2loci[geneid]
+                locusname = locusid2name[locusid]
+                yield protid, locusname
+
 
 # -----------------------------------------------------------------------------
 # Unit tests
@@ -67,7 +110,7 @@ class PdomDB(genhub.genomedb.GenomeDB):
 
 def test_download():
     """PdomDataStore download"""
-    label, config = genhub.conf.load_one('conf/HymHub/Pdom.yml')
+    label, config = genhub.conf.load_one('conf/hym/Pdom.yml')
     pdom_db = PdomDB(label, config)
     assert pdom_db.gdnaurl == ('http://de.iplantcollaborative.org/dl/d/'
                                '53B7319E-3201-4087-9607-2D541FF34DD0/'
@@ -89,3 +132,36 @@ def test_format():
     pdom_db.preprocess_gdna(logstream=None)
     pdom_db.preprocess_gff3(logstream=None)
     pdom_db.preprocess_prot(logstream=None)
+
+
+def test_protids():
+    """Pdom: extract protein IDs from GFF3"""
+
+    label, conf = genhub.conf.load_one('conf/hym/Pdom.yml')
+    db = PdomDB(label, conf)
+    protids = ['PdomMRNAr1.2-08518.1', 'PdomMRNAr1.2-11420.1',
+               'PdomMRNAr1.2-08519.1']
+    infile = 'testdata/gff3/pdom-266.gff3'
+    testids = list()
+    with open(infile, 'r') as instream:
+        for protid in db.gff3_protids(instream):
+            testids.append(protid)
+    assert sorted(protids) == sorted(testids), \
+        'protein ID mismatch: %r %r' % (protids, testids)
+
+
+def test_protmap():
+    """Pdom: extract protein-->iLocus mapping from GFF3"""
+
+    label, conf = genhub.conf.load_one('conf/hym/Pdom.yml')
+    db = PdomDB(label, conf)
+    mapping = {'PdomMRNAr1.2-08518.1': 'PdomILC-18235',
+               'PdomMRNAr1.2-11420.1': 'PdomILC-18237',
+               'PdomMRNAr1.2-08519.1': 'PdomILC-18238'}
+    infile = 'testdata/gff3/pdom-266-loci.gff3'
+    testmap = dict()
+    with open(infile, 'r') as instream:
+        for protid, locid in db.protein_mapping(instream):
+            testmap[protid] = locid
+    assert mapping == testmap, \
+        'protein mapping mismatch: %r %r' % (mapping, testmap)

@@ -12,6 +12,7 @@ from __future__ import print_function
 import argparse
 import re
 import sys
+import genhub
 
 
 class FeatureFormatter(object):
@@ -192,11 +193,13 @@ def parse_args():
     sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
     desc = 'Filter features and parse accession values'
     parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('-v', '--version', action='version',
+                        version='GenHub v%s' % genhub.__version__)
     parser.add_argument('-o', '--outfile', type=argparse.FileType('w'),
                         default=sys.stdout)
-    parser.add_argument('-p', '--prefix', default=None,
+    parser.add_argument('-p', '--prefix', default=None, metavar='PFX',
                         help='attach the given prefix to each sequence ID')
-    parser.add_argument('-s', '--source', default='refseq', choices=sources,
+    parser.add_argument('--source', default='refseq', choices=sources,
                         help='data source; default is "refseq"')
     parser.add_argument('gff3', type=argparse.FileType('r'))
     return parser.parse_args()

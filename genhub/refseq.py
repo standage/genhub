@@ -8,7 +8,11 @@
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
 
-"""Genome database implementation for data from NCBI."""
+"""
+Retrieve and format data from RefSeq.
+
+GenomeDB implementation for data residing in NCBI's RefSeq database.
+"""
 
 from __future__ import print_function
 import filecmp
@@ -84,6 +88,8 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
             cmds.append('grep -vf %s' % excludefile.name)
         cmds.append('tidygff3')
         cmds.append('genhub-format-gff3.py --source refseq -')
+        if 'fixseqreg' in self.config and self.config['fixseqreg'] is True:
+            cmds.append('seq-reg.py - %s' % self.gdnafile)  # pragma: no cover
         cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
 
         commands = ' | '.join(cmds)
@@ -103,6 +109,69 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
         if 'annotfilter' in self.config:
             os.unlink(excludefile.name)
 
+    def gff3_protids(self, instream):
+        protids = dict()
+        for line in instream:
+            if '\tCDS\t' not in line:
+                continue
+            idmatch = re.search('protein_id=([^;\n]+)', line)
+            assert idmatch, 'cannot parse protein_id: ' + line
+            protid = idmatch.group(1)
+            if protid not in protids:
+                protids[protid] = True
+                yield protid
+
+    def protein_mapping(self, instream):
+        locusid2name = dict()
+        gene2loci = dict()
+        mrna2gene = dict()
+        proteins = dict()
+        protdups = dict()
+        for line in instream:
+            fields = line.split('\t')
+            if len(fields) != 9:
+                continue
+            feattype = fields[2]
+            attrs = fields[8]
+
+            if feattype == 'locus':
+                idmatch = re.search('ID=([^;\n]+);.*Name=([^;\n]+)', attrs)
+                if idmatch:
+                    locusid = idmatch.group(1)
+                    locusname = idmatch.group(2)
+                    locusid2name[locusid] = locusname
+            elif feattype == 'gene':
+                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                if idmatch:
+                    geneid = idmatch.group(1)
+                    ilocusid = idmatch.group(2)
+                    gene2loci[geneid] = ilocusid
+                else:  # pragma: no cover
+                    print('Unable to parse gene and iLocus IDs: %s' % attrs,
+                          file=sys.stderr)
+            elif feattype == 'mRNA':
+                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                assert idmatch, \
+                    'Unable to parse mRNA and gene IDs: %s' % attrs.rstrip()
+                mrnaid = idmatch.group(1)
+                geneid = idmatch.group(2)
+                mrna2gene[mrnaid] = geneid
+            elif feattype == 'CDS':
+                if 'exception=rearrangement required for product' in attrs:
+                    continue
+                idmatch = re.search('Parent=([^;\n]+).*protein_id=([^;\n]+)',
+                                    attrs)
+                assert idmatch, \
+                    'Unable to parse protein and mRNA IDs: %s' % attrs
+                mrnaid = idmatch.group(1)
+                proteinid = idmatch.group(2)
+                if proteinid not in proteins:
+                    geneid = mrna2gene[mrnaid]
+                    proteins[proteinid] = mrnaid
+                    ilocusid = gene2loci[geneid]
+                    ilocusname = locusid2name[ilocusid]
+                    yield proteinid, ilocusname
+
 
 # -----------------------------------------------------------------------------
 # Unit tests
@@ -112,7 +181,7 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
 def test_genome_download():
     """RefSeq chromosomes/scaffolds download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Ador.yml')
+    label, config = genhub.conf.load_one('conf/hym/Ador.yml')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
@@ -126,7 +195,7 @@ def test_genome_download():
         'scaffold path mismatch\n%s\n%s' % (ador_db.gdnapath, testpath)
     assert ador_db.compress_gdna is False
 
-    label, config = genhub.conf.load_one('conf/HymHub/Amel.yml')
+    label, config = genhub.conf.load_one('conf/hym/Amel.yml')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_mellifera/all_assembly_versions/'
                'GCF_000002195.4_Amel_4.5/'
@@ -141,8 +210,9 @@ def test_genome_download():
 
 
 def test_annot_download():
+    """RefSeq annotation download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Ador.yml')
+    label, config = genhub.conf.load_one('conf/hym/Ador.yml')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
@@ -159,7 +229,7 @@ def test_annot_download():
 def test_proteins_download():
     """RefSeq protein download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Ador.yml')
+    label, config = genhub.conf.load_one('conf/hym/Ador.yml')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
@@ -177,14 +247,14 @@ def test_proteins_download():
 def test_gdna_format():
     """RefSeq gDNA formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Hsal.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Hsal.yml')
     hsal_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
     hsal_db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hsal/Hsal.gdna.fa'
     testoutfile = 'testdata/fasta/hsal-first-7-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Hsal gDNA formatting failed'
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Tcas.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Tcas.yml')
     tcas_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
     tcas_db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Tcas/Tcas.gdna.fa'
@@ -195,14 +265,14 @@ def test_gdna_format():
 def test_annot_format():
     """RefSeq annotation formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Aech.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Aech.yml')
     aech_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
     aech_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Aech/Aech.gff3'
     testfile = 'testdata/gff3/ncbi-format-aech.gff3'
     assert filecmp.cmp(outfile, testfile), 'Aech annotation formatting failed'
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Pbar.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Pbar.yml')
     conf['annotfilter'] = 'NW_011933506.1'
     pbar_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
     pbar_db.preprocess_gff3(logstream=None, verify=False)
@@ -210,7 +280,7 @@ def test_annot_format():
     testfile = 'testdata/gff3/ncbi-format-pbar.gff3'
     assert filecmp.cmp(outfile, testfile), 'Pbar annotation formatting failed'
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Ador.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Ador.yml')
     conf['annotfilter'] = ['NW_006264094.1', 'NW_006263516.1']
     ador_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
     ador_db.preprocess_gff3(logstream=None, verify=False)
@@ -222,9 +292,43 @@ def test_annot_format():
 def test_prot_ncbi():
     """RefSeq protein formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Hsal.yml')
+    label, conf = genhub.conf.load_one('conf/hym/Hsal.yml')
     hsal_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
     hsal_db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hsal/Hsal.all.prot.fa'
     testoutfile = 'testdata/fasta/hsal-13-prot-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Hsal protein formatting failed'
+
+
+def test_protids():
+    """RefSeq: extract protein IDs from GFF3"""
+
+    label, conf = genhub.conf.load_one('conf/modorg/Xtro.yml')
+    db = RefSeqDB(label, conf)
+    protids = ['XP_012809995.1', 'XP_012809996.1', 'XP_012809997.1',
+               'XP_012809998.1']
+    infile = 'testdata/gff3/xtro-3genes.gff3'
+    testids = list()
+    with open(infile, 'r') as instream:
+        for protid in db.gff3_protids(instream):
+            testids.append(protid)
+    assert sorted(protids) == sorted(testids), \
+        'protein ID mismatch: %r %r' % (protids, testids)
+
+
+def test_protmap():
+    """RefSeq: extract protein-->iLocus mapping from GFF3"""
+
+    label, conf = genhub.conf.load_one('conf/modorg/Xtro.yml')
+    db = RefSeqDB(label, conf)
+    mapping = {'XP_012809997.1': 'XtroILC-43374',
+               'XP_012809996.1': 'XtroILC-43374',
+               'XP_012809995.1': 'XtroILC-43373',
+               'XP_012809998.1': 'XtroILC-43374'}
+    infile = 'testdata/gff3/xtro-3genes-loci.gff3'
+    testmap = dict()
+    with open(infile, 'r') as instream:
+        for protid, locid in db.protein_mapping(instream):
+            testmap[protid] = locid
+    assert mapping == testmap, \
+        'protein mapping mismatch: %r %r' % (mapping, testmap)

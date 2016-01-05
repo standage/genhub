@@ -118,6 +118,64 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
             'annot cleanup command failed: %s' % commands
         os.unlink(excludefile.name)
 
+    def gff3_protids(self, instream):
+        protids = dict()
+        for line in instream:
+            if '\tCDS\t' not in line:
+                continue
+            idmatch = re.search('protein_id=([^;\n]+)', line)
+            assert idmatch, 'cannot parse protein_id: ' + line
+            protid = idmatch.group(1)
+            if protid not in protids:
+                protids[protid] = True
+                yield protid
+
+    def protein_mapping(self, instream):
+        locusid2name = dict()
+        gene2loci = dict()
+        mrna2gene = dict()
+        proteins = dict()
+        for line in instream:
+            fields = line.split('\t')
+            if len(fields) != 9:
+                continue
+            feattype = fields[2]
+            attrs = fields[8]
+
+            if feattype == 'locus':
+                idmatch = re.search('ID=([^;\n]+);.*Name=([^;\n]+)', attrs)
+                if idmatch:
+                    locusid = idmatch.group(1)
+                    locusname = idmatch.group(2)
+                    locusid2name[locusid] = locusname
+            elif feattype == 'gene':
+                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                assert idmatch, \
+                    'Unable to parse gene and iLocus IDs: %s' % attrs
+                geneid = idmatch.group(1)
+                ilocusid = idmatch.group(2)
+                gene2loci[geneid] = ilocusid
+            elif feattype == 'mRNA':
+                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                assert idmatch, \
+                    'Unable to parse mRNA and gene IDs: %s' % attrs
+                mrnaid = idmatch.group(1)
+                geneid = idmatch.group(2)
+                mrna2gene[mrnaid] = geneid
+            elif feattype == 'CDS':
+                idmatch = re.search('Parent=([^;\n]+).*protein_id=([^;\n]+)',
+                                    attrs)
+                assert idmatch, \
+                    'Unable to parse protein and mRNA IDs: %s' % attrs
+                mrnaid = idmatch.group(1)
+                proteinid = idmatch.group(2)
+                if proteinid not in proteins:
+                    geneid = mrna2gene[mrnaid]
+                    proteins[proteinid] = mrnaid
+                    ilocusid = gene2loci[geneid]
+                    ilocusname = locusid2name[ilocusid]
+                    yield proteinid, ilocusname
+
 
 # -----------------------------------------------------------------------------
 # Unit tests
@@ -127,7 +185,7 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
 def test_chromosomes():
     """NCBI/FlyBase chromosome download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, config = genhub.conf.load_one('conf/modorg/Dmel.yml')
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
                 'RELEASE_5_48/CHR_X/NC_004354.fna',
                 'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
@@ -153,7 +211,7 @@ def test_chromosomes():
 def test_annot():
     """NCBI/FlyBase annotation download"""
 
-    label, config = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, config = genhub.conf.load_one('conf/modorg/Dmel.yml')
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
                 'RELEASE_5_48/CHR_X/NC_004354.gff',
                 'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
@@ -177,7 +235,7 @@ def test_annot():
 
 def test_proteins():
     """NCBI/FlyBase protein download"""
-    label, config = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, config = genhub.conf.load_one('conf/modorg/Dmel.yml')
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
                 'RELEASE_5_48/CHR_X/NC_004354.faa',
                 'ftp://ftp.ncbi.nih.gov/genomes/Drosophila_melanogaster/'
@@ -201,7 +259,7 @@ def test_proteins():
 
 def test_format():
     """Task drivers"""
-    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
     dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
     dmel_db.format(logstream=None, verify=False)
 
@@ -209,7 +267,7 @@ def test_format():
 def test_gdna_format():
     """NCBI/FlyBase gDNA formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
     dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
     dmel_db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Dmel/Dmel.gdna.fa'
@@ -220,7 +278,7 @@ def test_gdna_format():
 def test_annot_format():
     """NCBI/FlyBase annotation formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
     aech_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
     aech_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Dmel/Dmel.gff3'
@@ -231,9 +289,43 @@ def test_annot_format():
 def test_prot_format():
     """NCBI/FlyBase protein formatting"""
 
-    label, conf = genhub.conf.load_one('conf/HymHub/Dmel.yml')
+    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
     dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
     dmel_db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Dmel/Dmel.all.prot.fa'
     testoutfile = 'testdata/fasta/dmel-fb-prot-ut-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Dmel protein formatting failed'
+
+
+def test_protids():
+    """NCBI/FlyBase: extract protein IDs from GFF3"""
+
+    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
+    db = FlyBaseDB(label, conf)
+    protids = ['NP_524820.2', 'NP_001259789.1', 'NP_608489.2']
+    infile = 'testdata/gff3/dmel-net.gff3'
+    testids = list()
+    with open(infile, 'r') as instream:
+        for protid in db.gff3_protids(instream):
+            testids.append(protid)
+    assert sorted(protids) == sorted(testids), \
+        'protein ID mismatch: %r %r' % (protids, testids)
+
+
+def test_protmap():
+    """NCBI/FlyBase: extract protein-->iLocus mapping from GFF3"""
+
+    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
+    db = FlyBaseDB(label, conf)
+    mapping = {'NP_001259789.1': 'DmelILC-10965',
+               'NP_524820.2': 'DmelILC-10965',
+               'NP_608489.2': 'DmelILC-10967',
+               'NP_608490.1': 'DmelILC-10968',
+               'NP_001259790.1': 'DmelILC-10968'}
+    infile = 'testdata/gff3/dmel-net-loci.gff3'
+    testmap = dict()
+    with open(infile, 'r') as instream:
+        for protid, locid in db.protein_mapping(instream):
+            testmap[protid] = locid
+    assert mapping == testmap, \
+        'protein mapping mismatch: %r %r' % (mapping, testmap)

@@ -16,7 +16,7 @@ import subprocess
 import sys
 import genhub
 
-buildcmds = 'download format datatypes stats cleanup'.split(' ')
+buildcmds = 'download format prepare stats cleanup'.split(' ')
 sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
 dbtype = {'refseq': genhub.refseq.RefSeqDB,
           'ncbi_flybase': genhub.ncbi_flybase.FlyBaseDB,
@@ -65,6 +65,11 @@ def main(parser=get_parser()):
             db.download()
         if 'format' in args.task:
             db.format()
+        if 'prepare' in args.task:
+            genhub.iloci.prepare(db)
+            genhub.proteins.prepare(db)
+            genhub.mrnas.prepare(db)
+            genhub.exons.prepare(db)
 
         print('[GenHub: %s] build complete!' % config['species'],
               file=sys.stderr)
