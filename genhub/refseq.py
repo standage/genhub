@@ -8,7 +8,11 @@
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
 
-"""Genome database implementation for data from NCBI."""
+"""
+Retrieve and format data from RefSeq.
+
+GenomeDB implementation for data residing in NCBI's RefSeq database.
+"""
 
 from __future__ import print_function
 import filecmp

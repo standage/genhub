@@ -8,6 +8,8 @@
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
 
+"""Simple module for reading, writing, subsetting, and comparing sequences."""
+
 from __future__ import print_function
 import sys
 try:

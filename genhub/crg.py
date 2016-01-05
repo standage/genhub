@@ -9,9 +9,10 @@
 # -----------------------------------------------------------------------------
 
 """
-Genome database implementation for data from CRG.
+Retrieve and format data from CRG.
 
-Two aculeate insect data sets from the Centre de Regulacio Genomica.
+GenomeDB implementation for two data sets residing in an unofficial
+distribution site at the Centre de Regulacio Genomica.
 """
 
 from __future__ import print_function

@@ -8,7 +8,12 @@
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
 
-"""Genome database implementation for BeeBase consortium data."""
+"""
+Retrieve and format data from BeeBase.
+
+GenomeDB implementation for BeeBase consortium data provisioned by
+HymenopteraBase.
+"""
 
 from __future__ import print_function
 import filecmp
