@@ -62,7 +62,6 @@ DnovScf_101	GLEAN	mRNA	3510911	3511125	.	+	.	ID=mRNA4;accession=Dnov00270
 DnovScf_101	GLEAN	mRNA	3511575	3511714	.	+	.	ID=mRNA4;accession=Dnov00270
 DnovScf_101	GLEAN	mRNA	3511954	3512160	.	+	.	ID=mRNA4;accession=Dnov00270
 ###
-DnovScf_101	Cufflinks	mRNA	3468181	3468483	1e+03	-	.	accession=Dnov00271
 DnovScf_101	GLEAN	mRNA	3526408	3526492	.	+	.	ID=mRNA5;accession=Dnov00272
 DnovScf_101	GLEAN	mRNA	3526825	3527018	.	+	.	ID=mRNA5;accession=Dnov00272
 DnovScf_101	GLEAN	mRNA	3527092	3527301	.	+	.	ID=mRNA5;accession=Dnov00272
