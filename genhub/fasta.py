@@ -14,7 +14,7 @@ from __future__ import print_function
 import sys
 try:
     from StringIO import StringIO
-except ImportError:
+except ImportError:  # pragma: no cover
     from io import StringIO
 
 
