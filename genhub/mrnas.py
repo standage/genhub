@@ -94,11 +94,11 @@ def mature_mrna_intervals(db, logstream=sys.stderr):
             print(exon, file=outstream)
 
     inpatterns = ['%s/%s.mrnas.temp', '%s/%s.ilocus.mrnas.temp']
-    outpatterns = ['%s/%s.mrnas.gff3', '%s/%s.all.mrnas.gff3']
+    outpatterns = ['%s/%s.all.mrnas.gff3', '%s/%s.mrnas.gff3']
     for inpattern, outpattern in zip(inpatterns, outpatterns):
-        infile = inpattern % (specdir, db.label)
-        outfile = outpattern % (specdir, db.label)
-        command = 'gt gff3 -sort -tidy -force -o %s %s' % (outfile, infile)
+        inf = inpattern % (specdir, db.label)
+        otf = outpattern % (specdir, db.label)
+        command = 'gt gff3 -retainids -sort -tidy -force -o %s %s' % (otf, inf)
         cmd = command.split(' ')
         proc = subprocess.Popen(cmd, stderr=subprocess.PIPE,
                                 universal_newlines=True)
