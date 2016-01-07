@@ -70,6 +70,8 @@ def main(parser=get_parser()):
             genhub.proteins.prepare(db)
             genhub.mrnas.prepare(db)
             genhub.exons.prepare(db)
+        if 'stats' in args.task:
+            genhub.stats.compute(db)
 
         print('[GenHub: %s] build complete!' % config['species'],
               file=sys.stderr)
