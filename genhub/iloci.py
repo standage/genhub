@@ -110,6 +110,7 @@ def sequences(db, logstream=sys.stderr):
         proc = subprocess.Popen(cmd, stderr=subprocess.PIPE,
                                 universal_newlines=True)
         stdout, stderr = proc.communicate()
+        print('DEBUG: proc.returncode=%d' % proc.returncode, file=sys.stderr)
         for line in stderr.split('\n'):
             if 'has not been previously introduced' not in line and \
                'does not begin with "##gff-version"' not in line and \
