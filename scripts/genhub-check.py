@@ -12,7 +12,6 @@ from __future__ import print_function
 import importlib
 import shutil
 import subprocess
-import genhub
 
 
 def check_import(genhubroot='.', dev=False):
@@ -95,8 +94,6 @@ def check_path():
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', '--version', action='version',
-                        version='GenHub v%s' % genhub.__version__)
     parser.add_argument('-d', '--dev', action='store_true',
                         help='Check for developer-only modules as well')
     parser.add_argument('-r', '--root', default='.',
