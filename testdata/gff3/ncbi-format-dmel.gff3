@@ -1,4 +1,4 @@
-##gff-version   3
+##gff-version 3
 ##sequence-region   NC_004353.3 1 1351857
 NC_004353.3	RefSeq	gene	24053	25665	.	+	.	ID=gene1;Name=JYalpha;Dbxref=FLYBASE:FBgn0040037,GeneID:49962;gbkey=Gene;gene=JYalpha;gene_synonym=CG17923,Dmel%5CCG17923,JY-alpha,JYAlpha;locus_tag=Dmel_CG17923;partial=true;accession=49962
 NC_004353.3	RefSeq	mRNA	24053	25665	.	+	.	ID=mRNA1;Parent=gene1;Name=NM_143896.4;Note=JYalpha-RB%3B Dmel%5CJYalpha-RB%3B CG17923-RB%3B Dmel%5CCG17923-RB;Dbxref=Genbank:NM_143896.4,FLYBASE:FBgn0040037,GeneID:49962;gbkey=mRNA;gene=JYalpha;product=JYalpha;transcript_id=NM_143896.4;accession=NM_143896.4

@@ -1,4 +1,4 @@
-##gff-version   3
+##gff-version 3
 ##sequence-region   DquaScf_275 1 15708
 DquaScf_275	AEGeAn::LocusPocus	locus	1	1568	.	.	.	ID=locus1;Name=DquaILC-14465;gene=1;mRNA=1;right_overlap=881;iiLocus_exception=delta-overlap-gene;riil=0;effective_length=687;iLocus_type=piLocus
 DquaScf_275	EVM_PASA	gene	304	1068	.	+	.	ID=gene1;Parent=locus1;accession=DQUA011a006022

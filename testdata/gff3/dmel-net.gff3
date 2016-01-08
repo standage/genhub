@@ -1,4 +1,4 @@
-##gff-version   3
+##gff-version 3
 ##sequence-region   NT_033779.4 1 23011544
 NT_033779.4	RefSeq	gene	82421	87387	.	-	.	ID=gene1;Name=net;Dbxref=FLYBASE:FBgn0002931,GeneID:45339;gbkey=Gene;gene=net;gene_synonym=bHLHc42,CG11450,Dmel%5CCG11450,Group IId,shout,Shout;locus_tag=Dmel_CG11450;accession=45339
 NT_033779.4	RefSeq	mRNA	82421	87387	.	-	.	ID=mRNA1;Parent=gene1;Name=NM_080081.3;Note=net-RB%3B Dmel%5Cnet-RB%3B CG11450-RB%3B Dmel%5CCG11450-RB;Dbxref=Genbank:NM_080081.3,FLYBASE:FBgn0002931,GeneID:45339;gbkey=mRNA;gene=net;product=net%2C transcript variant B;transcript_id=NM_080081.3;accession=NM_080081.3

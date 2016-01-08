@@ -1,4 +1,4 @@
-##gff-version   3
+##gff-version 3
 ##sequence-region   NT_033779.4 1 23011544
 NT_033779.4	AEGeAn::LocusPocus	locus	78284	81920	.	.	.	fg_orient=FR;Name=DmelILC-10964;effective_length=3637;iLocus_type=iiLocus
 NT_033779.4	AEGeAn::LocusPocus	locus	81921	87887	.	.	.	ID=locus1;liil=3637;Name=DmelILC-10965;gene=1;mRNA=2;riil=6351;effective_length=5967;iLocus_type=piLocus

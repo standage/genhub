@@ -1,4 +1,4 @@
-##gff-version   3
+##gff-version 3
 ##sequence-region   PdomSCFr1.2-0266 1 34204
 PdomSCFr1.2-0266	AEGeAn::LocusPocus	locus	1	6808	.	.	.	fragment=true;Name=PdomILC-18234;effective_length=6808;iLocus_type=iiLocus
 PdomSCFr1.2-0266	AEGeAn::LocusPocus	locus	6809	12240	.	.	.	ID=locus1;Name=PdomILC-18235;gene=1;mRNA=1;riil=3849;effective_length=5432;iLocus_type=piLocus

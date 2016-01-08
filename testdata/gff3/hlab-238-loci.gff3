@@ -1,4 +1,4 @@
-##gff-version   3
+##gff-version 3
 ##sequence-region   HlabScf_238 1 159382
 HlabScf_238	AEGeAn::LocusPocus	locus	1	2849	.	.	.	fragment=true;Name=HlabILC-653078;effective_length=2849;iLocus_type=iiLocus
 HlabScf_238	AEGeAn::LocusPocus	locus	2850	5238	.	.	.	ID=locus1;Name=HlabILC-653079;gene=1;mRNA=1;riil=18686;effective_length=2389;iLocus_type=piLocus

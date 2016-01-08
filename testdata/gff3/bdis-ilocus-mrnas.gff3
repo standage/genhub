@@ -1,4 +1,4 @@
-##gff-version   3
+##gff-version 3
 ##sequence-region   NW_014576703.1 1 23566
 ##sequence-region   NW_014576707.1 1 16400
 #!gff-spec-version 1.21
