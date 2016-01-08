@@ -8,6 +8,6 @@ Hsal:
     build: HarSal_1.0
     checksums:
         gdna: 73b508cf0a0f7905b2fc46d0afef451b8802f45d
-        gff3: 6c43288cc3125c7e3e726152a9aea832cc98873c
+        gff3: 53458cf561bf8c0f12eb201c846845811bb29634
         prot: 93261734dd34c9e3858492fcc04c67e6533a24af
     description: HarSal_1.0 from BGI-Shenzhen

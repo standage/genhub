@@ -14,6 +14,6 @@ Atha:
         - NC_000932.1
     checksums:
         gdna: 332dc85d30d297ca140d3e6dc87911747ebb4818
-        gff3: 90b6c264b85d3160d8af5a3c2d7bad28fdbf48c8
+        gff3: 3a9350d28d87e2dce07f20b0602afbd19f79ec26
         prot: 55cefaf86350639f77c520887e37c1a6a4e87451
     description: TAIR10 from TAIR

@@ -1,4 +1,4 @@
-##gff-version   3
+##gff-version 3
 ##sequence-region   NC_003070.9 316128 337582
 NC_003070.9	RefSeq	mRNA	316128	316257	.	+	.	ID=mRNA1;Dbxref=Genbank:NM_001035856.2,GeneID:839313,TAIR:AT1G01920;gbkey=mRNA;gene=F22M8.5;product=SET domain-containing protein;transcript_id=NM_001035856.2;accession=NM_001035856.2
 NC_003070.9	RefSeq	mRNA	316344	316440	.	+	.	ID=mRNA1;Dbxref=Genbank:NM_001035856.2,GeneID:839313,TAIR:AT1G01920;gbkey=mRNA;gene=F22M8.5;product=SET domain-containing protein;transcript_id=NM_001035856.2;accession=NM_001035856.2

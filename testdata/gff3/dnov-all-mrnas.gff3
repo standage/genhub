@@ -1,4 +1,4 @@
-##gff-version   3
+##gff-version 3
 ##sequence-region   DnovScf_101 3414831 3569651
 DnovScf_101	GLEAN	mRNA	3414831	3414992	.	+	.	ID=mRNA1;accession=Dnov00267
 DnovScf_101	GLEAN	mRNA	3415486	3415614	.	+	.	ID=mRNA1;accession=Dnov00267

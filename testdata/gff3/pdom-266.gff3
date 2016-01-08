@@ -1,4 +1,4 @@
-##gff-version   3
+##gff-version 3
 ##sequence-region   PdomSCFr1.2-0266 1 34204
 PdomSCFr1.2-0266	maker	gene	7309	11740	.	+	.	ID=gene1;Name=PdomGENEr1.2-08518;Dbxref=MAKER:snap-PdomSCFr1.2-0266-processed-gene-0.41;accession=PdomGENEr1.2-08518
 PdomSCFr1.2-0266	maker	mRNA	7309	11740	.	+	.	ID=mRNA1;Parent=gene1;Name=PdomMRNAr1.2-08518.1;_AED=0.12;_eAED=0.12;_QI=520|0.72|0.83|1|0.90|0.83|12|152|609;Dbxref=MAKER:snap-PdomSCFr1.2-0266-processed-gene-0.41-mRNA-1;accession=PdomMRNAr1.2-08518.1

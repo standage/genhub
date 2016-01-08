@@ -10,6 +10,6 @@ Bdis:
         - NC_011032.1
     checksums:
         gdna: 65702da54927be38b37be8911643f036fdb577b1
-        gff3: 732c91a1f6a0bfb2af48d63a1b6ba63b482b7eed
+        gff3: 11c352f2483784a7acb1c3c200601969a444439f
         prot: c70e1b2df2780da33aea71fa2b61908a795c4c3e
     description: Brachypodium_distachyon_v2.0 from JGI

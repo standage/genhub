@@ -27,6 +27,7 @@ from . import iloci
 from . import proteins
 from . import mrnas
 from . import exons
+from . import stats
 
 # Custom modules
 from . import pdom

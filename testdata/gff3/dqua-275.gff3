@@ -1,4 +1,4 @@
-##gff-version   3
+##gff-version 3
 ##sequence-region   DquaScf_275 1 15708
 DquaScf_275	EVM_PASA	gene	304	1068	.	+	.	ID=gene1;accession=DQUA011a006022
 DquaScf_275	EVM_PASA	mRNA	304	1068	.	+	.	ID=mRNA1;Parent=gene1;accession=DQUA011a006022T1

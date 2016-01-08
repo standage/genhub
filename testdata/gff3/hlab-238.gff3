@@ -1,4 +1,4 @@
-##gff-version   3
+##gff-version 3
 ##sequence-region   HlabScf_238 1 159382
 HlabScf_238	AEGeAn::tidygff3	gene	3350	4738	.	+	.	ID=gene1
 HlabScf_238	GLEAN	mRNA	3350	4738	0.821	+	.	ID=mRNA1;Parent=gene1;source_id=Hlab_GLEAN_10000992;Name=Hlab05062;accession=Hlab05062
