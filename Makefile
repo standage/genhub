@@ -3,10 +3,10 @@ SHELL := bash
 SHELLOPTS := errexit:pipefail
 
 check:
-	python scripts/genhub-check.py
+	python dev/check.py
 
 check-dev:
-	python scripts/genhub-check.py --dev
+	python dev/check.py --dev
 
 depend:
 	@ pip install --upgrade pip

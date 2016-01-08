@@ -11,7 +11,7 @@ cache:
 before_install:
     - mkdir -p $HOME/.python-eggs
     - chmod og-w $HOME/.python-eggs
-    - bash scripts/travis-prereqs.sh
+    - bash dev/travis-prereqs.sh
     - make depend
 before_script:
     - export PATH=$HOME/local/bin:$PATH

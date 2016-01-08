@@ -36,10 +36,10 @@ Whichever you choose, be sure to check that all of GenHub's [prerequisites](docs
 ## Quick start
 
 ```bash
-# Download the Arabidopsis genome
-genhub-build.py --workdir=/opt/data/myhub --cfg=$GENHUBDIR/conf/modorg/Atha.yml download format prepare stats
+# Download and prepare the yeast genome
+genhub-build.py --workdir=/opt/data/myhub --cfg=$GENHUBDIR/conf/modorg/Scer.yml download format prepare stats
 
-# Download 23 Hymenopteran genomes, 4 at a time
+# Download and prepare 23 Hymenopteran genomes, 4 at a time
 find $GENHUBDIR/conf/hym -type f -name "*.yml" \
     | parallel --gnu --jobs 4 genhub-build.py --workdir=/opt/data/myhub --cfg={} download format prepare stats
 ```
