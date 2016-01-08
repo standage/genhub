@@ -21,6 +21,6 @@ Bter:
         - 'GeneID:100648960'
     checksums:
         gdna: 43c26f7df40173119062341929c0fa07de303821
-        gff3: 73a3c220fd3f8660f07ee2f7b65b5539d7b4c63c
+        gff3: bb2995c05587546dd68e933f638c5ac11758f08b
         prot: 2b33ea870cdf72d2a744ce8a19bc6959ef454cf3
     description: Bter_1.0 from HGSC@Baylor

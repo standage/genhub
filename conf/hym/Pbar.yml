@@ -8,6 +8,6 @@ Pbar:
     build: Pbar_UMD_V03
     checksums:
         gdna: 5deee484ae7e219b91bec975d9206378c8417f49
-        gff3: 8c39da4d76b77f3e3aaaaee30bfb0de46ba645e6
+        gff3: f0523af8e2b578c1e789d1aed460a670d3bedb16
         prot: 0c1084c83bfa693c5075ebcf0cf7d5bafe7fe7c6
     description: Pbar_UMD_V03 from the Ant Genomics Consortium

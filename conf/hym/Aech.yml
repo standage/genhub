@@ -8,6 +8,6 @@ Aech:
     build: Aech_3.9
     checksums:
         gdna: 7085caf56df9f094aed4cfff0d9ef34509db9a3d
-        gff3: acacbd25488ca5d48115e388b538f833ffc166c2
+        gff3: 769e2a3c47f7133ccdea4716ae3d0cb1b51d83cd
         prot: 4ce2daff273a6dd6c602a23d2b518156d860477c
     description: Aech_3.9 from BGI-Shenzhen

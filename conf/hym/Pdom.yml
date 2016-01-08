@@ -8,6 +8,6 @@ Pdom:
     proteins: pdom-annot-r1.2-proteins.fa
     checksums:
         gdna: f5762ffee0c703c54f56f180879852c79ffcf284
-        gff3: 869e9661f04ab566a634612f1193f6b672926144
+        gff3: f2a6bb396b290f3ab3cd48592ff926797c6abf73
         prot: a789c1e0365cb0500360ea9a273ec1497b3c8fa8
     description: Toth lab internal release 1.2

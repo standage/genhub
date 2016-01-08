@@ -14,7 +14,7 @@ Dmel:
         - CHR_4/NC_004353
     checksums:
         gdna: a010d9c19f8d9d9792c0a6f180b12d0c27e86077
-        gff3: ea4f73b80574f1575df550d9942deee85ca09caf
+        gff3: 6831c6dede26f7e765c013edc85393eb48054f71
         prot: c4ba26a693b7a954db846f8add3aed41b065052d
     compress:
         - gdna

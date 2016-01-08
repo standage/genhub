@@ -16,6 +16,6 @@ Scer:
         - NC_001224.1
     checksums:
         gdna: 69cd6ed44de3eae8896466bfb36e1eaa9ef948e8
-        gff3: 09764827d64b0c5e0e2d98cd01556b64deec30ba
+        gff3: 2c9be5765a26345b4c3b689cecec4dced6e29b7d
         prot: 6dd13fce7050f9439313fd9b0c16a70458c8c605
     description: R64 from SGD
