@@ -202,7 +202,7 @@ def premrna_desc(gff3, fasta):
             fields = entry.rstrip().split('\t')
             assert len(fields) == 9
             utr3plen += int(fields[4]) - int(fields[3]) + 1
-        elif '###' in entry:
+        elif entry.startswith('###'):
             if mrnaacc != '':
                 values = '%s %d %.3f %.3f %.3f %d %d %d %d' % (
                     mrnaacc, mrnalen, gccontent, gcskew, ncontent,
@@ -241,7 +241,7 @@ def mrna_desc(gff3, fasta):
             accmatch = re.search('accession=([^;\n]+)', fields[8])
             assert accmatch, 'Unable to parse mRNA accession: %s' % fields[8]
             mrnaacc = accmatch.group(1)
-        elif '###' in entry:
+        elif entry.startswith('###'):
             mrnaseq = seqs[mrnaacc]
             if len(mrnaseq) != mrnalen:
                 message = 'mature mRNA "%s": length mismatch' % mrnaacc
@@ -278,20 +278,22 @@ def cds_desc(gff3, fasta):
             assert len(fields) == 9
             accession = re.search('accession=([^;\n]+)', fields[8]).group(1)
             cdslen += int(fields[4]) - int(fields[3]) + 1
-        elif '###' in entry:
-            cdsseq = seqs[accession]
-            if len(cdsseq) != cdslen:
-                message = 'CDS for "%s": length mismatch' % accession
-                message += ' (gff3=%d, fa=%d)' % (cdslen, len(cdsseq))
-                message += '; most likely a duplicated accession, discarding'
-                print(message, file=sys.stderr)
-            else:
-                gccontent = gc_content(cdsseq)
-                gcskew = gc_skew(cdsseq)
-                ncontent = n_content(cdsseq)
-                values = '%s %d %.3f %.3f %.3f' % (
-                    accession, cdslen, gccontent, gcskew, ncontent)
-                yield values.split(' ')
+        elif entry.startswith('###'):
+            if accession:
+                cdsseq = seqs[accession]
+                if len(cdsseq) != cdslen:
+                    message = 'CDS for "%s": length mismatch' % accession
+                    message += ' (gff3=%d, fa=%d)' % (cdslen, len(cdsseq))
+                    message += '; most likely a duplicated accession'
+                    message += ', discarding'
+                    print(message, file=sys.stderr)
+                else:
+                    gccontent = gc_content(cdsseq)
+                    gcskew = gc_skew(cdsseq)
+                    ncontent = n_content(cdsseq)
+                    values = '%s %d %.3f %.3f %.3f' % (
+                        accession, cdslen, gccontent, gcskew, ncontent)
+                    yield values.split(' ')
             accession = ''
             cdslen = 0
 
@@ -374,10 +376,12 @@ def exon_desc(gff3, fasta):
     reported_exons = {}
     exons, cdss = [], {}
     start, stop = None, None
+    moltypes = ['mRNA', 'tRNA', 'ncRNA', 'transcript', 'primary_transcript',
+                'V_gene_segment', 'D_gene_segment', 'J_gene_segment',
+                'C_gene_segment']
     for entry in gff3:
-        for rnatype in ['mRNA', 'tRNA', 'ncRNA', 'transcript',
-                        'primary_transcript']:
-            if ('\t%s\t' % rnatype) in entry:
+        for moltype in moltypes:
+            if ('\t%s\t' % moltype) in entry:
                 accession = re.search('accession=([^;\n]+)', entry).group(1)
                 tid = re.search('ID=([^;\n]+)', entry).group(1)
                 rnaid_to_accession[tid] = accession
@@ -392,7 +396,9 @@ def exon_desc(gff3, fasta):
             start = entry
         elif '\tstop_codon\t' in entry:
             stop = entry
-        elif '###' in entry:
+        elif entry.startswith('###'):
+            if len(exons) == 0:
+                continue
             xcept = False
             for exonpos in cdss:
                 if ';exception=ribosomal slippage' in cdss[exonpos]:
@@ -497,7 +503,9 @@ def intron_desc(gff3, fasta):
             start = entry
         elif '\tstop_codon\t' in entry:
             stop = entry
-        elif '###' in entry:
+        elif entry.startswith('###'):
+            if mrnaid is None:
+                continue
             assert start, 'No start codon for introns(s): %s' % introns[0]
             assert stop,  'No stop codon for introns(s): %s' % introns[0]
             if len(introns) > 0:
@@ -523,9 +531,9 @@ def intron_desc(gff3, fasta):
                         ncontent, context)
                     reported_introns[intronpos] = 1
                     yield values.split(' ')
+            mrnaid = None
             introns = []
             start, stop = None, None
-            continue
 
 if __name__ == '__main__':
     desc = 'Calculate descriptive statistics of genome features'
