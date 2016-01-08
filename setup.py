@@ -30,4 +30,6 @@ setuptools.setup(name='genhub',
                           'scripts/genhub-format-gff3.py',
                           'scripts/genhub-namedup.py',
                           'scripts/genhub-stats.py'],
+                 package_data={'genhub': ['../conf/*.yml',
+                                          '../conf/*/*.yml']},
                  zip_safe=False)
