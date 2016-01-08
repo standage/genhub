@@ -182,8 +182,10 @@ def premrna_desc(gff3, fasta):
             mrnalen = int(fields[4]) - int(fields[3]) + 1
             mrnaseq = seqs[mrnaacc]
             if len(mrnaseq) != mrnalen:
-                print('mRNA "%s": length mismatch; gff=%d, fa=%d' %
-                      (mrnaacc, mrnalen, len(mrnaseq)), file=sys.stderr)
+                message = 'pre-mRNA "%s": length mismatch' % mrnaacc
+                message += ' (gff3=%d, fa=%d)' % (mrnalen, len(mrnaseq))
+                message += '; most likely a duplicated accession, discarding'
+                print(message, file=sys.stderr)
                 mrnaacc = ''
             gccontent = gc_content(mrnaseq)
             gcskew = gc_skew(mrnaseq)
@@ -242,13 +244,14 @@ def mrna_desc(gff3, fasta):
         elif '###' in entry:
             mrnaseq = seqs[mrnaacc]
             if len(mrnaseq) != mrnalen:
-                print('mature mRNA "%s": length mismatch; gff=%d, fa=%d' %
-                      (mrnaacc, mrnalen, len(mrnaseq)), file=sys.stderr)
-                mrnaacc = ''
-            gccontent = gc_content(mrnaseq)
-            gcskew = gc_skew(mrnaseq)
-            ncontent = n_content(mrnaseq)
-            if mrnaacc != '':
+                message = 'mature mRNA "%s": length mismatch' % mrnaacc
+                message += ' (gff3=%d, fa=%d)' % (mrnalen, len(mrnaseq))
+                message += '; most likely a duplicated accession, discarding'
+                print(message, file=sys.stderr)
+            else:
+                gccontent = gc_content(mrnaseq)
+                gcskew = gc_skew(mrnaseq)
+                ncontent = n_content(mrnaseq)
                 values = '%s %d %.3f %.3f %.3f' % (
                     mrnaacc, mrnalen, gccontent, gcskew, ncontent)
                 yield values.split(' ')
@@ -278,13 +281,14 @@ def cds_desc(gff3, fasta):
         elif '###' in entry:
             cdsseq = seqs[accession]
             if len(cdsseq) != cdslen:
-                print('CDS "%s": length mismatch; gff=%d, fa=%d' %
-                      (accession, cdslen, len(cdsseq)), file=sys.stderr)
-                accession = ''
-            gccontent = gc_content(cdsseq)
-            gcskew = gc_skew(cdsseq)
-            ncontent = n_content(cdsseq)
-            if accession != '':
+                message = 'CDS for "%s": length mismatch' % accession
+                message += ' (gff3=%d, fa=%d)' % (cdslen, len(cdsseq))
+                message += '; most likely a duplicated accession, discarding'
+                print(message, file=sys.stderr)
+            else:
+                gccontent = gc_content(cdsseq)
+                gcskew = gc_skew(cdsseq)
+                ncontent = n_content(cdsseq)
                 values = '%s %d %.3f %.3f %.3f' % (
                     accession, cdslen, gccontent, gcskew, ncontent)
                 yield values.split(' ')
