@@ -33,6 +33,17 @@ make check
 
 Whichever you choose, be sure to check that all of GenHub's [prerequisites](docs/INSTALL.md) are installed on your system.
 
+## Quick start
+
+```bash
+# Download the Arabidopsis genome
+genhub-build.py --workdir=/opt/data/myhub --cfg=$GENHUBDIR/conf/modorg/Atha.yml download format prepare stats
+
+# Download 23 Hymenopteran genomes, 4 at a time
+find $GENHUBDIR/conf/hym -type f -name "*.yml" \
+    | parallel --gnu --jobs 4 genhub-build.py --workdir=/opt/data/myhub --cfg={} download format prepare stats
+```
+
 ## Additional Details
 
 GenHub was originally dubbed *HymHub* and was designed specifically for managing hymenotperan genomes.
