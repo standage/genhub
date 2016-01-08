@@ -486,7 +486,7 @@ def intron_desc(gff3, fasta):
     start, stop = None, None
     for entry in gff3:
         if '\tmRNA\t' in entry:
-            mrnaid = re.search('Name=([^;\n]+)', entry).group(1)
+            mrnaid = re.search('accession=([^;\n]+)', entry).group(1)
         elif '\tintron\t' in entry:
             introns.append(entry)
         elif '\tstart_codon\t' in entry:
