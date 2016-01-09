@@ -44,3 +44,4 @@ If you are having issues installing PycURL, try the [following workaround][curl]
 [agn]: http://standage.github.io/AEGeAn
 [venv]: http://docs.python-guide.org/en/latest/dev/virtualenvs/
 [curl]: http://eon01.com/blog/hacking-pycurl-installation-problem-within-virtualenv/
+[rel]: https://github.com/standage/genhub/releases

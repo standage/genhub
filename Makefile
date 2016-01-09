@@ -32,5 +32,8 @@ precommit: .git/hooks/pre-commit
 version:
 	python setup.py version
 
+pypi:
+	python setup.py sdist upload
+
 clean:
 	rm -rf *.pyc genhub/*.pyc .coverage testdata/scratch/*
