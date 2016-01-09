@@ -34,7 +34,7 @@ setuptools.setup(name='genhub',
                  package_data={'genhub': ['../conf/*.yml',
                                           '../conf/*/*.yml']},
                  classifiers=[
-                    'Development Status :: 4 - Beta'
+                    'Development Status :: 4 - Beta',
                     'Environment :: Console',
                     'License :: OSI Approved :: BSD License',
                     'Programming Language :: Python :: 2.7',
