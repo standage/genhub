@@ -1,6 +1,11 @@
 GenHub
 ======
 
+![Supported Python versions](https://img.shields.io/pypi/pyversions/genhub.svg)
+[![PyPI version][pypiv]](https://pypi.python.org/pypi/genhub)
+[![GenHub build status][travisbadge]](https://travis-ci.org/standage/genhub)
+[![BSD-3 licensed][bsd]](https://github.com/standage/genhub/blob/master/LICENSE.txt)
+
 ## Summary
 
 GenHub is software for managing a hub of annotated genome assemblies.
@@ -13,25 +18,25 @@ So rather than distributing the processed data itself, GenHub distributes stable
 
 ## Obtaining GenHub
 
-The easiest way to obtain the latest and greatest version of GenHub is to clone the development repository from GitHub.
+The easiest way to obtain GenHub is to install from the Python Package Index (PyPI) using the `pip` command.
 
 ```bash
-git clone https://github.com/standage/genhub.git
-cd genhub
-make check
+pip install genhub
 ```
 
-Another option is to download a stable version from the [release listing][rel].
+You can also install directly from the source.
+Check for the latest stable version on the [release listing][rel].
 
 ```bash
 # replace x.y.z with an actual version
 wget https://github.com/standage/genhub/archive/x.y.z.tar.gz
 tar -xzf x.y.z.tar.gz
 cd genhub-x.y.z
-make check
+python setup.py install
 ```
 
-Whichever you choose, be sure to check that all of GenHub's [prerequisites](docs/INSTALL.md) are installed on your system.
+GenHub relies on additional third-party software.
+For more info and troubleshooting tips, be sure to check out the complete [installation instructions](docs/INSTALL.md).
 
 ## Quick start
 
@@ -50,10 +55,4 @@ GenHub was originally dubbed *HymHub* and was designed specifically for managing
 The need for a more general solution motivated the development of GenHub in its current incarnation.
 
 - Built by Daniel Standage <daniel.standage@gmail.com>
-- Available at https://github.com/standage/genhub
-- [![GenHub build status][travisbadge]](https://travis-ci.org/standage/genhub)
-
-
-[travisbadge]: https://travis-ci.org/standage/genhub.png
-[agn_rtd]: http://aegean.readthedocs.org
-[rel]: https://github.com/standage/genhub/releases
+- Development repository at https://github.com/standage/genhub

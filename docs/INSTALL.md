@@ -1,40 +1,46 @@
 Installing GenHub
 =================
 
-## Prerequistes
+Installing GenHub itself is pretty painless.
+The easiest way to install is with `pip`.
 
-Before getting started with GenHub, make sure that all prerequisites are installed on your system.
-This includes the following.
+```bash
+pip install genhub
+```
 
-- A UNIX operating system (Mac OS X or Linux should work fine)
-- Basic build tools like `gcc` and `make`
-- the Python packages specified in `requirements.txt`
-- the [GenomeTools library][gt]
-- the [AEGeAn Toolkit][agn]
+You can also install directly from the source.
+Check for the latest stable version on the [release listing][rel].
 
-Running `make depend` with administrative privileges or within a user-controlled [virtual environment][venv] will install the prerequisite Python packages.
-Installation instructions for GenomeTools and AEGeAn are available from the corresponding source code distributions.
+```bash
+# replace x.y.z with an actual version
+wget https://github.com/standage/genhub/archive/x.y.z.tar.gz
+tar -xzf x.y.z.tar.gz
+cd genhub-x.y.z
+python setup.py install
+```
 
-## Installing GenHub
+Either of these methods will install the `pyyaml` and `pycurl` dependencies.
+See below if you have trouble installing `pycurl` in a virtual environment.
+
+## Third-party software
 
 GenHub is implemented primarily in Python, and should be compatible with Python 2.7 and Python 3.3+.
 The GenHub code itself does not need to be compiled.
-Eventually GenHub will be registered with the Python Package Index (so you can `pip install genhub`), but for now running GenHub directly from the development directory is recommended.
-Set your `PATH` and `PYTHONPATH` variables so that the operating system can find the GenHub scripts and modules, and then use the `check-dev` task to troubleshoot installation of prerequisites.
+However, it does depend on two third-party libraries that do need to be compiled.
+Links to these libraries (and corresponding installation instructions) are provided below.
 
-```
-export PATH=$(pwd)/scripts:$PATH
-export PYTHONPATH=$(pwd)
-make check-dev
-```
+- the [GenomeTools library][gt] ([installation][gt-install])
+- the [AEGeAn Toolkit][agn] ([installation][agn-install])
 
 ## Special note about PycURL
 
-In the past there were some issues installing PycURL in a virtual environment.
+In the past there were some issues installing PycURL in a [virtual environment][venv].
 If you are having issues installing PycURL, try the [following workaround][curl]: deactivate the virtualenv, install PycURL system-wide (or in a directory you control), and then copy the pycurl files into your virtualenv site-packages.
 
 
-[gt]: http://genometools.org
+[gt]: https://github.com/genometools/genometools
+[gt-install]: https://github.com/genometools/genometools
+[agn-install]: http://aegean.readthedocs.org/
 [agn]: http://standage.github.io/AEGeAn
 [venv]: http://docs.python-guide.org/en/latest/dev/virtualenvs/
 [curl]: http://eon01.com/blog/hacking-pycurl-installation-problem-within-virtualenv/
