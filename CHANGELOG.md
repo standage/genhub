@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.2] - 2016-01-09
+### Added
+- Package metadata.
+
+### Fixed
+- Minor improvements to documentation.
+
 ## [0.1.1] - 2016-01-08
 ### Fixed
 - Added pre-requisites to setup.py.
