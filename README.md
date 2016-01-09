@@ -56,3 +56,9 @@ The need for a more general solution motivated the development of GenHub in its 
 
 - Built by Daniel Standage <daniel.standage@gmail.com>
 - Development repository at https://github.com/standage/genhub
+
+[travisbadge]: https://img.shields.io/travis/standage/genhub.svg
+[pypiv]: https://img.shields.io/pypi/v/genhub.svg
+[bsd]: https://img.shields.io/pypi/l/genhub.svg
+[agn_rtd]: http://aegean.readthedocs.org
+[rel]: https://github.com/standage/genhub/releases
