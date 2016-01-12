@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Added
+- Recipe for the rice genome (*Oryza sativa* L. ssp. *japonica*).
+
 ## [0.1.2] - 2016-01-09
 ### Added
 - Package metadata.
