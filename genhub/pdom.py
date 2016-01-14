@@ -110,7 +110,7 @@ class PdomDB(genhub.genomedb.GenomeDB):
 
 def test_download():
     """PdomDataStore download"""
-    label, config = genhub.conf.load_one('conf/hym/Pdom.yml')
+    label, config = genhub.conf.load_one('genhub/genomes/Pdom.yml')
     pdom_db = PdomDB(label, config)
     assert pdom_db.gdnaurl == ('http://de.iplantcollaborative.org/dl/d/'
                                '53B7319E-3201-4087-9607-2D541FF34DD0/'
@@ -137,7 +137,7 @@ def test_format():
 def test_protids():
     """Pdom: extract protein IDs from GFF3"""
 
-    label, conf = genhub.conf.load_one('conf/hym/Pdom.yml')
+    label, conf = genhub.conf.load_one('genhub/genomes/Pdom.yml')
     db = PdomDB(label, conf)
     protids = ['PdomMRNAr1.2-08518.1', 'PdomMRNAr1.2-11420.1',
                'PdomMRNAr1.2-08519.1']
@@ -153,7 +153,7 @@ def test_protids():
 def test_protmap():
     """Pdom: extract protein-->iLocus mapping from GFF3"""
 
-    label, conf = genhub.conf.load_one('conf/hym/Pdom.yml')
+    label, conf = genhub.conf.load_one('genhub/genomes/Pdom.yml')
     db = PdomDB(label, conf)
     mapping = {'PdomMRNAr1.2-08518.1': 'PdomILC-18235',
                'PdomMRNAr1.2-11420.1': 'PdomILC-18237',

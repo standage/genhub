@@ -90,7 +90,7 @@ def prepare(db, logstream=sys.stderr):  # pragma: no cover
 
 def test_protein_sequence():
     """Select protein sequences"""
-    label, config = genhub.conf.load_one('conf/modorg/Scer.yml')
+    label, config = genhub.conf.load_one('genhub/genomes/Scer.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     sequences(db, logstream=None)
 

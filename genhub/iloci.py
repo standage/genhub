@@ -161,7 +161,7 @@ def prepare(db, delta=500, logstream=sys.stderr):  # pragma: no cover
 
 def test_intervals():
     """Parse iLocus intervals"""
-    label, config = genhub.conf.load_one('conf/modorg/Bdis.yml')
+    label, config = genhub.conf.load_one('genhub/genomes/Bdis.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     intervals(db, logstream=None)
 
@@ -176,7 +176,7 @@ def test_intervals():
 
 def test_simple():
     """Determine simple iLoci"""
-    label, config = genhub.conf.load_one('conf/modorg/Bdis.yml')
+    label, config = genhub.conf.load_one('genhub/genomes/Bdis.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     simple(db, logstream=None)
 
@@ -187,7 +187,7 @@ def test_simple():
 
 def test_reps():
     """Select representative gene models for each iLocus"""
-    label, config = genhub.conf.load_one('conf/modorg/Bdis.yml')
+    label, config = genhub.conf.load_one('genhub/genomes/Bdis.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     representatives(db, logstream=None)
 
@@ -198,7 +198,7 @@ def test_reps():
 
 def test_sequences():
     """Extract iLocus sequences"""
-    label, config = genhub.conf.load_one('conf/modorg/Bdis.yml')
+    label, config = genhub.conf.load_one('genhub/genomes/Bdis.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     sequences(db, logstream=None)
 
@@ -213,7 +213,7 @@ def test_sequences():
 
 def test_ancillary():
     """Process ancillary data for iLoci"""
-    label, config = genhub.conf.load_one('conf/modorg/Bdis.yml')
+    label, config = genhub.conf.load_one('genhub/genomes/Bdis.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     ancillary(db, logstream=None)
 

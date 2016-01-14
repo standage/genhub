@@ -36,4 +36,4 @@ pypi:
 	python setup.py sdist upload
 
 clean:
-	rm -rf *.pyc genhub/*.pyc .coverage testdata/scratch/*
+	rm -rf *.pyc genhub/*.pyc .coverage testdata/scratch/* build/ dist/ genhub.egg-info/ __pycache__/

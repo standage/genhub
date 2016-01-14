@@ -247,7 +247,7 @@ class GenomeDB(object):
 
 def test_props():
     """GenomeDB properties"""
-    label, config = genhub.conf.load_one('conf/hym/Bimp.yml')
+    label, config = genhub.conf.load_one('genhub/genomes/Bimp.yml')
     db = GenomeDB(label, config)
     assert db.dbdir == './Bimp'
     assert db.gdnafile == './Bimp/Bimp.gdna.fa'
@@ -255,7 +255,7 @@ def test_props():
     assert db.protfile == './Bimp/Bimp.all.prot.fa'
     assert db.source == 'refseq'
 
-    label, config = genhub.conf.load_one('conf/hym/Dqua.yml')
+    label, config = genhub.conf.load_one('genhub/genomes/Dqua.yml')
     db = GenomeDB(label, config, workdir='/opt/data/genomes')
     assert db.dbdir == '/opt/data/genomes/Dqua'
     assert db.gdnafile == '/opt/data/genomes/Dqua/Dqua.gdna.fa'

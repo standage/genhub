@@ -125,7 +125,7 @@ def prepare(db, logstream=sys.stderr):  # pragma: no cover
 
 def test_coding_sequences():
     """Extract coding sequences"""
-    label, config = genhub.conf.load_one('conf/modorg/Atha.yml')
+    label, config = genhub.conf.load_one('genhub/genomes/Atha.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     cds_sequences(db, logstream=None)
 
@@ -136,7 +136,7 @@ def test_coding_sequences():
 
 def test_exon_sequences():
     """Extract exon sequences"""
-    label, config = genhub.conf.load_one('conf/modorg/Atha.yml')
+    label, config = genhub.conf.load_one('genhub/genomes/Atha.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     exon_sequences(db, logstream=None)
 
@@ -147,7 +147,7 @@ def test_exon_sequences():
 
 def test_intron_sequences():
     """Extract intron sequences"""
-    label, config = genhub.conf.load_one('conf/modorg/Atha.yml')
+    label, config = genhub.conf.load_one('genhub/genomes/Atha.yml')
     db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
     intron_sequences(db, logstream=None)
 

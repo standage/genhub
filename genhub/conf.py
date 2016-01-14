@@ -87,35 +87,35 @@ def conf_filter_file(conf):
 
 def test_load_file():
     """Loading genome configurations from a single file"""
-    fh = open('conf/hym/Pbar.yml', 'r')
+    fh = open('genhub/genomes/Pbar.yml', 'r')
     conf = load_file(fh)
     assert len(conf) == 1
     assert 'Pbar' in conf
     assert conf['Pbar']['species'] == 'Pogonomyrmex barbatus'
 
-    conf = load_file('conf/hym/Hlab.yml')
+    conf = load_file('genhub/genomes/Hlab.yml')
     assert len(conf) == 1
     assert 'Hlab' in conf
     assert conf['Hlab']['common'] == 'blueberry bee'
 
-    label, conf = load_one('conf/modorg/Tcas.yml')
+    label, conf = load_one('genhub/genomes/Tcas.yml')
     assert label == 'Tcas'
     assert conf['source'] == 'refseq'
 
 
 def test_load_dir():
     """Loading genome configurations from a directory"""
-    conf = load_dir('conf/hym')
+    conf = load_dir('genhub/genomes')
     assert len(conf) == 23
     assert sorted(conf)[0:4] == ['Acep', 'Ador', 'Aech', 'Aflo']
 
 
 def test_load_list():
     """Loading genome configurations from a file list"""
-    conf = load_file_list('conf/honeybees.yml')
+    conf = load_file_list('genhub/genomes/honeybees.yml')
     assert len(conf) == 3
     assert sorted(conf) == ['Ador', 'Aflo', 'Amel']
 
-    conf = load_file_list(open('conf/bumblebees.yml', 'r'))
+    conf = load_file_list(open('genhub/genomes/bumblebees.yml', 'r'))
     assert len(conf) == 2
     assert sorted(conf) == ['Bimp', 'Bter']
