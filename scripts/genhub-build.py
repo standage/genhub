@@ -28,17 +28,25 @@ dbtype = {'refseq': genhub.refseq.RefSeqDB,
 def get_parser():
     desc = 'Run the main GenHub build process.'
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('-v', '--version', action='version',
-                        version='GenHub v%s' % genhub.__version__)
     parser.add_argument('-w', '--workdir', metavar='WD', default='./species',
                         help='working directory for data files; default is '
                         '"./species"')
+    parser.add_argument('-v', '--version', action='version',
+                        version='GenHub v%s' % genhub.__version__)
+    parser.add_argument('-c', '--cfgdir', default=None, metavar='DIR',
+                        help='Directory (or comma-separated list of '
+                        'directories) from which to load user-supplied genome '
+                        'configuration files')
     confargs = parser.add_mutually_exclusive_group()
-    confargs.add_argument('-c', '--cfg', default=None, metavar='CFG',
-                          type=argparse.FileType('r'), help='Provide all '
-                          'genome configurations in a single file')
-    confargs.add_argument('--cfgdir', default=None, metavar='DIR', help='Load '
-                          'genome configs from all .yml files in a directory')
+    confargs.add_argument('-g', '--genome', default=None, metavar='LBL',
+                          help='Label (or comma-separated set of labels) '
+                          'specifying the genome(s) to process; more '
+                          'information available by executing the command '
+                          '`genhub-genomes.py -h`')
+    confargs.add_argument('-l', '--list', default=None, metavar='LBL',
+                          help='Label of a list of genomes to process; more '
+                          'information available by executing the command '
+                          '`genhub-genomes.py -h`')
     parser.add_argument('task', nargs='+', choices=buildcmds, metavar='task',
                         help='Build task(s) to execute; options include '
                         '"%s"' % '", "'.join(buildcmds))
@@ -47,12 +55,16 @@ def get_parser():
 
 def main(parser=get_parser()):
     args = parser.parse_args()
-    if args.cfg:
-        conf = genhub.conf.load_file(args.cfg)
-    elif args.cfgdir:
-        conf = genhub.conf.load_dir(args.cfgdir)
+    if args.cfgdir:
+        args.cfgdir = args.cfgdir.split(',')
+    if args.genome:
+        labels = args.genome.split(',')
+        conf = genhub.conf.load_genomes(labels, args.cfgdir)
+    elif args.list:
+        conf = genhub.conf.load_genome_list(args.list, args.cfgdir)
     else:
-        print('error: must specify config file or directory', file=sys.stderr)
+        message = 'must specify a genome or genome list to process'
+        raise ValueError(message)
 
     for label in sorted(conf):
         config = conf[label]
