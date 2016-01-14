@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015   Indiana University
+# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2015-2016   Indiana University
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -28,11 +28,11 @@ dbtype = {'refseq': genhub.refseq.RefSeqDB,
 def get_parser():
     desc = 'Run the main GenHub build process.'
     parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('-v', '--version', action='version',
+                        version='GenHub v%s' % genhub.__version__)
     parser.add_argument('-w', '--workdir', metavar='WD', default='./species',
                         help='working directory for data files; default is '
                         '"./species"')
-    parser.add_argument('-v', '--version', action='version',
-                        version='GenHub v%s' % genhub.__version__)
     parser.add_argument('-c', '--cfgdir', default=None, metavar='DIR',
                         help='Directory (or comma-separated list of '
                         'directories) from which to load user-supplied genome '

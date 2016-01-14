@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015   Indiana University
+# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2015-2016   Indiana University
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -11,6 +11,7 @@
 """Module for handling genome configuration files."""
 
 from __future__ import print_function
+import glob
 import itertools
 import os
 import pkg_resources
@@ -19,8 +20,34 @@ import yaml
 import genhub
 try:
     FileNotFoundError
-except NameError:
+except NameError:  # pragma: no cover
     FileNotFoundError = IOError
+
+
+def find_genomes(user_dirs=None):
+    cfgdirs = list()
+    if user_dirs:
+        cfgdirs.extend(user_dirs)
+    genhubdir = pkg_resources.resource_filename('genhub', 'genomes')
+    cfgdirs.append(genhubdir)
+
+    for cfgdir in cfgdirs:
+        for filepath in glob.glob(cfgdir + '/*.yml'):
+            yield load_one(filepath)
+
+
+def find_lists(user_dirs=None):
+    cfgdirs = list()
+    if user_dirs:
+        cfgdirs.extend(user_dirs)
+    genhubdir = pkg_resources.resource_filename('genhub', 'genomes')
+    cfgdirs.append(genhubdir)
+
+    for cfgdir in cfgdirs:
+        for filepath in glob.glob(cfgdir + '/*.txt'):
+            filename = os.path.basename(filepath)
+            label = os.path.splitext(filename)[0]
+            yield label
 
 
 def load_genome(label, user_dirs=None):
@@ -141,6 +168,27 @@ def conf_filter_file(conf):
             print(exclusion, file=excludefile)
     excludefile.close()
     return excludefile
+
+
+def test_find():
+    """Find genome and genome list configs"""
+    genome_labels = [x for x in find_genomes()]
+    files = [x for x in glob.glob('genhub/genomes/*.yml')]
+    assert len(genome_labels) == len(files)
+
+    genome_labels = [x for x in find_genomes(['testdata/conf'])]
+    files1 = [x for x in glob.glob('genhub/genomes/*.yml')]
+    files2 = [x for x in glob.glob('testdata/conf/*.yml')]
+    assert len(genome_labels) == len(files1 + files2)
+
+    list_labels = [x for x in find_lists()]
+    files = [x for x in glob.glob('genhub/genomes/*.txt')]
+    assert len(list_labels) == len(files)
+
+    list_labels = [x for x in find_lists(['testdata/conf'])]
+    files1 = [x for x in glob.glob('genhub/genomes/*.txt')]
+    files2 = [x for x in glob.glob('testdata/conf/*.txt')]
+    assert len(list_labels) == len(files1 + files2)
 
 
 def test_load_genome():
