@@ -11,7 +11,6 @@
 """Module for handling configuration files."""
 
 from __future__ import print_function
-import glob
 import itertools
 import tempfile
 import yaml
@@ -30,21 +29,6 @@ def load_one(filename):
     conf = load_file(filename)
     label = list(conf.keys())[0]
     return label, conf[label]
-
-
-def load_dir(dirname):
-    """
-    Load a directory of configuration files.
-
-    All files in the given directory with the suffix `.yml` will be loaded and
-    inspected.
-    """
-    configs = dict()
-    filelist = glob.glob(dirname + '/*.yml')
-    for filename in filelist:
-        conf = load_file(filename)
-        configs.update(conf)
-    return configs
 
 
 def load_file_list(cfglist):
@@ -101,13 +85,6 @@ def test_load_file():
     label, conf = load_one('genhub/genomes/Tcas.yml')
     assert label == 'Tcas'
     assert conf['source'] == 'refseq'
-
-
-def test_load_dir():
-    """Loading genome configurations from a directory"""
-    conf = load_dir('genhub/genomes')
-    assert len(conf) == 23
-    assert sorted(conf)[0:4] == ['Acep', 'Ador', 'Aech', 'Aflo']
 
 
 def test_load_list():
