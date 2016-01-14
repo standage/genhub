@@ -17,6 +17,10 @@ import pkg_resources
 import tempfile
 import yaml
 import genhub
+try:
+    FileNotFoundError
+except NameError:
+    FileNotFoundError = IOError
 
 
 def load_genome(label, user_dirs=None):
