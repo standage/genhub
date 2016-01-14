@@ -1,0 +1,18 @@
+Osat:
+    species: Oryza sativa
+    common: rice
+    clade: monocot
+    source: refseq
+    branch: plant
+    accession: GCF_000005425.2
+    build: Build_4.0
+    annotfilter:
+        - NC_011033.1
+        - NC_001751.1
+        - NC_001320.1
+        - NP_001064261.1
+    checksums:
+        gdna: 4929a1aca1bbe468f56e0130d2b48efff28a5256
+        gff3: 0f300baca379a007aade6419bf5167b104c07999
+        prot: 2cb4d7872fe6c120872786460267d855fe8f50c0
+    description: Japonica Build 4.0 from the IRGSP
