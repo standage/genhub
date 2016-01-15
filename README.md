@@ -42,7 +42,7 @@ For more info and troubleshooting tips, be sure to check out the complete [insta
 
 ```bash
 # List all available genomes
-genhub-build.py --list
+genhub-build.py list
 
 # Download and process the yeast genome
 genhub-build.py --workdir=/opt/data/myhub --genome=Scer download format prepare stats
