@@ -32,10 +32,12 @@ Links to these libraries (and corresponding installation instructions) are provi
 - the [GenomeTools library][gt] ([installation][gt-install])
 - the [AEGeAn Toolkit][agn] ([installation][agn-install])
 
-## Special note about PycURL
+## Troubleshooting PycURL installation
 
-In the past there were some issues installing PycURL in a [virtual environment][venv].
-If you are having issues installing PycURL, try the [following workaround][curl]: deactivate the virtualenv, install PycURL system-wide (or in a directory you control), and then copy the pycurl files into your virtualenv site-packages.
+On some systems installing the PycURL dependency may require an additional step or two.
+
+- If you are having issues installing PycURL in a [virtual environment][venv], try the [following workaround][curl]: deactivate the virtualenv, install PycURL system-wide (or in a directory you control), and then copy the `pycurl` files into your virtualenv site-packages.
+- If you are on a Fedora machine and lack administrative privileges, you may need to execute `export PYCURL_SSL_LIBRARY=nss` before installing PycURL. See [this page][pycurl_ssl] for more information.
 
 
 [gt]: https://github.com/genometools/genometools
@@ -44,4 +46,5 @@ If you are having issues installing PycURL, try the [following workaround][curl]
 [agn]: http://standage.github.io/AEGeAn
 [venv]: http://docs.python-guide.org/en/latest/dev/virtualenvs/
 [curl]: http://eon01.com/blog/hacking-pycurl-installation-problem-within-virtualenv/
+[pycurl_ssl]: http://pycurl.sourceforge.net/doc/install.html#pip-and-cached-pycurl-package
 [rel]: https://github.com/standage/genhub/releases
