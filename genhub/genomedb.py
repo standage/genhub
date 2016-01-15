@@ -21,11 +21,16 @@ specifics for managing data from a particular source.
 
 from __future__ import print_function
 import gzip
+import hashlib
 import os
 import subprocess
 import sys
 import tempfile
 import genhub
+try:
+    FileNotFoundError
+except NameError:  # pragma: no cover
+    FileNotFoundError = IOError
 
 
 class GenomeDB(object):
@@ -39,6 +44,19 @@ class GenomeDB(object):
     # ----------
     # Filenames for unprocessed data from the primary source.
     # ----------
+
+    def file_path(self, filename, check=False, message=None):
+        """
+        Resolve a file's complete path, optionally checking if the file exists.
+        """
+        filepath = '%s/%s/%s' % (self.workdir, self.label, filename)
+        if check:  # pragma: no cover
+            if not os.path.exists(filepath):
+                msg = 'file "%s" not found' % filepath
+                if message is not None:
+                    msg += '; %s' % message
+                raise FileNotFoundError(msg)
+        return filepath
 
     @property
     def gdnafilename(self):
@@ -62,15 +80,15 @@ class GenomeDB(object):
 
     @property
     def gdnapath(self):
-        return genhub.file_path(self.gdnafilename, self.label, self.workdir)
+        return self.file_path(self.gdnafilename)
 
     @property
     def gff3path(self):
-        return genhub.file_path(self.gff3filename, self.label, self.workdir)
+        return self.file_path(self.gff3filename)
 
     @property
     def protpath(self):
-        return genhub.file_path(self.protfilename, self.label, self.workdir)
+        return self.file_path(self.protfilename)
 
     # ----------
     # File paths for processed data.
@@ -79,17 +97,17 @@ class GenomeDB(object):
     @property
     def gdnafile(self):
         filename = '%s.gdna.fa' % self.label
-        return genhub.file_path(filename, self.label, self.workdir)
+        return self.file_path(filename)
 
     @property
     def gff3file(self):
         filename = '%s.gff3' % self.label
-        return genhub.file_path(filename, self.label, self.workdir)
+        return self.file_path(filename)
 
     @property
     def protfile(self):
         filename = '%s.all.prot.fa' % self.label
-        return genhub.file_path(filename, self.label, self.workdir)
+        return self.file_path(filename)
 
     # ----------
     # Determine whether raw data files need to be compressed during download.
@@ -224,7 +242,7 @@ class GenomeDB(object):
 
         if 'checksums' in self.config and datatype in self.config['checksums']:
             sha1 = self.config['checksums'][datatype]
-            testsha1 = genhub.file_sha1(outfile)
+            testsha1 = self.file_sha1(outfile)
             assert testsha1 == sha1, ('%s %s integrity check failed\n%s\n%s' %
                                       (self.label, datatypes[datatype],
                                        testsha1, sha1))
@@ -264,10 +282,41 @@ class GenomeDB(object):
         excludefile.close()
         return excludefile
 
+    def file_sha1(self, filepath):
+        """
+        Stolen shamelessly from http://stackoverflow.com/a/19711609/459780.
+        """
+        sha = hashlib.sha1()
+        with open(filepath, 'rb') as f:
+            while True:
+                block = f.read(2**10)
+                if not block:
+                    break
+                sha.update(block)
+            return sha.hexdigest()
+
 
 # -----------------------------------------------------------------------------
 # Unit tests
 # -----------------------------------------------------------------------------
+
+def test_file_path():
+    """GenomeDB File name resolution"""
+    config = genhub.test_registry.genome('Bimp')
+    db = GenomeDB('Bimp', config)
+    assert db.file_path('bogus.txt') == './Bimp/bogus.txt'
+    db = GenomeDB('Bimp', config, 'wd')
+    assert db.file_path('Bimp.gff3') == 'wd/Bimp/Bimp.gff3'
+    checkfailed = False
+    try:
+        config = genhub.test_registry.genome('Amel')
+        db = GenomeDB('Amel', config)
+        path = db.file_path('Amel.iloci.gff3', check=True)
+    except FileNotFoundError as e:
+        checkfailed = True
+        assert e.args[0] == 'file "./Amel/Amel.iloci.gff3" not found'
+    assert checkfailed
+
 
 def test_props():
     """GenomeDB properties"""

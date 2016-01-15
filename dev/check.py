@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015   Indiana University
+# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2015-2016   Indiana University
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -14,28 +14,26 @@ import shutil
 import subprocess
 
 
-def check_import(genhubroot='.', dev=False):
+def check_import():
     """Check for Python modules."""
     print('[GenHub] Checking Python modules.')
 
+    basemod = [('yaml', 'pyyaml'), ('pycurl', 'pycurl')]
     devmod = ['pep8', 'nose', 'coverage']
-    reqfilename = '%s/requirements.txt' % genhubroot
-    reqfile = open(reqfilename, 'r')
+
     packages = dict()
-    for line in reqfile:
-        pkg = line.rstrip()
-        if pkg in devmod and dev is False:
-            continue
+    for importname, packagename in basemod:
         try:
-            importlib.import_module(pkg)
-            packages[pkg] = True
+            importlib.import_module(importname)
+            packages[packagename] = True
         except ImportError:
-            packages[pkg] = False
-    try:
-        importlib.import_module('yaml')
-        packages['pyyaml'] = True
-    except ImportError:
-        packages['pyyaml'] = False
+            packages[packagename] = False
+    for packagename in devmod:
+        try:
+            importlib.import_module(packagename)
+            packages[packagename] = True
+        except ImportError:
+            packages[packagename] = False
 
     rundep = False
     for pkg in packages:
@@ -47,8 +45,8 @@ def check_import(genhubroot='.', dev=False):
             rundep = True
         print('%c package %-12s: %s' % (char, pkg, msg))
     if rundep is True:
-        print('Run "make depend" to install missing packages.', end='')
-        print(' See "README.md".')
+        print('Please install these dependencies before proceding')
+    print('')
 
 
 def check_path():
@@ -61,7 +59,7 @@ def check_path():
     print('[GenHub] Checking PATH for executables and scripts.')
 
     execs = ['gt', 'tidygff3', 'locuspocus', 'xtractore', 'canon-gff3',
-             'lpdriver.py', 'uloci.py', 'seq-reg.py']
+             'pmrna', 'lpdriver.py', 'uloci.py', 'seq-reg.py']
     paths = list()
     for exe in execs:
         try:
@@ -92,13 +90,5 @@ def check_path():
 
 
 if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--dev', action='store_true',
-                        help='Check for developer-only modules as well')
-    parser.add_argument('-r', '--root', default='.',
-                        help='GenHub root directory')
-    args = parser.parse_args()
-
-    check_import(genhubroot=args.root, dev=args.dev)
+    check_import()
     check_path()

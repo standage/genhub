@@ -1,7 +1,7 @@
 Installing GenHub
 =================
 
-Installing GenHub itself is pretty painless.
+Installing GenHub itself should be pretty painless.
 The easiest way to install is with `pip`.
 
 ```bash
@@ -22,15 +22,15 @@ python setup.py install
 Either of these methods will install the `pyyaml` and `pycurl` dependencies.
 See below if you have trouble installing `pycurl` in a virtual environment.
 
-## Third-party software
+## External software
 
-GenHub is implemented primarily in Python, and should be compatible with Python 2.7 and Python 3.3+.
-The GenHub code itself does not need to be compiled.
-However, it does depend on two third-party libraries that do need to be compiled.
-Links to these libraries (and corresponding installation instructions) are provided below.
+GenHub is implemented in Python and does not need to be compiled.
+However, it does depend on two external software packages that do need to be compiled.
 
-- the [GenomeTools library][gt] ([installation][gt-install])
-- the [AEGeAn Toolkit][agn] ([installation][agn-install])
+- the [GenomeTools library][gt] ([installation instructions][gt-install])
+- the [AEGeAn Toolkit][agn] ([installation instructions][agn-install])
+
+These packages must be installed before you can run GenHub.
 
 ## Troubleshooting PycURL installation
 

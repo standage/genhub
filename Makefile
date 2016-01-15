@@ -3,15 +3,7 @@ SHELL := bash
 SHELLOPTS := errexit:pipefail
 
 check:
-	python dev/check.py
-
-check-dev:
-	python dev/check.py --dev
-
-depend:
-	@ pip install --upgrade pip
-	@ pip install -r requirements.txt
-	@ python -m easy_install pyyaml
+	@ python dev/check.py
 
 test:
 	@ rm -f .coverage

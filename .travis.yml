@@ -12,7 +12,6 @@ before_install:
     - mkdir -p $HOME/.python-eggs
     - chmod og-w $HOME/.python-eggs
     - bash dev/travis-prereqs.sh
-    - make depend
 install:
     - python setup.py install
 before_script:
