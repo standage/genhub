@@ -90,9 +90,10 @@ def prepare(db, logstream=sys.stderr):  # pragma: no cover
 
 def test_protein_sequence():
     """Select protein sequences"""
-    label, config = genhub.conf.load_one('genhub/genomes/Scer.yml')
-    db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
-    sequences(db, logstream=None)
+    registry = genhub.registry.Registry()
+    config = registry.genome('Scer')
+    d = genhub.refseq.RefSeqDB('Scer', config, workdir='testdata/demo-workdir')
+    sequences(d, logstream=None)
 
     outfile = 'testdata/demo-workdir/Scer/Scer.prot.fa'
     testfile = 'testdata/fasta/scer-few-prots.fa'

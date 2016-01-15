@@ -84,7 +84,7 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
         cmds = list()
         cmds.append('gunzip -c %s' % self.gff3path)
         if 'annotfilter' in self.config:
-            excludefile = genhub.conf.conf_filter_file(self.config)
+            excludefile = self.filter_file()
             cmds.append('grep -vf %s' % excludefile.name)
         cmds.append('tidygff3')
         cmds.append('genhub-format-gff3.py --source refseq -')
@@ -180,14 +180,15 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
 
 def test_genome_download():
     """RefSeq chromosomes/scaffolds download"""
+    registry = genhub.registry.Registry()
 
-    label, config = genhub.conf.load_one('genhub/genomes/Ador.yml')
+    config = registry.genome('Ador')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
                'GCF_000469605.1_Apis_dorsata_1.3_genomic.fna.gz')
     testpath = './Ador/GCF_000469605.1_Apis_dorsata_1.3_genomic.fna.gz'
-    ador_db = RefSeqDB(label, config)
+    ador_db = RefSeqDB('Ador', config)
     assert '%r' % ador_db == 'RefSeq'
     assert ador_db.gdnaurl == testurl, \
         'scaffold URL mismatch\n%s\n%s' % (ador_db.gdnaurl, testurl)
@@ -195,13 +196,13 @@ def test_genome_download():
         'scaffold path mismatch\n%s\n%s' % (ador_db.gdnapath, testpath)
     assert ador_db.compress_gdna is False
 
-    label, config = genhub.conf.load_one('genhub/genomes/Amel.yml')
+    config = registry.genome('Amel')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_mellifera/all_assembly_versions/'
                'GCF_000002195.4_Amel_4.5/'
                'GCF_000002195.4_Amel_4.5_genomic.fna.gz')
     testpath = './Amel/GCF_000002195.4_Amel_4.5_genomic.fna.gz'
-    amel_db = RefSeqDB(label, config)
+    amel_db = RefSeqDB('Amel', config)
     assert amel_db.gdnaurl == testurl, \
         'chromosome URL mismatch\n%s\n%s' % (amel_db.gdnaurl, testurl)
     assert amel_db.gdnapath == testpath, \
@@ -211,14 +212,15 @@ def test_genome_download():
 
 def test_annot_download():
     """RefSeq annotation download"""
+    registry = genhub.registry.Registry()
 
-    label, config = genhub.conf.load_one('genhub/genomes/Ador.yml')
+    config = registry.genome('Ador')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
                'GCF_000469605.1_Apis_dorsata_1.3_genomic.gff.gz')
     testpath = './Ador/GCF_000469605.1_Apis_dorsata_1.3_genomic.gff.gz'
-    ador_db = RefSeqDB(label, config)
+    ador_db = RefSeqDB('Ador', config)
     assert ador_db.gff3url == testurl, \
         'annotation URL mismatch\n%s\n%s' % (ador_db.gff3url, testurl)
     assert ador_db.gff3path == testpath, \
@@ -228,15 +230,16 @@ def test_annot_download():
 
 def test_proteins_download():
     """RefSeq protein download"""
+    registry = genhub.registry.Registry()
 
-    label, config = genhub.conf.load_one('genhub/genomes/Ador.yml')
+    config = registry.genome('Ador')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
                'GCF_000469605.1_Apis_dorsata_1.3_protein.faa.gz')
     testpath = ('/home/gandalf/HymHub/Ador/'
                 'GCF_000469605.1_Apis_dorsata_1.3_protein.faa.gz')
-    ador_db = RefSeqDB(label, config, workdir='/home/gandalf/HymHub')
+    ador_db = RefSeqDB('Ador', config, workdir='/home/gandalf/HymHub')
     assert ador_db.proturl == testurl, \
         'protein URL mismatch\n%s\n%s' % (ador_db.proturl, testurl)
     assert ador_db.protpath == testpath, \
@@ -246,16 +249,17 @@ def test_proteins_download():
 
 def test_gdna_format():
     """RefSeq gDNA formatting"""
+    registry = genhub.registry.Registry()
 
-    label, conf = genhub.conf.load_one('genhub/genomes/Hsal.yml')
-    hsal_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
+    conf = registry.genome('Hsal')
+    hsal_db = RefSeqDB('Hsal', conf, workdir='testdata/demo-workdir')
     hsal_db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hsal/Hsal.gdna.fa'
     testoutfile = 'testdata/fasta/hsal-first-7-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Hsal gDNA formatting failed'
 
-    label, conf = genhub.conf.load_one('genhub/genomes/Tcas.yml')
-    tcas_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
+    conf = registry.genome('Tcas')
+    tcas_db = RefSeqDB('Tcas', conf, workdir='testdata/demo-workdir')
     tcas_db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Tcas/Tcas.gdna.fa'
     testoutfile = 'testdata/fasta/tcas-first-33-out.fa'
@@ -264,25 +268,26 @@ def test_gdna_format():
 
 def test_annot_format():
     """RefSeq annotation formatting"""
+    registry = genhub.registry.Registry()
 
-    label, conf = genhub.conf.load_one('genhub/genomes/Aech.yml')
-    aech_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
+    conf = registry.genome('Aech')
+    aech_db = RefSeqDB('Aech', conf, workdir='testdata/demo-workdir')
     aech_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Aech/Aech.gff3'
     testfile = 'testdata/gff3/ncbi-format-aech.gff3'
     assert filecmp.cmp(outfile, testfile), 'Aech annotation formatting failed'
 
-    label, conf = genhub.conf.load_one('genhub/genomes/Pbar.yml')
+    conf = registry.genome('Pbar')
     conf['annotfilter'] = 'NW_011933506.1'
-    pbar_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
+    pbar_db = RefSeqDB('Pbar', conf, workdir='testdata/demo-workdir')
     pbar_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Pbar/Pbar.gff3'
     testfile = 'testdata/gff3/ncbi-format-pbar.gff3'
     assert filecmp.cmp(outfile, testfile), 'Pbar annotation formatting failed'
 
-    label, conf = genhub.conf.load_one('genhub/genomes/Ador.yml')
+    conf = registry.genome('Ador')
     conf['annotfilter'] = ['NW_006264094.1', 'NW_006263516.1']
-    ador_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
+    ador_db = RefSeqDB('Ador', conf, workdir='testdata/demo-workdir')
     ador_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Ador/Ador.gff3'
     testfile = 'testdata/gff3/ncbi-format-ador.gff3'
@@ -291,9 +296,10 @@ def test_annot_format():
 
 def test_prot_ncbi():
     """RefSeq protein formatting"""
+    registry = genhub.registry.Registry()
 
-    label, conf = genhub.conf.load_one('genhub/genomes/Hsal.yml')
-    hsal_db = RefSeqDB(label, conf, workdir='testdata/demo-workdir')
+    conf = registry.genome('Hsal')
+    hsal_db = RefSeqDB('Hsal', conf, workdir='testdata/demo-workdir')
     hsal_db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hsal/Hsal.all.prot.fa'
     testoutfile = 'testdata/fasta/hsal-13-prot-out.fa'
@@ -302,9 +308,10 @@ def test_prot_ncbi():
 
 def test_protids():
     """RefSeq: extract protein IDs from GFF3"""
+    registry = genhub.registry.Registry()
 
-    label, conf = genhub.conf.load_one('genhub/genomes/Xtro.yml')
-    db = RefSeqDB(label, conf)
+    conf = registry.genome('Xtro')
+    db = RefSeqDB('Xtro', conf)
     protids = ['XP_012809995.1', 'XP_012809996.1', 'XP_012809997.1',
                'XP_012809998.1']
     infile = 'testdata/gff3/xtro-3genes.gff3'
@@ -318,9 +325,10 @@ def test_protids():
 
 def test_protmap():
     """RefSeq: extract protein-->iLocus mapping from GFF3"""
+    registry = genhub.registry.Registry()
 
-    label, conf = genhub.conf.load_one('genhub/genomes/Xtro.yml')
-    db = RefSeqDB(label, conf)
+    conf = registry.genome('Xtro')
+    db = RefSeqDB('Xtro', conf)
     mapping = {'XP_012809997.1': 'XtroILC-43374',
                'XP_012809996.1': 'XtroILC-43374',
                'XP_012809995.1': 'XtroILC-43373',

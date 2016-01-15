@@ -174,9 +174,11 @@ def prepare(db, logstream=sys.stderr):  # pragma: no cover
 
 def test_mature_mrna_intervals():
     """Define mature mRNA intervals"""
-    label, config = genhub.conf.load_one('genhub/genomes/Atha.yml')
-    db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
-    mature_mrna_intervals(db, logstream=None)
+    registry = genhub.registry.Registry()
+
+    config = registry.genome('Atha')
+    d = genhub.refseq.RefSeqDB('Atha', config, workdir='testdata/demo-workdir')
+    mature_mrna_intervals(d, logstream=None)
 
     outfile = 'testdata/demo-workdir/Atha/Atha.all.mrnas.gff3'
     testfile = 'testdata/gff3/atha-all-mrnas.gff3'
@@ -186,10 +188,10 @@ def test_mature_mrna_intervals():
     testfile = 'testdata/gff3/atha-mrnas.gff3'
     assert filecmp.cmp(outfile, testfile), 'mature mRNA interval ID failed'
 
-    label, config = genhub.conf.load_one('genhub/genomes/Dnov.yml')
-    db = genhub.beebase.BeeBaseDB(label, config,
-                                  workdir='testdata/demo-workdir')
-    mature_mrna_intervals(db, logstream=None)
+    config = registry.genome('Dnov')
+    d = genhub.beebase.BeeBaseDB('Dnov', config,
+                                 workdir='testdata/demo-workdir')
+    mature_mrna_intervals(d, logstream=None)
 
     outfile = 'testdata/demo-workdir/Dnov/Dnov.all.mrnas.gff3'
     testfile = 'testdata/gff3/dnov-all-mrnas.gff3'
@@ -202,9 +204,11 @@ def test_mature_mrna_intervals():
 
 def test_mrna_sequences():
     """Extract mRNA sequences"""
-    label, config = genhub.conf.load_one('genhub/genomes/Atha.yml')
-    db = genhub.refseq.RefSeqDB(label, config, workdir='testdata/demo-workdir')
-    sequences(db, logstream=None)
+    registry = genhub.registry.Registry()
+
+    config = registry.genome('Atha')
+    d = genhub.refseq.RefSeqDB('Atha', config, workdir='testdata/demo-workdir')
+    sequences(d, logstream=None)
 
     outfile = 'testdata/demo-workdir/Atha/Atha.all.pre-mrnas.fa'
     testfile = 'testdata/fasta/atha-all-pre-mrnas.fa'
