@@ -341,7 +341,7 @@ def test_filter_file():
     """GenomeDB filter file"""
     config = genhub.test_registry.genome('Lalb')
     db = GenomeDB('Lalb', config)
-    assert db.filter_file() == None
+    assert db.filter_file() is None
 
     config = genhub.test_registry.genome('Drer')
     db = GenomeDB('Drer', config)
