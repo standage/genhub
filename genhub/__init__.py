@@ -47,5 +47,5 @@ try:
     # This will only work when the current working directory is the GenHub
     # root directory. Fine since it's only for development.
     test_registry_supp.update('testdata/conf')
-except FileNotFoundError:
+except FileNotFoundError:  # pragma: no cover
     pass
