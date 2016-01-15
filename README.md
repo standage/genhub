@@ -41,12 +41,14 @@ For more info and troubleshooting tips, be sure to check out the complete [insta
 ## Quick start
 
 ```bash
-# Download and prepare the yeast genome
-genhub-build.py --workdir=/opt/data/myhub --cfg=$GENHUBDIR/conf/modorg/Scer.yml download format prepare stats
+# List all available genomes
+genhub-build.py --list
 
-# Download and prepare 23 Hymenopteran genomes, 4 at a time
-find $GENHUBDIR/conf/hym -type f -name "*.yml" \
-    | parallel --gnu --jobs 4 genhub-build.py --workdir=/opt/data/myhub --cfg={} download format prepare stats
+# Download and process the yeast genome
+genhub-build.py --workdir=/opt/data/myhub --genome=Scer download format prepare stats
+
+# Download and process 23 Hymenopteran genomes, 4 at a time
+genhub-build.py --workdir=/opt/data/myhub --batch=hymenoptera --numprocs=4 download format prepare stats
 ```
 
 ## Additional Details

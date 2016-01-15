@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Recipe for the rice genome (*Oryza sativa* L. ssp. *japonica*).
 - Recipe for a model legume genome (*Medicago truncatula*).
+- Batch for all Hymenoptera.
+- Multiprocessing support for build script.
 
 ### Changed
 - Complete overhaul of the genome configuration handling (now in the `registry` module).
