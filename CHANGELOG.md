@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Complete overhaul of the genome configuration handling (now in the `registry` module).
 - Minor changes to the Travis CI configuration.
+- Updated *Xenopus tropicalis* config to drop the parentheses in the species name.
 
 ## [0.1.2] - 2016-01-09
 ### Added

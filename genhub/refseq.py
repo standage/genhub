@@ -36,8 +36,6 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
         assert 'build' in self.config
 
         species = self.config['species'].replace(' ', '_')
-        species = species.replace('(', '')
-        species = species.replace(')', '')
         self.acc = self.config['accession'] + '_' + self.config['build']
 
         base = 'ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq'
