@@ -9,4 +9,4 @@ Thanks for your interest in GenHub!
 
 By engaging with GenHub's developers and users, you are agreeing to our [code of conduct](CONDUCT.md).
 In short, we want to create a space where people feel comfortable and welcome to discuss, ask questions about, or contribute to the project.
-And if the language of the code of conduct seems a bit grandiose for a small project, just realized it was adapted from a code of conduct designed for much larger development communities!
+And if the language of the code of conduct seems a bit grandiose for a small project, just realize it was adapted from a code of conduct designed for much larger communities!
