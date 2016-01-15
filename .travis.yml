@@ -12,11 +12,13 @@ before_install:
     - mkdir -p $HOME/.python-eggs
     - chmod og-w $HOME/.python-eggs
     - bash dev/travis-prereqs.sh
+    - pip install --upgrade pip nose pep8 coverage
 install:
     - python setup.py install
 before_script:
     - export PATH=$HOME/local/bin:$PATH
     - export LD_LIBRARY_PATH=$HOME/local/lib
     - make check
+    - make style
     - set -eo pipefail
 script: make test testmore
