@@ -17,6 +17,6 @@ install:
 before_script:
     - export PATH=$HOME/local/bin:$PATH
     - export LD_LIBRARY_PATH=$HOME/local/lib
-    - make check-dev
+    - make check
     - set -eo pipefail
 script: make test testmore
