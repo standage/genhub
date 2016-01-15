@@ -106,8 +106,10 @@ def main(args):
     if args.genome:
         labels = args.genome.split(',')
         conf = registry.genomes(labels)
+        assert conf is not None, 'unknown genome label(s) "%s"' % args.genome
     elif args.batch:
         conf = registry.batch(args.batch)
+        assert conf is not None, 'unknown batch label "%s"' % args.batch
     else:
         message = ('must specify a genome or batch of genomes to process, '
                    'or `list` to show available genomes')
