@@ -185,8 +185,8 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
 def test_chromosomes():
     """NCBI/FlyBase chromosome download"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmel')
-    dmel_db = FlyBaseDB('Dmel', config)
+    config = registry.genome('Dmfb')
+    dmel_db = FlyBaseDB('Dmfb', config)
 
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_X/NC_004354.fna',
@@ -200,7 +200,7 @@ def test_chromosomes():
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_3/NT_037436.fna',
                 'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_4/NC_004353.fna']
-    testpath = './Dmel/Dmel.orig.fa.gz'
+    testpath = './Dmfb/Dmfb.orig.fa.gz'
     assert dmel_db.gdnaurl == testurls, \
         'chromosome URL mismatch\n%s\n%s' % (dmel_db.gdnaurl, testurls)
     assert dmel_db.gdnapath == testpath, \
@@ -212,8 +212,8 @@ def test_chromosomes():
 def test_annot():
     """NCBI/FlyBase annotation download"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmel')
-    dmel_db = FlyBaseDB('Dmel', config)
+    config = registry.genome('Dmfb')
+    dmel_db = FlyBaseDB('Dmfb', config)
 
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_X/NC_004354.gff',
@@ -227,7 +227,7 @@ def test_annot():
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_3/NT_037436.gff',
                 'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_4/NC_004353.gff']
-    testpath = './Dmel/dmel-5.48-ncbi.gff3.gz'
+    testpath = './Dmfb/dmel-5.48-ncbi.gff3.gz'
     assert dmel_db.gff3url == testurls, \
         'annotation URL mismatch\n%s\n%s' % (dmel_db.gff3url, testurls)
     assert dmel_db.gff3path == testpath, \
@@ -238,8 +238,8 @@ def test_annot():
 def test_proteins():
     """NCBI/FlyBase protein download"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmel')
-    dmel_db = FlyBaseDB('Dmel', config)
+    config = registry.genome('Dmfb')
+    dmel_db = FlyBaseDB('Dmfb', config)
 
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_X/NC_004354.faa',
@@ -253,7 +253,7 @@ def test_proteins():
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_3/NT_037436.faa',
                 'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_4/NC_004353.faa']
-    testpath = './Dmel/protein.fa.gz'
+    testpath = './Dmfb/protein.fa.gz'
     assert dmel_db.proturl == testurls, \
         'protein URL mismatch\n%s\n%s' % (dmel_db.proturl, testurls)
     assert dmel_db.protpath == testpath, \
@@ -264,52 +264,52 @@ def test_proteins():
 def test_format():
     """Task drivers"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmel')
-    dmel_db = FlyBaseDB('Dmel', config, workdir='testdata/demo-workdir')
+    config = registry.genome('Dmfb')
+    dmel_db = FlyBaseDB('Dmfb', config, workdir='testdata/demo-workdir')
     dmel_db.format(logstream=None, verify=False)
 
 
 def test_gdna_format():
     """NCBI/FlyBase gDNA formatting"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmel')
-    dmel_db = FlyBaseDB('Dmel', config, workdir='testdata/demo-workdir')
+    config = registry.genome('Dmfb')
+    dmel_db = FlyBaseDB('Dmfb', config, workdir='testdata/demo-workdir')
 
     dmel_db.preprocess_gdna(logstream=None, verify=False)
-    outfile = 'testdata/demo-workdir/Dmel/Dmel.gdna.fa'
+    outfile = 'testdata/demo-workdir/Dmfb/Dmfb.gdna.fa'
     testoutfile = 'testdata/fasta/dmel-fb-gdna-ut-out.fa'
-    assert filecmp.cmp(testoutfile, outfile), 'Dmel gDNA formatting failed'
+    assert filecmp.cmp(testoutfile, outfile), 'Dmfb gDNA formatting failed'
 
 
 def test_annot_format():
     """NCBI/FlyBase annotation formatting"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmel')
-    dmel_db = FlyBaseDB('Dmel', config, workdir='testdata/demo-workdir')
+    config = registry.genome('Dmfb')
+    dmel_db = FlyBaseDB('Dmfb', config, workdir='testdata/demo-workdir')
 
     dmel_db.preprocess_gff3(logstream=None, verify=False)
-    outfile = 'testdata/demo-workdir/Dmel/Dmel.gff3'
+    outfile = 'testdata/demo-workdir/Dmfb/Dmfb.gff3'
     testfile = 'testdata/gff3/ncbi-format-dmel.gff3'
-    assert filecmp.cmp(outfile, testfile), 'Dmel annotation formatting failed'
+    assert filecmp.cmp(outfile, testfile), 'Dmfb annotation formatting failed'
 
 
 def test_prot_format():
     """NCBI/FlyBase protein formatting"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmel')
-    dmel_db = FlyBaseDB('Dmel', config, workdir='testdata/demo-workdir')
+    config = registry.genome('Dmfb')
+    dmel_db = FlyBaseDB('Dmfb', config, workdir='testdata/demo-workdir')
 
     dmel_db.preprocess_prot(logstream=None, verify=False)
-    outfile = 'testdata/demo-workdir/Dmel/Dmel.all.prot.fa'
+    outfile = 'testdata/demo-workdir/Dmfb/Dmfb.all.prot.fa'
     testoutfile = 'testdata/fasta/dmel-fb-prot-ut-out.fa'
-    assert filecmp.cmp(testoutfile, outfile), 'Dmel protein formatting failed'
+    assert filecmp.cmp(testoutfile, outfile), 'Dmfb protein formatting failed'
 
 
 def test_protids():
     """NCBI/FlyBase: extract protein IDs from GFF3"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmel')
-    dmel_db = FlyBaseDB('Dmel', config)
+    config = registry.genome('Dmfb')
+    dmel_db = FlyBaseDB('Dmfb', config)
 
     protids = ['NP_524820.2', 'NP_001259789.1', 'NP_608489.2']
     infile = 'testdata/gff3/dmel-net.gff3'
@@ -324,14 +324,14 @@ def test_protids():
 def test_protmap():
     """NCBI/FlyBase: extract protein-->iLocus mapping from GFF3"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmel')
-    dmel_db = FlyBaseDB('Dmel', config)
+    config = registry.genome('Dmfb')
+    dmel_db = FlyBaseDB('Dmfb', config)
 
-    mapping = {'NP_001259789.1': 'DmelILC-10965',
-               'NP_524820.2': 'DmelILC-10965',
-               'NP_608489.2': 'DmelILC-10967',
-               'NP_608490.1': 'DmelILC-10968',
-               'NP_001259790.1': 'DmelILC-10968'}
+    mapping = {'NP_001259789.1': 'DmfbILC-10965',
+               'NP_524820.2': 'DmfbILC-10965',
+               'NP_608489.2': 'DmfbILC-10967',
+               'NP_608490.1': 'DmfbILC-10968',
+               'NP_001259790.1': 'DmfbILC-10968'}
     infile = 'testdata/gff3/dmel-net-loci.gff3'
     testmap = dict()
     with open(infile, 'r') as instream:
