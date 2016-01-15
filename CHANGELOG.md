@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Minor changes to the Travis CI configuration.
 - Excluded *Danio rerio* config from CI tests, as its resource requirements are right at the limit of what the Travis VMs can handle.
 - Updated *Xenopus tropicalis* config to drop the parentheses in the species name.
+- Updated *Drosophila melanogaster* config to the latest RefSeq assembly/annotation.
 
 ## [0.1.2] - 2016-01-09
 ### Added

@@ -2,40 +2,15 @@ Dmel:
     species: Drosophila melanogaster
     common: fruit fly
     clade: fly
-    source: ncbi_flybase
-    prefix: RELEASE_5_48
-    annotation: dmel-5.48-ncbi.gff3.gz
-    accessions:
-        - CHR_X/NC_004354
-        - CHR_2/NT_033778
-        - CHR_2/NT_033779
-        - CHR_3/NT_033777
-        - CHR_3/NT_037436
-        - CHR_4/NC_004353
-    checksums:
-        gdna: a010d9c19f8d9d9792c0a6f180b12d0c27e86077
-        gff3: 6831c6dede26f7e765c013edc85393eb48054f71
-        prot: c4ba26a693b7a954db846f8add3aed41b065052d
-    compress:
-        - gdna
-        - gff3
-        - prot
+    source: refseq
+    branch: invertebrate
+    accession: GCF_000001215.4
+    build: Release_6_plus_ISO1_MT
     annotfilter:
+        - NC_024511.2
         - exception=trans-splicing
-        - pseudo=true
-        - exception=transcribed pseudogene
-        - CR32518
-        - CR31485
-        - CR32761
-        - CR32123
-        - FBgn0264745
-        - =HPsi;
-        - tRNA:HPsi-
-        - "	region	"
-        - "	STS	"
-        - "	sequence_variant"
-        - "##species"
-        - "###"
-        - "#!gff-spec-version"
-        - "#!processor"
-    description: NCBI dissemination of FlyBase release 5.48
+    checksums:
+        gdna: 43fc7b8b4a37003e73fef0c61aa3903b54a24d12
+        gff3: 663c24c44972d553e60493402a7746f1fc43d7dd
+        prot: f25381f7f441ddf02eb45cd2b38b003cf4ce9dfb
+    description: Release 6 (plus ISO1 MT) from the FlyBase Consortium
