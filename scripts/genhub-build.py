@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015   Indiana University
+# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2015-2016   Indiana University
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -16,13 +16,27 @@ import subprocess
 import sys
 import genhub
 
-buildcmds = 'download format prepare stats cleanup'.split(' ')
+buildcmds = 'list download format prepare stats cleanup'.split(' ')
 sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
 dbtype = {'refseq': genhub.refseq.RefSeqDB,
           'ncbi_flybase': genhub.ncbi_flybase.FlyBaseDB,
           'beebase': genhub.beebase.BeeBaseDB,
           'crg': genhub.crg.CrgDB,
           'pdom': genhub.pdom.PdomDB}
+
+
+def list_configs(registry):
+    print('===== Genome configurations =====')
+    for label, config in registry.list_genomes():
+        print(label, config['species'], sep='\t', end='')
+        if 'common' in config:
+            print('\t', config['common'], end='')
+        print('')
+    print('')
+
+    print('===== Batch configurations =====')
+    for label, batch in registry.list_batches():
+        print(label, '\t', ','.join(batch))
 
 
 def get_parser():
@@ -33,26 +47,44 @@ def get_parser():
     parser.add_argument('-w', '--workdir', metavar='WD', default='./species',
                         help='working directory for data files; default is '
                         '"./species"')
+    parser.add_argument('-c', '--cfgdir', default=None, metavar='DIR',
+                        help='Directory (or comma-separated list of '
+                        'directories) from which to load user-supplied genome '
+                        'configuration files')
     confargs = parser.add_mutually_exclusive_group()
-    confargs.add_argument('-c', '--cfg', default=None, metavar='CFG',
-                          type=argparse.FileType('r'), help='Provide all '
-                          'genome configurations in a single file')
-    confargs.add_argument('--cfgdir', default=None, metavar='DIR', help='Load '
-                          'genome configs from all .yml files in a directory')
+    confargs.add_argument('-g', '--genome', default=None, metavar='LBL',
+                          help='Label (or comma-separated set of labels) '
+                          'specifying the genome(s) to process; use the'
+                          '`list` task to show all available genomes')
+    confargs.add_argument('-b', '--batch', default=None, metavar='LBL',
+                          help='Label of a batch of genomes to process; use '
+                          'the `list` task to show all available '
+                          'batches')
     parser.add_argument('task', nargs='+', choices=buildcmds, metavar='task',
                         help='Build task(s) to execute; options include '
                         '"%s"' % '", "'.join(buildcmds))
     return parser
 
 
-def main(parser=get_parser()):
-    args = parser.parse_args()
-    if args.cfg:
-        conf = genhub.conf.load_file(args.cfg)
-    elif args.cfgdir:
-        conf = genhub.conf.load_dir(args.cfgdir)
+def main(args):
+    registry = genhub.registry.Registry()
+    if args.cfgdir:
+        for cfgdirpath in args.cfgdir.split(','):
+            registry.update(cfgdirpath)
+
+    if 'list' in args.task:
+        list_configs(registry)
+        sys.exit(0)
+
+    if args.genome:
+        labels = args.genome.split(',')
+        conf = registry.genomes(labels)
+    elif args.batch:
+        conf = registry.batch(args.batch)
     else:
-        print('error: must specify config file or directory', file=sys.stderr)
+        message = ('must specify a genome or batch of genomes to process, '
+                   'or `list` to show available genomes')
+        raise ValueError(message)
 
     for label in sorted(conf):
         config = conf[label]
@@ -78,4 +110,4 @@ def main(parser=get_parser()):
 
 
 if __name__ == '__main__':
-    main()
+    main(get_parser().parse_args())

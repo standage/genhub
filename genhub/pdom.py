@@ -110,8 +110,10 @@ class PdomDB(genhub.genomedb.GenomeDB):
 
 def test_download():
     """PdomDataStore download"""
-    label, config = genhub.conf.load_one('conf/hym/Pdom.yml')
-    pdom_db = PdomDB(label, config)
+    registry = genhub.registry.Registry()
+    config = registry.genome('Pdom')
+    pdom_db = PdomDB('Pdom', config)
+
     assert pdom_db.gdnaurl == ('http://de.iplantcollaborative.org/dl/d/'
                                '53B7319E-3201-4087-9607-2D541FF34DD0/'
                                'pdom-scaffolds-unmasked-r1.2.fa.gz')
@@ -126,9 +128,11 @@ def test_download():
 
 def test_format():
     """Pdom formatting task"""
+    registry = genhub.registry.Registry()
+    registry.update('testdata/conf')
+    config = registry.genome('Pdom')
+    pdom_db = PdomDB('Pdom', config, workdir='testdata/demo-workdir')
 
-    label, conf = genhub.conf.load_one('testdata/conf/Pdom.yml')
-    pdom_db = PdomDB(label, conf, workdir='testdata/demo-workdir')
     pdom_db.preprocess_gdna(logstream=None)
     pdom_db.preprocess_gff3(logstream=None)
     pdom_db.preprocess_prot(logstream=None)
@@ -136,9 +140,10 @@ def test_format():
 
 def test_protids():
     """Pdom: extract protein IDs from GFF3"""
+    registry = genhub.registry.Registry()
+    config = registry.genome('Pdom')
+    db = PdomDB('Pdom', config)
 
-    label, conf = genhub.conf.load_one('conf/hym/Pdom.yml')
-    db = PdomDB(label, conf)
     protids = ['PdomMRNAr1.2-08518.1', 'PdomMRNAr1.2-11420.1',
                'PdomMRNAr1.2-08519.1']
     infile = 'testdata/gff3/pdom-266.gff3'
@@ -152,9 +157,10 @@ def test_protids():
 
 def test_protmap():
     """Pdom: extract protein-->iLocus mapping from GFF3"""
+    registry = genhub.registry.Registry()
+    config = registry.genome('Pdom')
+    db = PdomDB('Pdom', config)
 
-    label, conf = genhub.conf.load_one('conf/hym/Pdom.yml')
-    db = PdomDB(label, conf)
     mapping = {'PdomMRNAr1.2-08518.1': 'PdomILC-18235',
                'PdomMRNAr1.2-11420.1': 'PdomILC-18237',
                'PdomMRNAr1.2-08519.1': 'PdomILC-18238'}

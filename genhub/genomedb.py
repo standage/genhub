@@ -21,8 +21,10 @@ specifics for managing data from a particular source.
 
 from __future__ import print_function
 import gzip
+import os
 import subprocess
 import sys
+import tempfile
 import genhub
 
 
@@ -240,6 +242,28 @@ class GenomeDB(object):
     def preprocess_prot(self, logstream=sys.stderr, verify=True):
         self.preprocess('prot', logstream, verify)
 
+    def filter_file(self):
+        """
+        Write exclusion filter to a temporary file and return.
+
+        Data configurations may include an optional `annotfilter` with patterns
+        to discard from the input annotation a la `grep -v`. This function
+        retrieves the pattern(s) from the genome configuration and writes them
+        to a temporary file that can be used in a `grep -vf` command. The
+        calling function is responsible for unlinking the temporary file from
+        the operating system.
+        """
+        if 'annotfilter' not in self.config:
+            return None
+        excludefile = tempfile.NamedTemporaryFile(mode='wt', delete=False)
+        if isinstance(self.config['annotfilter'], str):
+            print(self.config['annotfilter'], file=excludefile)
+        else:
+            for exclusion in self.config['annotfilter']:
+                print(exclusion, file=excludefile)
+        excludefile.close()
+        return excludefile
+
 
 # -----------------------------------------------------------------------------
 # Unit tests
@@ -247,18 +271,35 @@ class GenomeDB(object):
 
 def test_props():
     """GenomeDB properties"""
-    label, config = genhub.conf.load_one('conf/hym/Bimp.yml')
-    db = GenomeDB(label, config)
+    registry = genhub.registry.Registry()
+    config = registry.genome('Bimp')
+    db = GenomeDB('Bimp', config)
     assert db.dbdir == './Bimp'
     assert db.gdnafile == './Bimp/Bimp.gdna.fa'
     assert db.gff3file == './Bimp/Bimp.gff3'
     assert db.protfile == './Bimp/Bimp.all.prot.fa'
     assert db.source == 'refseq'
 
-    label, config = genhub.conf.load_one('conf/hym/Dqua.yml')
-    db = GenomeDB(label, config, workdir='/opt/data/genomes')
+    config = registry.genome('Dqua')
+    db = GenomeDB('Dqua', config, workdir='/opt/data/genomes')
     assert db.dbdir == '/opt/data/genomes/Dqua'
     assert db.gdnafile == '/opt/data/genomes/Dqua/Dqua.gdna.fa'
     assert db.gff3file == '/opt/data/genomes/Dqua/Dqua.gff3'
     assert db.protfile == '/opt/data/genomes/Dqua/Dqua.all.prot.fa'
     assert db.source == 'crg'
+
+
+def test_filter_file():
+    """GenomeDB filter file"""
+    registry = genhub.registry.Registry()
+    config = registry.genome('Lalb')
+    db = GenomeDB('Lalb', config)
+    assert db.filter_file() == None
+
+    config = registry.genome('Drer')
+    db = GenomeDB('Drer', config)
+    ff = db.filter_file()
+    with open(ff.name, 'r') as infile:
+        excludestr = infile.read()
+        assert excludestr.strip() == 'NC_002333.2'
+    os.unlink(ff.name)

@@ -150,11 +150,12 @@ class CrgDB(genhub.genomedb.GenomeDB):
 
 def test_scaffolds():
     """CRG scaffolds download"""
+    registry = genhub.registry.Registry()
 
-    label, config = genhub.conf.load_one('conf/hym/Dqua.yml')
+    config = registry.genome('Dqua')
     testurl = 'http://wasp.crg.eu/DQUA.v01.fa.gz'
     testpath = './Dqua/DQUA.v01.fa.gz'
-    dqua_db = CrgDB(label, config)
+    dqua_db = CrgDB('Dqua', config)
     assert dqua_db.gdnaurl == testurl, \
         'scaffold URL mismatch\n%s\n%s' % (dqua_db.gdnaurl, testurl)
     assert dqua_db.gdnapath == testpath, \
@@ -164,12 +165,12 @@ def test_scaffolds():
 
 def test_annot():
     """CRG annotation download"""
+    registry = genhub.registry.Registry()
 
-    label, config = genhub.conf.load_one('conf/hym/Dqua.yml')
+    config = registry.genome('Dqua')
     testurl = 'http://wasp.crg.eu/DQUA.v01.gff3'
     testpath = 'CRG/Dqua/DQUA.v01.gff3.gz'
-    testresult = (testurl, testpath)
-    dqua_db = CrgDB(label, config, workdir='CRG')
+    dqua_db = CrgDB('Dqua', config, workdir='CRG')
     assert dqua_db.gff3url == testurl, \
         'annotation URL mismatch\n%s\n%s' % (dqua_db.gff3url, testurl)
     assert dqua_db.gff3path == testpath, \
@@ -178,11 +179,12 @@ def test_annot():
 
 def test_proteins():
     """CRG protein download"""
+    registry = genhub.registry.Registry()
 
-    label, config = genhub.conf.load_one('conf/hym/Dqua.yml')
+    config = registry.genome('Dqua')
     testurl = 'http://wasp.crg.eu/DQUA.v01.pep.fa.gz'
     testpath = '/opt/db/genhub/Dqua/DQUA.v01.pep.fa.gz'
-    dqua_db = CrgDB(label, config, workdir='/opt/db/genhub')
+    dqua_db = CrgDB('Dqua', config, workdir='/opt/db/genhub')
     assert dqua_db.proturl == testurl, \
         'protein URL mismatch\n%s\n%s' % (dqua_db.proturl, testurl)
     assert dqua_db.protpath == testpath, \
@@ -191,9 +193,10 @@ def test_proteins():
 
 def test_protids():
     """CRG: extract protein IDs from GFF3"""
+    registry = genhub.registry.Registry()
 
-    label, conf = genhub.conf.load_one('conf/hym/Dqua.yml')
-    db = CrgDB(label, conf)
+    conf = registry.genome('Dqua')
+    db = CrgDB('Dqua', conf)
     protids = ['DQUA011a006022P1', 'DQUA011a006023P1', 'DQUA011a006024P1']
     infile = 'testdata/gff3/dqua-275.gff3'
     testids = list()
@@ -206,9 +209,10 @@ def test_protids():
 
 def test_protmap():
     """CRG: extract protein-->iLocus mapping from GFF3"""
+    registry = genhub.registry.Registry()
 
-    label, conf = genhub.conf.load_one('conf/hym/Dqua.yml')
-    db = CrgDB(label, conf)
+    conf = registry.genome('Dqua')
+    db = CrgDB('Dqua', conf)
     mapping = {'DQUA011a006022P1': 'DquaILC-14465',
                'DQUA011a006023P1': 'DquaILC-14466',
                'DQUA011a006024P1': 'DquaILC-14467'}
@@ -223,6 +227,8 @@ def test_protmap():
 
 def test_format():
     """GenomeDB task drivers"""
-    label, conf = genhub.conf.load_one('testdata/conf/Pcan.yml')
-    pcan_db = CrgDB(label, conf, workdir='testdata/demo-workdir')
+    registry = genhub.registry.Registry()
+    registry.update('testdata/conf')
+    conf = registry.genome('Pcan')
+    pcan_db = CrgDB('Pcan', conf, workdir='testdata/demo-workdir')
     pcan_db.format(logstream=None)

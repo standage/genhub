@@ -18,7 +18,7 @@ test:
 	@ nosetests -v --with-coverage --cover-package=genhub genhub/*.py
 
 testmore:
-	@ set -e && for conf in $$(find conf -type f -name "????.yml" | grep -v -e Mmus -e Btau -e Emex | $(shufcmd) | head -2); do echo $$conf; genhub-build.py --cfg $$conf --workdir scratch/testmore/ download format prepare stats; rm -r scratch/testmore/; done
+	@ set -e && for conf in $$(ls genhub/genomes/*.yml | grep -v -e Mmus -e Btau -e Emex | $(shufcmd) | head -2); do label=$$(basename $$conf .yml); echo $$label; genhub-build.py --genome $$label --workdir scratch/testmore/ download format prepare stats; rm -r scratch/testmore/; done
 
 style:
 	@ pep8 genhub/*.py scripts/*.py
@@ -36,4 +36,4 @@ pypi:
 	python setup.py sdist upload
 
 clean:
-	rm -rf *.pyc genhub/*.pyc .coverage testdata/scratch/*
+	rm -rf *.pyc genhub/*.pyc .coverage testdata/scratch/* build/ dist/ genhub.egg-info/ __pycache__/

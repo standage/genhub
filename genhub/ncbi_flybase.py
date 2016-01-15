@@ -96,7 +96,7 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
     def format_gff3(self, logstream=sys.stderr, debug=False):
         cmds = list()
         cmds.append('gunzip -c %s' % self.gff3path)
-        excludefile = genhub.conf.conf_filter_file(self.config)
+        excludefile = self.filter_file()
         cmds.append('grep -vf %s' % excludefile.name)
         cmds.append('genhub-fix-trna.py')
         cmds.append('tidygff3')
@@ -184,8 +184,10 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
 
 def test_chromosomes():
     """NCBI/FlyBase chromosome download"""
+    registry = genhub.registry.Registry()
+    config = registry.genome('Dmel')
+    dmel_db = FlyBaseDB('Dmel', config)
 
-    label, config = genhub.conf.load_one('conf/modorg/Dmel.yml')
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_X/NC_004354.fna',
                 'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
@@ -199,7 +201,6 @@ def test_chromosomes():
                 'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_4/NC_004353.fna']
     testpath = './Dmel/Dmel.orig.fa.gz'
-    dmel_db = FlyBaseDB(label, config)
     assert dmel_db.gdnaurl == testurls, \
         'chromosome URL mismatch\n%s\n%s' % (dmel_db.gdnaurl, testurls)
     assert dmel_db.gdnapath == testpath, \
@@ -210,8 +211,10 @@ def test_chromosomes():
 
 def test_annot():
     """NCBI/FlyBase annotation download"""
+    registry = genhub.registry.Registry()
+    config = registry.genome('Dmel')
+    dmel_db = FlyBaseDB('Dmel', config)
 
-    label, config = genhub.conf.load_one('conf/modorg/Dmel.yml')
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_X/NC_004354.gff',
                 'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
@@ -225,7 +228,6 @@ def test_annot():
                 'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_4/NC_004353.gff']
     testpath = './Dmel/dmel-5.48-ncbi.gff3.gz'
-    dmel_db = FlyBaseDB(label, config)
     assert dmel_db.gff3url == testurls, \
         'annotation URL mismatch\n%s\n%s' % (dmel_db.gff3url, testurls)
     assert dmel_db.gff3path == testpath, \
@@ -235,7 +237,10 @@ def test_annot():
 
 def test_proteins():
     """NCBI/FlyBase protein download"""
-    label, config = genhub.conf.load_one('conf/modorg/Dmel.yml')
+    registry = genhub.registry.Registry()
+    config = registry.genome('Dmel')
+    dmel_db = FlyBaseDB('Dmel', config)
+
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_X/NC_004354.faa',
                 'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
@@ -249,7 +254,6 @@ def test_proteins():
                 'ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
                 'Drosophila_melanogaster/RELEASE_5_48/CHR_4/NC_004353.faa']
     testpath = './Dmel/protein.fa.gz'
-    dmel_db = FlyBaseDB(label, config)
     assert dmel_db.proturl == testurls, \
         'protein URL mismatch\n%s\n%s' % (dmel_db.proturl, testurls)
     assert dmel_db.protpath == testpath, \
@@ -259,16 +263,18 @@ def test_proteins():
 
 def test_format():
     """Task drivers"""
-    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
-    dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
+    registry = genhub.registry.Registry()
+    config = registry.genome('Dmel')
+    dmel_db = FlyBaseDB('Dmel', config, workdir='testdata/demo-workdir')
     dmel_db.format(logstream=None, verify=False)
 
 
 def test_gdna_format():
     """NCBI/FlyBase gDNA formatting"""
+    registry = genhub.registry.Registry()
+    config = registry.genome('Dmel')
+    dmel_db = FlyBaseDB('Dmel', config, workdir='testdata/demo-workdir')
 
-    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
-    dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
     dmel_db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Dmel/Dmel.gdna.fa'
     testoutfile = 'testdata/fasta/dmel-fb-gdna-ut-out.fa'
@@ -277,10 +283,11 @@ def test_gdna_format():
 
 def test_annot_format():
     """NCBI/FlyBase annotation formatting"""
+    registry = genhub.registry.Registry()
+    config = registry.genome('Dmel')
+    dmel_db = FlyBaseDB('Dmel', config, workdir='testdata/demo-workdir')
 
-    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
-    aech_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
-    aech_db.preprocess_gff3(logstream=None, verify=False)
+    dmel_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Dmel/Dmel.gff3'
     testfile = 'testdata/gff3/ncbi-format-dmel.gff3'
     assert filecmp.cmp(outfile, testfile), 'Dmel annotation formatting failed'
@@ -288,9 +295,10 @@ def test_annot_format():
 
 def test_prot_format():
     """NCBI/FlyBase protein formatting"""
+    registry = genhub.registry.Registry()
+    config = registry.genome('Dmel')
+    dmel_db = FlyBaseDB('Dmel', config, workdir='testdata/demo-workdir')
 
-    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
-    dmel_db = FlyBaseDB(label, conf, workdir='testdata/demo-workdir')
     dmel_db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Dmel/Dmel.all.prot.fa'
     testoutfile = 'testdata/fasta/dmel-fb-prot-ut-out.fa'
@@ -299,14 +307,15 @@ def test_prot_format():
 
 def test_protids():
     """NCBI/FlyBase: extract protein IDs from GFF3"""
+    registry = genhub.registry.Registry()
+    config = registry.genome('Dmel')
+    dmel_db = FlyBaseDB('Dmel', config)
 
-    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
-    db = FlyBaseDB(label, conf)
     protids = ['NP_524820.2', 'NP_001259789.1', 'NP_608489.2']
     infile = 'testdata/gff3/dmel-net.gff3'
     testids = list()
     with open(infile, 'r') as instream:
-        for protid in db.gff3_protids(instream):
+        for protid in dmel_db.gff3_protids(instream):
             testids.append(protid)
     assert sorted(protids) == sorted(testids), \
         'protein ID mismatch: %r %r' % (protids, testids)
@@ -314,9 +323,10 @@ def test_protids():
 
 def test_protmap():
     """NCBI/FlyBase: extract protein-->iLocus mapping from GFF3"""
+    registry = genhub.registry.Registry()
+    config = registry.genome('Dmel')
+    dmel_db = FlyBaseDB('Dmel', config)
 
-    label, conf = genhub.conf.load_one('conf/modorg/Dmel.yml')
-    db = FlyBaseDB(label, conf)
     mapping = {'NP_001259789.1': 'DmelILC-10965',
                'NP_524820.2': 'DmelILC-10965',
                'NP_608489.2': 'DmelILC-10967',
@@ -325,7 +335,7 @@ def test_protmap():
     infile = 'testdata/gff3/dmel-net-loci.gff3'
     testmap = dict()
     with open(infile, 'r') as instream:
-        for protid, locid in db.protein_mapping(instream):
+        for protid, locid in dmel_db.protein_mapping(instream):
             testmap[protid] = locid
     assert mapping == testmap, \
         'protein mapping mismatch: %r %r' % (mapping, testmap)
