@@ -90,8 +90,7 @@ def prepare(db, logstream=sys.stderr):  # pragma: no cover
 
 def test_protein_sequence():
     """Select protein sequences"""
-    registry = genhub.registry.Registry()
-    config = registry.genome('Scer')
+    config = genhub.test_registry.genome('Scer')
     d = genhub.refseq.RefSeqDB('Scer', config, workdir='testdata/demo-workdir')
     sequences(d, logstream=None)
 

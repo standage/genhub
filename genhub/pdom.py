@@ -110,8 +110,7 @@ class PdomDB(genhub.genomedb.GenomeDB):
 
 def test_download():
     """PdomDataStore download"""
-    registry = genhub.registry.Registry()
-    config = registry.genome('Pdom')
+    config = genhub.test_registry.genome('Pdom')
     pdom_db = PdomDB('Pdom', config)
 
     assert pdom_db.gdnaurl == ('http://de.iplantcollaborative.org/dl/d/'
@@ -128,9 +127,7 @@ def test_download():
 
 def test_format():
     """Pdom formatting task"""
-    registry = genhub.registry.Registry()
-    registry.update('testdata/conf')
-    config = registry.genome('Pdom')
+    config = genhub.test_registry_supp.genome('Pdom')
     pdom_db = PdomDB('Pdom', config, workdir='testdata/demo-workdir')
 
     pdom_db.preprocess_gdna(logstream=None)
@@ -140,8 +137,7 @@ def test_format():
 
 def test_protids():
     """Pdom: extract protein IDs from GFF3"""
-    registry = genhub.registry.Registry()
-    config = registry.genome('Pdom')
+    config = genhub.test_registry.genome('Pdom')
     db = PdomDB('Pdom', config)
 
     protids = ['PdomMRNAr1.2-08518.1', 'PdomMRNAr1.2-11420.1',
@@ -157,8 +153,7 @@ def test_protids():
 
 def test_protmap():
     """Pdom: extract protein-->iLocus mapping from GFF3"""
-    registry = genhub.registry.Registry()
-    config = registry.genome('Pdom')
+    config = genhub.test_registry.genome('Pdom')
     db = PdomDB('Pdom', config)
 
     mapping = {'PdomMRNAr1.2-08518.1': 'PdomILC-18235',

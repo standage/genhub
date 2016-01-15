@@ -161,8 +161,7 @@ def prepare(db, delta=500, logstream=sys.stderr):  # pragma: no cover
 
 def test_intervals():
     """Parse iLocus intervals"""
-    registry = genhub.registry.Registry()
-    config = registry.genome('Bdis')
+    config = genhub.test_registry.genome('Bdis')
     d = genhub.refseq.RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
     intervals(d, logstream=None)
 
@@ -177,8 +176,7 @@ def test_intervals():
 
 def test_simple():
     """Determine simple iLoci"""
-    registry = genhub.registry.Registry()
-    config = registry.genome('Bdis')
+    config = genhub.test_registry.genome('Bdis')
     d = genhub.refseq.RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
     simple(d, logstream=None)
 
@@ -189,8 +187,7 @@ def test_simple():
 
 def test_reps():
     """Select representative gene models for each iLocus"""
-    registry = genhub.registry.Registry()
-    config = registry.genome('Bdis')
+    config = genhub.test_registry.genome('Bdis')
     d = genhub.refseq.RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
     representatives(d, logstream=None)
 
@@ -201,8 +198,7 @@ def test_reps():
 
 def test_sequences():
     """Extract iLocus sequences"""
-    registry = genhub.registry.Registry()
-    config = registry.genome('Bdis')
+    config = genhub.test_registry.genome('Bdis')
     d = genhub.refseq.RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
     sequences(d, logstream=None)
 
@@ -217,8 +213,7 @@ def test_sequences():
 
 def test_ancillary():
     """Process ancillary data for iLoci"""
-    registry = genhub.registry.Registry()
-    config = registry.genome('Bdis')
+    config = genhub.test_registry.genome('Bdis')
     d = genhub.refseq.RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
     ancillary(d, logstream=None)
 

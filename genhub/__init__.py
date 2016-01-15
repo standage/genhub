@@ -38,9 +38,11 @@ __version__ = get_versions()['version']
 del get_versions
 
 
-ghdir = os.path.dirname(os.path.realpath(__file__))
-scriptdir = os.path.realpath(ghdir + '/../scripts/')
-os.environ['PATH'] += ':' + scriptdir
+# Unit test fixtures (can't figure out how to do package-scope global fixtures
+# with nose's setup and teardown mechanism).
+test_registry = registry.Registry()
+test_registry_supp = registry.Registry()
+test_registry_supp.update('testdata/conf')
 
 
 def file_path(filename, speclabel, workdir='.', check=False, message=None):

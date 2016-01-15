@@ -150,9 +150,7 @@ class CrgDB(genhub.genomedb.GenomeDB):
 
 def test_scaffolds():
     """CRG scaffolds download"""
-    registry = genhub.registry.Registry()
-
-    config = registry.genome('Dqua')
+    config = genhub.test_registry.genome('Dqua')
     testurl = 'http://wasp.crg.eu/DQUA.v01.fa.gz'
     testpath = './Dqua/DQUA.v01.fa.gz'
     dqua_db = CrgDB('Dqua', config)
@@ -165,9 +163,7 @@ def test_scaffolds():
 
 def test_annot():
     """CRG annotation download"""
-    registry = genhub.registry.Registry()
-
-    config = registry.genome('Dqua')
+    config = genhub.test_registry.genome('Dqua')
     testurl = 'http://wasp.crg.eu/DQUA.v01.gff3'
     testpath = 'CRG/Dqua/DQUA.v01.gff3.gz'
     dqua_db = CrgDB('Dqua', config, workdir='CRG')
@@ -179,9 +175,7 @@ def test_annot():
 
 def test_proteins():
     """CRG protein download"""
-    registry = genhub.registry.Registry()
-
-    config = registry.genome('Dqua')
+    config = genhub.test_registry.genome('Dqua')
     testurl = 'http://wasp.crg.eu/DQUA.v01.pep.fa.gz'
     testpath = '/opt/db/genhub/Dqua/DQUA.v01.pep.fa.gz'
     dqua_db = CrgDB('Dqua', config, workdir='/opt/db/genhub')
@@ -193,9 +187,7 @@ def test_proteins():
 
 def test_protids():
     """CRG: extract protein IDs from GFF3"""
-    registry = genhub.registry.Registry()
-
-    conf = registry.genome('Dqua')
+    conf = genhub.test_registry.genome('Dqua')
     db = CrgDB('Dqua', conf)
     protids = ['DQUA011a006022P1', 'DQUA011a006023P1', 'DQUA011a006024P1']
     infile = 'testdata/gff3/dqua-275.gff3'
@@ -209,9 +201,7 @@ def test_protids():
 
 def test_protmap():
     """CRG: extract protein-->iLocus mapping from GFF3"""
-    registry = genhub.registry.Registry()
-
-    conf = registry.genome('Dqua')
+    conf = genhub.test_registry.genome('Dqua')
     db = CrgDB('Dqua', conf)
     mapping = {'DQUA011a006022P1': 'DquaILC-14465',
                'DQUA011a006023P1': 'DquaILC-14466',
@@ -227,8 +217,6 @@ def test_protmap():
 
 def test_format():
     """GenomeDB task drivers"""
-    registry = genhub.registry.Registry()
-    registry.update('testdata/conf')
-    conf = registry.genome('Pcan')
+    conf = genhub.test_registry_supp.genome('Pcan')
     pcan_db = CrgDB('Pcan', conf, workdir='testdata/demo-workdir')
     pcan_db.format(logstream=None)

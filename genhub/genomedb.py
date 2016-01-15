@@ -271,8 +271,7 @@ class GenomeDB(object):
 
 def test_props():
     """GenomeDB properties"""
-    registry = genhub.registry.Registry()
-    config = registry.genome('Bimp')
+    config = genhub.test_registry.genome('Bimp')
     db = GenomeDB('Bimp', config)
     assert db.dbdir == './Bimp'
     assert db.gdnafile == './Bimp/Bimp.gdna.fa'
@@ -280,7 +279,7 @@ def test_props():
     assert db.protfile == './Bimp/Bimp.all.prot.fa'
     assert db.source == 'refseq'
 
-    config = registry.genome('Dqua')
+    config = genhub.test_registry.genome('Dqua')
     db = GenomeDB('Dqua', config, workdir='/opt/data/genomes')
     assert db.dbdir == '/opt/data/genomes/Dqua'
     assert db.gdnafile == '/opt/data/genomes/Dqua/Dqua.gdna.fa'
@@ -291,12 +290,11 @@ def test_props():
 
 def test_filter_file():
     """GenomeDB filter file"""
-    registry = genhub.registry.Registry()
-    config = registry.genome('Lalb')
+    config = genhub.test_registry.genome('Lalb')
     db = GenomeDB('Lalb', config)
     assert db.filter_file() == None
 
-    config = registry.genome('Drer')
+    config = genhub.test_registry.genome('Drer')
     db = GenomeDB('Drer', config)
     ff = db.filter_file()
     with open(ff.name, 'r') as infile:

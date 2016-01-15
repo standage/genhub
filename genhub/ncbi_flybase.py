@@ -184,8 +184,7 @@ class FlyBaseDB(genhub.genomedb.GenomeDB):
 
 def test_chromosomes():
     """NCBI/FlyBase chromosome download"""
-    registry = genhub.registry.Registry()
-    config = registry.genome('Dmfb')
+    config = genhub.test_registry.genome('Dmfb')
     dmel_db = FlyBaseDB('Dmfb', config)
 
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
@@ -212,7 +211,7 @@ def test_chromosomes():
 def test_annot():
     """NCBI/FlyBase annotation download"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmfb')
+    config = genhub.test_registry.genome('Dmfb')
     dmel_db = FlyBaseDB('Dmfb', config)
 
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
@@ -238,7 +237,7 @@ def test_annot():
 def test_proteins():
     """NCBI/FlyBase protein download"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmfb')
+    config = genhub.test_registry.genome('Dmfb')
     dmel_db = FlyBaseDB('Dmfb', config)
 
     testurls = ['ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/'
@@ -264,7 +263,7 @@ def test_proteins():
 def test_format():
     """Task drivers"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmfb')
+    config = genhub.test_registry.genome('Dmfb')
     dmel_db = FlyBaseDB('Dmfb', config, workdir='testdata/demo-workdir')
     dmel_db.format(logstream=None, verify=False)
 
@@ -272,7 +271,7 @@ def test_format():
 def test_gdna_format():
     """NCBI/FlyBase gDNA formatting"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmfb')
+    config = genhub.test_registry.genome('Dmfb')
     dmel_db = FlyBaseDB('Dmfb', config, workdir='testdata/demo-workdir')
 
     dmel_db.preprocess_gdna(logstream=None, verify=False)
@@ -284,7 +283,7 @@ def test_gdna_format():
 def test_annot_format():
     """NCBI/FlyBase annotation formatting"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmfb')
+    config = genhub.test_registry.genome('Dmfb')
     dmel_db = FlyBaseDB('Dmfb', config, workdir='testdata/demo-workdir')
 
     dmel_db.preprocess_gff3(logstream=None, verify=False)
@@ -296,7 +295,7 @@ def test_annot_format():
 def test_prot_format():
     """NCBI/FlyBase protein formatting"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmfb')
+    config = genhub.test_registry.genome('Dmfb')
     dmel_db = FlyBaseDB('Dmfb', config, workdir='testdata/demo-workdir')
 
     dmel_db.preprocess_prot(logstream=None, verify=False)
@@ -308,7 +307,7 @@ def test_prot_format():
 def test_protids():
     """NCBI/FlyBase: extract protein IDs from GFF3"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmfb')
+    config = genhub.test_registry.genome('Dmfb')
     dmel_db = FlyBaseDB('Dmfb', config)
 
     protids = ['NP_524820.2', 'NP_001259789.1', 'NP_608489.2']
@@ -324,7 +323,7 @@ def test_protids():
 def test_protmap():
     """NCBI/FlyBase: extract protein-->iLocus mapping from GFF3"""
     registry = genhub.registry.Registry()
-    config = registry.genome('Dmfb')
+    config = genhub.test_registry.genome('Dmfb')
     dmel_db = FlyBaseDB('Dmfb', config)
 
     mapping = {'NP_001259789.1': 'DmfbILC-10965',

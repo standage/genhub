@@ -174,9 +174,7 @@ def prepare(db, logstream=sys.stderr):  # pragma: no cover
 
 def test_mature_mrna_intervals():
     """Define mature mRNA intervals"""
-    registry = genhub.registry.Registry()
-
-    config = registry.genome('Atha')
+    config = genhub.test_registry.genome('Atha')
     d = genhub.refseq.RefSeqDB('Atha', config, workdir='testdata/demo-workdir')
     mature_mrna_intervals(d, logstream=None)
 
@@ -188,7 +186,7 @@ def test_mature_mrna_intervals():
     testfile = 'testdata/gff3/atha-mrnas.gff3'
     assert filecmp.cmp(outfile, testfile), 'mature mRNA interval ID failed'
 
-    config = registry.genome('Dnov')
+    config = genhub.test_registry.genome('Dnov')
     d = genhub.beebase.BeeBaseDB('Dnov', config,
                                  workdir='testdata/demo-workdir')
     mature_mrna_intervals(d, logstream=None)
@@ -204,9 +202,7 @@ def test_mature_mrna_intervals():
 
 def test_mrna_sequences():
     """Extract mRNA sequences"""
-    registry = genhub.registry.Registry()
-
-    config = registry.genome('Atha')
+    config = genhub.test_registry.genome('Atha')
     d = genhub.refseq.RefSeqDB('Atha', config, workdir='testdata/demo-workdir')
     sequences(d, logstream=None)
 
