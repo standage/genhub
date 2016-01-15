@@ -25,6 +25,10 @@ from . import proteins
 from . import mrnas
 from . import exons
 from . import stats
+try:
+    FileNotFoundError
+except NameError:  # pragma: no cover
+    FileNotFoundError = IOError
 
 # Custom modules
 from . import pdom
@@ -39,4 +43,9 @@ del get_versions
 # with nose's setup and teardown mechanism).
 test_registry = registry.Registry()
 test_registry_supp = registry.Registry()
-test_registry_supp.update('testdata/conf')
+try:
+    # This will only work when the current working directory is the GenHub
+    # root directory. Fine since it's only for development.
+    test_registry_supp.update('testdata/conf')
+except FileNotFoundError:
+    pass
