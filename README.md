@@ -56,6 +56,15 @@ genhub-build.py --workdir=/opt/data/myhub --genome=Scer download format prepare 
 genhub-build.py --workdir=/opt/data/myhub --batch=hymenoptera --numprocs=4 download format prepare stats
 ```
 
+For more detailed instructions on running GenHub, see the [user manual](docs/MANUAL.md).
+
+## Citing GenHub
+
+GenHub is research software and must be cited if it is used in a published research project.
+GenHub is not yet in print, but in the mean time it can be cited as follows.
+
+> **Standage DS** (2016) GenHub. *GitHub repository*, https://github.com/standage/genhub.
+
 ## Additional Details
 
 GenHub was originally dubbed *HymHub* and was designed specifically for managing hymenotperan genomes.
@@ -63,6 +72,10 @@ The need for a more general solution motivated the development of GenHub in its 
 
 - Built by Daniel Standage <daniel.standage@gmail.com>
 - Development repository at https://github.com/standage/genhub
+- [Installation instructions](docs/INSTALL.md)
+- [User manual](docs/MANUAL.md)
+- [Developer documentation](docs/DEVELOP.md)
+- [GenHub code of conduct](docs/CONDUCT.md)
 
 [travisbadge]: https://img.shields.io/travis/standage/genhub.svg
 [pypiv]: https://img.shields.io/pypi/v/genhub.svg
