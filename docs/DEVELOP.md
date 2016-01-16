@@ -6,7 +6,7 @@ GenHub Development
 As of yet, GenHub development has essentially been a one-man show.
 Early versions of this software were written in support of a specific research project.
 As the needs of that project and related projects grew, the need for more robust software (and concomitantly a more robust development process) emerged.
-GenHub in its current incarnation is a more generalized and sturdy solution to those research problems.
+GenHub in its current incarnation is a more generalized and sturdy solution to those original research problems.
 
 I have found GenHub very useful in my own research, and my hope is that others will find it useful as well.
 The software was intentionally designed to be extensible, and I would be thrilled to integrate contributions if you have extended GenHub to make it more useful for you.

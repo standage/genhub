@@ -27,8 +27,8 @@ See below if you have trouble installing `pycurl` in a virtual environment.
 GenHub is implemented in Python and does not need to be compiled.
 However, it does depend on two external software packages that do need to be compiled.
 
-- the [GenomeTools library][gt] ([installation instructions][gt-install])
-- the [AEGeAn Toolkit][agn] ([installation instructions][agn-install])
+- the [GenomeTools library][gt] ([installation instructions][gt-install]), version 1.5.8 or higher
+- the [AEGeAn Toolkit][agn] ([installation instructions][agn-install]), version 0.15.0 or higher
 
 These packages must be installed before you can run GenHub.
 

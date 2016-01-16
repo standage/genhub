@@ -9,12 +9,17 @@ GenHub
 ## Summary
 
 GenHub is software for managing a hub of annotated genome assemblies.
-It comes configured with simple recipes to collect and standardize genome data from a variety of sources, and it is easy to extend with recipes for additional data.
-The interval locus (iLocus) is the primary unit of organization: see the documentation for the [AEGeAn Toolkit][agn_rtd] for more information.
+It comes configured to retrieve and format dozens of genomes from a variety of sources, and it is easy to extend with configurations for additional genomes.
 
-GenHub is primarily designed as a data distribution and reproducibility mechanism.
-Because each processed data set includes many non-standard files and occupies >1 gigabyte of storage space (>10G for mammals), finding stable public long-term storage is problematic.
+The interval locus (*iLocus*) is the primary unit of organization in GenHub.
+Each iLocus captures the genomic context of a single gene, a group of overlapping genes, or an intergenic region.
+iLoci provide a detailed and granular representation of the entire genome that is robust to improvements to the assembly and annotation.
+See the documentation for the [AEGeAn Toolkit][agn_rtd] for more information.
+
+GenHub was originally designed as a data distribution and reproducibility mechanism.
+Because each processed genome data set includes many non-standard files and occupies >1 gigabyte of storage space (>10G for mammals), stable public long-term storage is not easy to come by.
 So rather than distributing the processed data itself, GenHub distributes stable code that enables the user to retrieve, process, and store the data using their own computing resources.
+This is all tied closely to our research philosophy and our conviction that published computational results (along with supporting software and data) should be reproducible and transparent.
 
 ## Obtaining GenHub
 
