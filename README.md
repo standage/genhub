@@ -4,6 +4,7 @@ GenHub
 ![Supported Python versions](https://img.shields.io/pypi/pyversions/genhub.svg)
 [![PyPI version][pypiv]](https://pypi.python.org/pypi/genhub)
 [![GenHub build status][travisbadge]](https://travis-ci.org/standage/genhub)
+[![codecov.io coverage][codecovbadge]](https://codecov.io/github/standage/genhub)
 [![BSD-3 licensed][bsd]](https://github.com/standage/genhub/blob/master/LICENSE.txt)
 
 ## Summary
@@ -79,6 +80,7 @@ The need for a more general solution motivated the development of GenHub in its 
 
 [travisbadge]: https://img.shields.io/travis/standage/genhub.svg
 [pypiv]: https://img.shields.io/pypi/v/genhub.svg
+[codecovbadge]: https://img.shields.io/codecov/c/github/standage/genhub.svg
 [bsd]: https://img.shields.io/pypi/l/genhub.svg
 [agn_rtd]: http://aegean.readthedocs.org
 [rel]: https://github.com/standage/genhub/releases
