@@ -12,7 +12,7 @@ before_install:
     - mkdir -p $HOME/.python-eggs
     - chmod og-w $HOME/.python-eggs
     - bash dev/travis-prereqs.sh
-    - pip install --upgrade pip nose pep8 coverage
+    - pip install --upgrade pip nose pep8 coverage codecov
 install:
     - python setup.py install
 before_script:
@@ -22,3 +22,5 @@ before_script:
     - make style
     - set -eo pipefail
 script: make test testmore
+after_success:
+    - codecov
