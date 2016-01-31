@@ -24,7 +24,7 @@ These software packages must be installed on your system before you can run or d
 
 GenHub also depends on several Python modules.
 The `pyyaml` and `pycurl` modules are required for runtime, and should be installed automatically when installing GenHub from PyPI (`pip install genhub`) or from source (`python setupy.py install`).
-See [INSTALL.md][INSTALL.md] for more information.
+See [INSTALL.md](INSTALL.md) for more information.
 
 Additional Python modules are required for GenHub development: `nose` and `coverage` (for automated unit tests), and `pep8` (for enforcing coding style).
 
@@ -35,7 +35,7 @@ When installed on a user's system, the core GenHub modules and scripts are copie
 
 ## Getting started
 
-The following is suggestions for setting up a GenHub development environment.
+The following is suggested for setting up a GenHub development environment.
 
 - Fork the main GenHub repository on GitHub
 - Clone (make a local copy of) your fork to your system: `git clone https://github.com/yourusername/genhub.git && cd genhub`
