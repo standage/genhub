@@ -1,0 +1,18 @@
+Tcac:
+    species: Theobroma cacao
+    common: cocoa tree
+    clade: dicot
+    source: refseq
+    branch: plant
+    accession: GCF_000403535.1
+    build: Theobroma_cacao_20110822
+    annotfilter:
+        - GeneID:18607272
+        - GeneID:18608784
+        - GeneID:18607542
+        - GeneID:18609433
+    checksums:
+        gdna: 85c3785160482dbd5a4ba630b0f6d005d248a484
+        gff3: 7837d324a643677e74827f36d18b33ea800cf6b1
+        prot: 634c53b575351fe809fb7e925f26aa95204d5800
+    description: Build 20110822 from the Cacao genome consortium
