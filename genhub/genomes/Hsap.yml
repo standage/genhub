@@ -1,0 +1,10 @@
+Hsap:
+    species: Homo sapiens
+    common: human
+    source: refseq
+    branch: vertebrate_mammalian
+    accession: GCF_000001405.32
+    build: GRCh38.p6
+    annotfilter:
+        - NC_012920.1
+    description: GRCh38 patch 6 from the Genome Reference Consortium
