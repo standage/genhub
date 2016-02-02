@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - Integration with codecov.io.
+- Recipe for the *Anopheles gambiae* genome.
+- Recipe for the *Homo sapiens* genome.
 
 ## [0.2.1] - 2016-01-15
 ### Fixed
