@@ -2,7 +2,10 @@ Dnov:
     species: Dufourea novaeangliae
     common: sweat bee
     clade: bee
-    source: beebase
+    source: hymbase
+    webroot: beebase
+    subdomain: beebase
+    urlprefix: consortium_data
     scaffolds: Dufourea_novaeangliae.fa.gz
     annotation: Dufourea_novaeangliae_v1.1.gff.gz
     proteins: Dufourea_novaeangliae_v1.1.pep.fa.gz

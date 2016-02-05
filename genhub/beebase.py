@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015   Indiana University
+# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2015-2016   Indiana University
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -24,17 +24,23 @@ import sys
 import genhub
 
 
-class BeeBaseDB(genhub.genomedb.GenomeDB):
+class HymBaseDB(genhub.genomedb.GenomeDB):
 
     def __init__(self, label, conf, workdir='.'):
-        super(BeeBaseDB, self).__init__(label, conf, workdir)
-        assert self.config['source'] == 'beebase'
-        self.specbase = ('http://hymenopteragenome.org/beebase/sites/'
-                         'hymenopteragenome.org.beebase/files/data/'
-                         'consortium_data')
+        super(HymBaseDB, self).__init__(label, conf, workdir)
+        assert 'source' in self.config and self.config['source'] == 'hymbase'
+        assert 'webroot' in self.config
+        assert self.config['webroot'] in ['drupal', 'beebase']
+        assert 'subdomain' in self.config
+        urlparts = ['http://hymenopteragenome.org/',
+                    self.config['webroot'], '/sites/hymenopteragenome.org.',
+                    self.config['subdomain'], '/files/data/']
+        if 'urlprefix' in self.config:
+            urlparts.append(self.config['urlprefix'])
+        self.specbase = ''.join(urlparts)
 
     def __repr__(self):
-        return 'BeeBase'
+        return 'HymenopteraBase'
 
     @property
     def gdnaurl(self):
@@ -48,16 +54,31 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
     def proturl(self):
         return '%s/%s' % (self.specbase, self.protfilename)
 
+    def format_gnl_defline(self, line):
+        deflinematch = re.search('>gnl\|[^\|]+\|(\S+)')
+        assert deflinematch, line
+        seqid = deflinematch.group(1)
+        return line.replace('>', '>%s %s' % (seqid, line[1:]))
+
+    def protid_from_mrnaid(self, mrnaid):
+        if mrnaid.endswith('-RA'):
+            mrnaid = mrnaid.replace('-RA', '-PA')
+        if mrnaid.endswith('-RB'):
+            mrnaid = mrnaid.replace('-RB', '-PB')
+        return mrnaid
+
     def format_gdna(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
-            if line.startswith('>'):
+            if line.startswith('>gnl|'):
+                line = self.format_gnl_defline(line)
+            elif line.startswith('>scaffold'):
                 line = line.replace('scaffold', '%sScf_' % self.label)
             print(line, end='', file=outstream)
 
     def format_prot(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
-            # No processing required currently.
-            # If any is ever needed, do it here.
+            if line.startswith('>gnl|'):
+                line = self.format_gnl_defline(line)
             print(line, end='', file=outstream)
 
     def format_gff3(self, logstream=sys.stderr, debug=False):
@@ -66,7 +87,7 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
         cmds.append('genhub-namedup.py')
         cmds.append("sed 's/scaffold/%sScf_/'" % self.label)
         cmds.append('tidygff3')
-        cmds.append('genhub-format-gff3.py --source beebase -')
+        cmds.append('genhub-format-gff3.py --source hymbase -')
         cmds.append('seq-reg.py - %s' % self.gdnafile)
         cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
 
@@ -92,7 +113,9 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
                 continue
             namematch = re.search('Name=([^;\n]+)', line)
             assert namematch, 'cannot parse mRNA name: ' + line
-            yield namematch.group(1)
+            mrnaid = namematch.group(1)
+            protid = self.protid_from_mrnaid(mrnaid)
+            yield protid
 
     def protein_mapping(self, instream):
         locusid2name = dict()
@@ -122,7 +145,8 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
                 idmatch = re.search(pattern, attrs)
                 assert idmatch, \
                     'Unable to parse mRNA and gene IDs: %s' % attrs
-                protid = idmatch.group(2)
+                mrnaid = idmatch.group(2)
+                protid = self.protid_from_mrnaid(mrnaid)
                 geneid = idmatch.group(1)
                 locusid = gene2loci[geneid]
                 locusname = locusid2name[locusid]
@@ -141,12 +165,12 @@ def test_scaffolds_download():
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
                'Eufriesea_mexicana.v1.0.fa.gz')
     testpath = './Emex/Eufriesea_mexicana.v1.0.fa.gz'
-    emex_db = BeeBaseDB('Emex', config)
+    emex_db = HymBaseDB('Emex', config)
     assert emex_db.gdnaurl == testurl, \
         'scaffold URL mismatch\n%s\n%s' % (emex_db.gdnaurl, testurl)
     assert emex_db.gdnapath == testpath, \
         'scaffold path mismatch\n%s\n%s' % (emex_db.gdnapath, testpath)
-    assert '%r' % emex_db == 'BeeBase'
+    assert '%r' % emex_db == 'HymenopteraBase'
 
 
 def test_annot_download():
@@ -156,7 +180,7 @@ def test_annot_download():
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
                'Dufourea_novaeangliae_v1.1.gff.gz')
     testpath = 'BeeBase/Dnov/Dufourea_novaeangliae_v1.1.gff.gz'
-    dnov_db = BeeBaseDB('Dnov', config, workdir='BeeBase')
+    dnov_db = HymBaseDB('Dnov', config, workdir='BeeBase')
     assert dnov_db.gff3url == testurl, \
         'annotation URL mismatch\n%s\n%s' % (dnov_db.gff3url, testurl)
     assert dnov_db.gff3path == testpath, \
@@ -170,7 +194,7 @@ def test_proteins_download():
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
                'Habropoda_laboriosa_v1.2.pep.fa.gz')
     testpath = '/opt/db/genhub/Hlab/Habropoda_laboriosa_v1.2.pep.fa.gz'
-    hlab_db = BeeBaseDB('Hlab', config, workdir='/opt/db/genhub')
+    hlab_db = HymBaseDB('Hlab', config, workdir='/opt/db/genhub')
     assert hlab_db.proturl == testurl, \
         'protein URL mismatch\n%s\n%s' % (hlab_db.proturl, testurl)
     assert hlab_db.protpath == testpath, \
@@ -180,7 +204,7 @@ def test_proteins_download():
 def test_gdna_format():
     """BeeBase gDNA formatting"""
     conf = genhub.test_registry.genome('Hlab')
-    hlab_db = BeeBaseDB('Hlab', conf, workdir='testdata/demo-workdir')
+    hlab_db = HymBaseDB('Hlab', conf, workdir='testdata/demo-workdir')
     hlab_db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.gdna.fa'
     testoutfile = 'testdata/fasta/hlab-first-6-out.fa'
@@ -190,7 +214,7 @@ def test_gdna_format():
 def test_annotation_beebase():
     """BeeBase annotation formatting"""
     conf = genhub.test_registry.genome('Hlab')
-    hlab_db = BeeBaseDB('Hlab', conf, workdir='testdata/demo-workdir')
+    hlab_db = HymBaseDB('Hlab', conf, workdir='testdata/demo-workdir')
     hlab_db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.gff3'
     testfile = 'testdata/gff3/beebase-format-hlab.gff3'
@@ -200,7 +224,7 @@ def test_annotation_beebase():
 def test_proteins_beebase():
     """BeeBase protein formatting"""
     conf = genhub.test_registry.genome('Hlab')
-    hlab_db = BeeBaseDB('Hlab', conf, workdir='testdata/demo-workdir')
+    hlab_db = HymBaseDB('Hlab', conf, workdir='testdata/demo-workdir')
     hlab_db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.all.prot.fa'
     testoutfile = 'testdata/fasta/hlab-first-20-prot-out.fa'
@@ -210,7 +234,7 @@ def test_proteins_beebase():
 def test_protids():
     """BeeBase: extract protein IDs from GFF3"""
     conf = genhub.test_registry.genome('Hlab')
-    db = BeeBaseDB('Hlab', conf)
+    db = HymBaseDB('Hlab', conf)
     protids = ['Hlab050%d' % x for x in range(62, 75)]
     infile = 'testdata/gff3/hlab-238.gff3'
     testids = list()
@@ -224,7 +248,7 @@ def test_protids():
 def test_protmap():
     """BeeBase: extract protein-->iLocus mapping from GFF3"""
     conf = genhub.test_registry.genome('Hlab')
-    db = BeeBaseDB('Hlab', conf)
+    db = HymBaseDB('Hlab', conf)
     mapping = {'Hlab05074': 'HlabILC-653102', 'Hlab05071': 'HlabILC-653096',
                'Hlab05062': 'HlabILC-653079', 'Hlab05068': 'HlabILC-653090',
                'Hlab05072': 'HlabILC-653098', 'Hlab05070': 'HlabILC-653094',

@@ -2,7 +2,10 @@ Hlab:
     species: Habropoda laboriosa
     common: blueberry bee
     clade: bee
-    source: beebase
+    source: hymbase
+    webroot: beebase
+    subdomain: beebase
+    urlprefix: consortium_data
     scaffolds: Habropoda_laboriosa.v1.0.fa.gz
     annotation: Habropoda_laboriosa_v1.2.gff.gz
     proteins: Habropoda_laboriosa_v1.2.pep.fa.gz

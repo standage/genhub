@@ -1,7 +1,10 @@
 Mqua:
     species: Melipona quadrifasciata
     clade: bee
-    source: beebase
+    source: hymbase
+    webroot: beebase
+    subdomain: beebase
+    urlprefix: consortium_data
     scaffolds: Melipona_quadrifasciata.v1.0.fa.gz
     annotation: Melipona_quadrifasciata_v1.1.gff.gz
     proteins: Melipona_quadrifasciata_v1.1.pep.fa.gz

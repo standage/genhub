@@ -81,7 +81,7 @@ def mature_mrna_intervals(db, logstream=sys.stderr):
     infile = '%s/%s.gff3' % (specdir, db.label)
     outfile = '%s/%s.mrnas.temp' % (specdir, db.label)
     usecds = False
-    if repr(db) == 'BeeBase':
+    if repr(db) == 'HymenopteraBase':
         usecds = True
     with open(infile, 'r') as instream, open(outfile, 'w') as outstream:
         for exon in mrna_exons(instream, convert=True, usecds=usecds):
@@ -187,7 +187,7 @@ def test_mature_mrna_intervals():
     assert filecmp.cmp(outfile, testfile), 'mature mRNA interval ID failed'
 
     config = genhub.test_registry.genome('Dnov')
-    d = genhub.beebase.BeeBaseDB('Dnov', config,
+    d = genhub.beebase.HymBaseDB('Dnov', config,
                                  workdir='testdata/demo-workdir')
     mature_mrna_intervals(d, logstream=None)
 

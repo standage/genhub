@@ -2,7 +2,10 @@ Lalb:
     species: Lasioglossum albipes
     common: sweat bee
     clade: bee
-    source: beebase
+    source: hymbase
+    webroot: beebase
+    subdomain: beebase
+    urlprefix: consortium_data
     scaffolds: Lalb_v2.fa.gz
     annotation: Lalb_OGS_v5.42.gff.gz
     proteins: Lalb_OGS_v5.42.pep.fa.gz
