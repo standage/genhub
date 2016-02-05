@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015   Indiana University
+# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2015-2016   Indiana University
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -94,7 +94,7 @@ class FeatureFormatter(object):
 
         ftype = fields[2]
         attributes = fields[8]
-        if ftype != 'gene' or self.source == 'beebase':
+        if ftype != 'gene' or '\tAEGeAn::tidygff3\t' in line:
             return line
 
         accmatch = None
@@ -137,7 +137,7 @@ class FeatureFormatter(object):
             idmatch = re.search('GeneID:([^;,\n]+)', attributes)
         elif self.source in ['crg', 'pdom']:
             accmatch = re.search('ID=([^;\n]+)', attributes)
-        elif self.source in ['beebase', 'tair']:
+        elif self.source in ['beebase', 'tair', 'am10']:
             accmatch = re.search('Name=([^;\n]+)', attributes)
         else:
             pass
@@ -197,7 +197,8 @@ class FeatureFormatter(object):
 
 def parse_args():
     """Define the command-line interface."""
-    sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom', 'tair']
+    sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom', 'tair',
+               'am10']
     desc = 'Filter features and parse accession values'
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('-v', '--version', action='version',

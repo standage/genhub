@@ -1,0 +1,11 @@
+Am10:
+    species: Apis mellifera
+    common: honey bee
+    clade:
+        - bee
+        - honeybee
+    source: am10
+    scaffolds: Amel_2.0_scaffolds.fa.gz
+    annotation: amel_OGSv1.0.gff.gz
+    proteins: amel_OGSv1.0_pep.fa.gz
+    description: OGS version 1.0
