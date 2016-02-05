@@ -102,7 +102,7 @@ class FeatureFormatter(object):
             accmatch = re.search('GeneID:([^;,\n]+)', line)
         elif self.source == 'crg':
             accmatch = re.search('ID=([^;\n]+)', line)
-        elif self.source in ['pdom', 'tair']:
+        elif self.source in ['pdom', 'tair', 'beebase']:
             accmatch = re.search('Name=([^;\n]+)', line)
         else:
             pass

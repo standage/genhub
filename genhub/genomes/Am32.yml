@@ -10,6 +10,6 @@ Am32:
     proteins: amel_OGSv3.2_pep.fa.gz
     checksums:
         gdna: 8f1cfbc20198294a134b82c9655af4278ebcfd89
-        gff3: e3c488ebcbf1d9131b0d52f3449ce96faa901610
+        gff3: b0601bf24e534713d9bb77490065e3e5bfa889d7
         prot: 46fb9d11cea73150b47c1c436a9a9f4ad6791232
     description: OGS version 3.2
