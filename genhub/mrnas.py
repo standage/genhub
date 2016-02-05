@@ -81,7 +81,7 @@ def mature_mrna_intervals(db, logstream=sys.stderr):
     infile = '%s/%s.gff3' % (specdir, db.label)
     outfile = '%s/%s.mrnas.temp' % (specdir, db.label)
     usecds = False
-    if repr(db) == 'BeeBase':
+    if repr(db) in ['BeeBase', 'OGS1.0']:
         usecds = True
     with open(infile, 'r') as instream, open(outfile, 'w') as outstream:
         for exon in mrna_exons(instream, convert=True, usecds=usecds):

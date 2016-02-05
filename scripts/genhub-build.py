@@ -18,12 +18,13 @@ import sys
 import genhub
 
 buildcmds = ['list', 'download', 'format', 'prepare', 'stats', 'cleanup']
-sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
+sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom', 'am10']
 dbtype = {'refseq': genhub.refseq.RefSeqDB,
           'ncbi_flybase': genhub.ncbi_flybase.FlyBaseDB,
           'beebase': genhub.beebase.BeeBaseDB,
           'crg': genhub.crg.CrgDB,
-          'pdom': genhub.pdom.PdomDB}
+          'pdom': genhub.pdom.PdomDB,
+          'am10': genhub.am10.Am10DB}
 
 
 def list_configs(registry):

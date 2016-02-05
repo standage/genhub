@@ -91,7 +91,7 @@ class FeatureFormatter(object):
 
         ftype = fields[2]
         attributes = fields[8]
-        if ftype != 'gene' or self.source == 'beebase':
+        if ftype != 'gene' or '\tAEGeAn::tidygff3\t' in line:
             return line
 
         accmatch = None
@@ -134,7 +134,7 @@ class FeatureFormatter(object):
             idmatch = re.search('GeneID:([^;,\n]+)', attributes)
         elif self.source in ['crg', 'pdom']:
             accmatch = re.search('ID=([^;\n]+)', attributes)
-        elif self.source == 'beebase':
+        elif self.source in ['beebase', 'am10']:
             accmatch = re.search('Name=([^;\n]+)', attributes)
         else:
             pass
@@ -190,7 +190,7 @@ class FeatureFormatter(object):
 
 def parse_args():
     """Define the command-line interface."""
-    sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
+    sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom', 'am10']
     desc = 'Filter features and parse accession values'
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('-v', '--version', action='version',
