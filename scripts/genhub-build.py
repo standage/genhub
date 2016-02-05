@@ -18,10 +18,10 @@ import sys
 import genhub
 
 buildcmds = ['list', 'download', 'format', 'prepare', 'stats', 'cleanup']
-sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom', 'tair']
+sources = ['refseq', 'ncbi_flybase', 'hymbase', 'crg', 'pdom', 'tair']
 dbtype = {'refseq': genhub.refseq.RefSeqDB,
           'ncbi_flybase': genhub.ncbi_flybase.FlyBaseDB,
-          'beebase': genhub.beebase.BeeBaseDB,
+          'hymbase': genhub.beebase.HymBaseDB,
           'crg': genhub.crg.CrgDB,
           'pdom': genhub.pdom.PdomDB,
           'tair': genhub.tair.TairDB}
