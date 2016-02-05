@@ -20,6 +20,7 @@ from . import refseq
 from . import ncbi_flybase
 from . import beebase
 from . import crg
+from . import tair
 from . import iloci
 from . import proteins
 from . import mrnas

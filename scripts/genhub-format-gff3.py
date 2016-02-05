@@ -67,6 +67,9 @@ class FeatureFormatter(object):
 
         We want to ignore these!
         """
+        if self.source == 'tair':
+            return False
+
         fields = line.split('\t')
         if len(fields) != 9:
             return False
@@ -99,7 +102,7 @@ class FeatureFormatter(object):
             accmatch = re.search('GeneID:([^;,\n]+)', line)
         elif self.source == 'crg':
             accmatch = re.search('ID=([^;\n]+)', line)
-        elif self.source == 'pdom':
+        elif self.source in ['pdom', 'tair']:
             accmatch = re.search('Name=([^;\n]+)', line)
         else:
             pass
@@ -123,8 +126,8 @@ class FeatureFormatter(object):
 
         ftype = fields[2]
         attributes = fields[8]
-        if ftype not in ['mRNA', 'tRNA', 'rRNA', 'ncRNA', 'transcript',
-                         'primary_transcript']:
+        if ftype not in ['mRNA', 'tRNA', 'rRNA', 'ncRNA', 'miRNA', 'snRNA',
+                         'snoRNA', 'transcript', 'primary_transcript']:
             return line
 
         accmatch = None
@@ -134,7 +137,7 @@ class FeatureFormatter(object):
             idmatch = re.search('GeneID:([^;,\n]+)', attributes)
         elif self.source in ['crg', 'pdom']:
             accmatch = re.search('ID=([^;\n]+)', attributes)
-        elif self.source == 'beebase':
+        elif self.source in ['beebase', 'tair']:
             accmatch = re.search('Name=([^;\n]+)', attributes)
         else:
             pass
@@ -182,6 +185,10 @@ class FeatureFormatter(object):
             return line
 
         parentid = re.search('Parent=([^;\n]+)', line).group(1)
+        if self.source == 'tair':
+            for pid in parentid.split(','):
+                if 'RNA' in pid:
+                    parentid = pid
         assert ',' not in parentid, parentid
         assert parentid in self.id2acc, parentid
         accession = self.id2acc[parentid]
@@ -190,7 +197,7 @@ class FeatureFormatter(object):
 
 def parse_args():
     """Define the command-line interface."""
-    sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom']
+    sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom', 'tair']
     desc = 'Filter features and parse accession values'
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('-v', '--version', action='version',
