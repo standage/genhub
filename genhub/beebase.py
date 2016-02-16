@@ -193,6 +193,13 @@ def test_gdna_format():
     testoutfile = 'testdata/fasta/hlab-first-6-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Hlab gDNA formatting failed'
 
+    conf = genhub.test_registry.genome('Am32')
+    amel_db = BeeBaseDB('Am32', conf, workdir='testdata/demo-workdir')
+    amel_db.preprocess_gdna(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Am32/Am32.gdna.fa'
+    testoutfile = 'testdata/fasta/am32-gdna-out.fa'
+    assert filecmp.cmp(testoutfile, outfile), 'Am32 gDNA formatting failed'
+
 
 def test_annotation_beebase():
     """BeeBase annotation formatting"""
@@ -212,6 +219,13 @@ def test_proteins_beebase():
     outfile = 'testdata/demo-workdir/Hlab/Hlab.all.prot.fa'
     testoutfile = 'testdata/fasta/hlab-first-20-prot-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Hlab protein formatting failed'
+
+    conf = genhub.test_registry.genome('Am32')
+    amel_db = BeeBaseDB('Am32', conf, workdir='testdata/demo-workdir')
+    amel_db.preprocess_prot(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Am32/Am32.all.prot.fa'
+    testoutfile = 'testdata/fasta/am32-prot-out.fa'
+    assert filecmp.cmp(testoutfile, outfile), 'Am32 protein formatting failed'
 
 
 def test_protids():
