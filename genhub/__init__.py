@@ -20,6 +20,7 @@ from . import refseq
 from . import ncbi_flybase
 from . import beebase
 from . import crg
+from . import tair
 from . import iloci
 from . import proteins
 from . import mrnas
@@ -32,6 +33,7 @@ except NameError:  # pragma: no cover
 
 # Custom modules
 from . import pdom
+from . import am10
 
 # Versioneer
 from ._version import get_versions

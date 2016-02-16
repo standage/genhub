@@ -50,14 +50,19 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
 
     def format_gdna(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
-            if line.startswith('>'):
+            if line.startswith('>scaffold'):
                 line = line.replace('scaffold', '%sScf_' % self.label)
+            elif line.startswith('>Group'):
+                line = line.replace('Group', '%sGroup' % self.label)
             print(line, end='', file=outstream)
 
     def format_prot(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
-            # No processing required currently.
-            # If any is ever needed, do it here.
+            if line.startswith('>gnl|'):
+                deflinematch = re.search('>gnl\|[^\|]+\|(\S+)', line)
+                assert deflinematch, line
+                protid = deflinematch.group(1)
+                line = line.replace('>', '>%s ' % protid)
             print(line, end='', file=outstream)
 
     def format_gff3(self, logstream=sys.stderr, debug=False):
@@ -65,6 +70,7 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
         cmds.append('gunzip -c %s' % self.gff3path)
         cmds.append('genhub-namedup.py')
         cmds.append("sed 's/scaffold/%sScf_/'" % self.label)
+        cmds.append("sed 's/Group/%sGroup/'" % self.label)
         cmds.append('tidygff3')
         cmds.append('genhub-format-gff3.py --source beebase -')
         cmds.append('seq-reg.py - %s' % self.gdnafile)
@@ -92,7 +98,8 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
                 continue
             namematch = re.search('Name=([^;\n]+)', line)
             assert namematch, 'cannot parse mRNA name: ' + line
-            yield namematch.group(1)
+            protid = namematch.group(1).replace('-RA', '-PA')
+            yield protid
 
     def protein_mapping(self, instream):
         locusid2name = dict()
@@ -122,7 +129,7 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
                 idmatch = re.search(pattern, attrs)
                 assert idmatch, \
                     'Unable to parse mRNA and gene IDs: %s' % attrs
-                protid = idmatch.group(2)
+                protid = idmatch.group(2).replace('-RA', '-PA')
                 geneid = idmatch.group(1)
                 locusid = gene2loci[geneid]
                 locusname = locusid2name[locusid]
