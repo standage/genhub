@@ -8,6 +8,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Recipe for the *Anopheles gambiae* genome.
 - Recipe for the *Homo sapiens* genome.
 - Recipe for the *Theobroma cacao* genome.
+- Some version-specific recipes.
+    - TAIR6
+    - *Apis mellifera* assembly 2.0 / OGS 1.0
+    - *Apis mellifera* assembly 4.5 / OGS 3.2
+- Recipes for 9 species of green algae.
 
 ## [0.2.1] - 2016-01-15
 ### Fixed
