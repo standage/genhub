@@ -1,0 +1,15 @@
+Msrc:
+    species: Micromonas sp. RCC299
+    clade: green algae
+    source: refseq
+    branch: plant
+    accession: GCF_000090985.2
+    build: ASM9098v2
+    annotfilter:
+        - NC_012575.1
+        - NC_012643.1
+    checksums:
+        gdna: fdc0991e372140c9870ca315e4f77d8a2c88caa9
+        gff3: 325fa07138857180ad26c63704a32255fa223b91
+        prot: db8770270843a297be87ae8f69ab2b8be4fe7f13
+    description: ASM9098v2 from the Micromonas Genome Consortium
