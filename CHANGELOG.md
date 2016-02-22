@@ -14,6 +14,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - *Apis mellifera* assembly 4.5 / OGS 3.2
 - Recipes for 9 species of green algae.
 
+### Changed
+- Unit test fixtures to account for AEGeAn's improved reporting of iLocus types.
+
 ## [0.2.1] - 2016-01-15
 ### Fixed
 - versioneer issue with MANIFEST

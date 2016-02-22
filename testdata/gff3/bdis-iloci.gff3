@@ -17,8 +17,8 @@ NW_014576703.1	Gnomon	CDS	180	641	.	+	0	ID=CDS1;Parent=mRNA1;Dbxref=GeneID:10084
 NW_014576703.1	Gnomon	CDS	1214	2095	.	+	0	ID=CDS1;Parent=mRNA1;Dbxref=GeneID:100844543,Genbank:XP_003581689.1;Name=XP_003581689.1;gbkey=CDS;gene=LOC100844543;product=elongation factor 1-alpha;protein_id=XP_003581689.1;accession=XM_003581641.3
 NW_014576703.1	Gnomon	exon	1214	2342	.	+	.	Parent=mRNA1;Dbxref=GeneID:100844543,Genbank:XM_003581641.3;gbkey=mRNA;gene=LOC100844543;product=elongation factor 1-alpha;transcript_id=XM_003581641.3;accession=XM_003581641.3
 ###
-NW_014576703.1	AEGeAn::LocusPocus	locus	2843	23566	.	.	.	fragment=true;Name=BdisILC-00002;effective_length=20724;iLocus_type=iiLocus
-NW_014576707.1	AEGeAn::LocusPocus	locus	1	6765	.	.	.	fragment=true;Name=BdisILC-00003;effective_length=6765;iLocus_type=iiLocus
+NW_014576703.1	AEGeAn::LocusPocus	locus	2843	23566	.	.	.	Name=BdisILC-00002;effective_length=20724;iLocus_type=fiLocus
+NW_014576707.1	AEGeAn::LocusPocus	locus	1	6765	.	.	.	Name=BdisILC-00003;effective_length=6765;iLocus_type=fiLocus
 NW_014576707.1	AEGeAn::LocusPocus	locus	6766	11442	.	.	.	ID=locus2;Name=BdisILC-00004;child_gene=1;child_mRNA=5;right_overlap=395;iiLocus_exception=delta-overlap-delta;riil=0;effective_length=4282;iLocus_type=piLocus
 NW_014576707.1	Gnomon	gene	7266	10942	.	-	.	ID=gene2;Parent=locus2;Dbxref=GeneID:100822410;Name=LOC100822410;gbkey=Gene;gene=LOC100822410;gene_biotype=protein_coding;accession=100822410
 NW_014576707.1	Gnomon	mRNA	7266	10942	.	-	.	ID=mRNA2;Parent=gene2;Dbxref=GeneID:100822410,Genbank:XM_014896223.1;Name=XM_014896223.1;gbkey=mRNA;gene=LOC100822410;product=uncharacterized LOC100822410%2C transcript variant X2;transcript_id=XM_014896223.1;accession=XM_014896223.1
