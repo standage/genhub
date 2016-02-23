@@ -7,7 +7,7 @@ Att6:
     annotfilter:
         - '^ChrC'
         - '^ChrM'
-        - 'UTR\t'
+        - 'UTR	'
     gdna_filename: TAIR6-gdna.fa.gz
     gff3_filename: TAIR6-genes.gff3.gz
     prot_filename: TAIR6-pep.faa.gz
