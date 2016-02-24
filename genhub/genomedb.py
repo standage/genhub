@@ -337,6 +337,15 @@ class GenomeDB(object):
                 os.unlink(dbfile)
         return files_deleted
 
+    def get_prot_map(self):
+        mapfile = '%s/%s.protein2ilocus.txt' % (self.dbdir, self.label)
+        with open(mapfile, 'r') as instream:
+            for line in instream:
+                if line.strip() == '':
+                    continue
+                protid, locid = line.strip().split()
+                yield protid, locid
+
 
 # -----------------------------------------------------------------------------
 # Unit tests

@@ -66,17 +66,28 @@ def run_build(builddata):
 
 def cluster_proteins(dbs, np=1):
     print('[GenHub] aggregating representative proteins', file=sys.stderr)
+    protmap = dict()
     with open('GenHub.prot.fa', 'w') as outstream:
         for db in dbs:
-            with open(db.protfile, 'r') as instream:
+            protfile = '%s/%s.prot.fa' % (db.dbdir, db.label)
+            with open(protfile, 'r') as instream:
                 for line in instream:
-                    line = line.replace('>', '>gnl|%s|' % db.label)
                     print(line, end='', file=outstream)
+            for protid, locid in db.get_prot_map():
+                protmap[protid] = locid
 
     print('[GenHub] clustering representative proteins', file=sys.stderr)
-    command = ('cd-hit -i GenHub.prot.fa -o GenHub.cluster.txt -T %d -d 0 '
+    command = ('cd-hit -i GenHub.prot.fa -o GenHub.prot -T %d -d 0 '
                '-c 0.50 -s 0.65 -p 1 -n 3 -aL 0.75 -aS 0.85 -g 1' % np).split()
     subprocess.check_call(command)
+
+    with open('GenHub.prot.clstr', 'r') as infile, \
+            open('GenHub.hiloci.tsv', 'w') as outfile:
+        for clusterid, clusterseqs in genhub.cdhit.parse_clusters(infile):
+            iloci = [protmap[prot.accession] for prot in clusterseqs]
+            species = set([prot.defline.split('|')[1] for prot in clusterseqs])
+            print(len(iloci), len(species), ','.join(iloci), ','.join(species),
+                  sep='\t', file=outfile)
 
 
 def get_parser():
