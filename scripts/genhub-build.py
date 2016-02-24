@@ -17,7 +17,8 @@ import subprocess
 import sys
 import genhub
 
-buildcmds = ['list', 'download', 'format', 'prepare', 'stats', 'cleanup']
+buildcmds = ['list', 'download', 'format', 'prepare', 'stats', 'cluster',
+             'cleanup']
 sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom', 'tair', 'am10']
 dbtype = {'refseq': genhub.refseq.RefSeqDB,
           'ncbi_flybase': genhub.ncbi_flybase.FlyBaseDB,
@@ -43,11 +44,7 @@ def list_configs(registry):
 
 
 def run_build(builddata):
-    label, config, args = builddata
-    assert 'source' in config
-    assert config['source'] in sources
-    constructor = dbtype[config['source']]
-    db = constructor(label, config, workdir=args.workdir)
+    db, args = builddata
 
     if 'download' in args.task:
         db.download()
@@ -63,8 +60,23 @@ def run_build(builddata):
     if 'cleanup' in args.task:
         db.cleanup(args.keep, args.fullclean)
 
-    print('[GenHub: %s] build complete!' % config['species'],
+    print('[GenHub: %s] build complete!' % db.config['species'],
           file=sys.stderr)
+
+
+def cluster_proteins(dbs, np=1):
+    print('[GenHub] aggregating representative proteins', file=sys.stderr)
+    with open('GenHub.prot.fa', 'w') as outstream:
+        for db in dbs:
+            with open(db.protfile, 'r') as instream:
+                for line in instream:
+                    line = line.replace('>', '>gnl|%s|' % db.label)
+                    print(line, end='', file=outstream)
+
+    print('[GenHub] clustering representative proteins', file=sys.stderr)
+    command = ('cd-hit -i GenHub.prot.fa -o GenHub.cluster.txt -T %d -d 0 '
+               '-c 0.50 -s 0.65 -p 1 -n 3 -aL 0.75 -aS 0.85 -g 1' % np).split()
+    subprocess.check_call(command)
 
 
 def get_parser():
@@ -126,14 +138,23 @@ def main(args):
                    'or `list` to show available genomes')
         raise ValueError(message)
 
+    dbs = list()
     builds = list()
     for label in sorted(conf):
         config = conf[label]
-        builddata = (label, config, args)
+        assert 'source' in config
+        assert config['source'] in sources
+        constructor = dbtype[config['source']]
+        db = constructor(label, config, workdir=args.workdir)
+        dbs.append(db)
+        builddata = (db, args)
         builds.append(builddata)
     pool = multiprocessing.Pool(processes=args.numprocs)
     results = [pool.apply_async(run_build, args=(b,)) for b in builds]
     _ = [p.get() for p in results]
+
+    if 'cluster' in args.task:
+        cluster_proteins(dbs, args.numprocs)
 
     print('[GenHub] all builds complete!', file=sys.stderr)
 
