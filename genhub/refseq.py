@@ -335,7 +335,7 @@ def test_cleanup():
                 'testdata/demo-workdir/Aech/GCF_000204515.1_Aech_3.9_genomic.'
                 'gff.gz']
     testfiles = db.cleanup(None, True, True)
-    assert testfiles == delfiles, '%r %r' % (testfiles, delfiles)
+    assert set(testfiles) == set(delfiles), '%r %r' % (testfiles, delfiles)
 
     db = RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
     delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
@@ -348,7 +348,7 @@ def test_cleanup():
                 'testdata/demo-workdir/Bdis/Bdis.simple-iloci.txt',
                 'testdata/demo-workdir/Bdis/ilens.temp']
     testfiles = db.cleanup(None, False, True)
-    assert testfiles == delfiles, '%r %r' % (testfiles, delfiles)
+    assert set(testfiles) == set(delfiles), '%r %r' % (testfiles, delfiles)
     delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
                 'testdata/demo-workdir/Bdis/Bdis.gff3',
                 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
@@ -357,7 +357,7 @@ def test_cleanup():
                 'testdata/demo-workdir/Bdis/Bdis.simple-iloci.txt',
                 'testdata/demo-workdir/Bdis/ilens.temp']
     testfiles = db.cleanup(['.miloci.'], False, True)
-    assert testfiles == delfiles, '%r %r' % (testfiles, delfiles)
+    assert set(testfiles) == set(delfiles), '%r %r' % (testfiles, delfiles)
     delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
                 'testdata/demo-workdir/Bdis/Bdis.gff3',
                 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
@@ -365,4 +365,4 @@ def test_cleanup():
                 'testdata/demo-workdir/Bdis/Bdis.mrnas.txt',
                 'testdata/demo-workdir/Bdis/ilens.temp']
     testfiles = db.cleanup(['.miloci.', 'simple'], False, True)
-    assert testfiles == delfiles, '%r %r' % (testfiles, delfiles)
+    assert set(testfiles) == set(delfiles), '%r %r' % (testfiles, delfiles)
