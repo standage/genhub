@@ -25,12 +25,16 @@ See below if you have trouble installing `pycurl` in a virtual environment.
 ## External software
 
 GenHub is implemented in Python and does not need to be compiled.
-However, it does depend on two external software packages that do need to be compiled.
+However, it does depend on a few external software packages that do need to be compiled.
+The required packages must be installed before you can run GenHub.
+The optional packages are only required for the specified features.
 
-- the [GenomeTools library][gt] ([installation instructions][gt-install]), version 1.5.8 or higher
-- the [AEGeAn Toolkit][agn] ([installation instructions][agn-install]), version 0.15.0 or higher
-
-These packages must be installed before you can run GenHub.
+- required packages
+    - the [GenomeTools library][gt] ([installation instructions][gt-install]), version 1.5.8 or higher
+    - the [AEGeAn Toolkit][agn] ([installation instructions][agn-install]), version 0.15.0 or higher
+- optional packages
+    - the [CD-HIT package][cdhit] ([installation instructions][cdhit-install]), tested with version 4.6.4;
+      required only for the `cluster` build task
 
 ## Troubleshooting PycURL installation
 
@@ -42,8 +46,10 @@ On some systems installing the PycURL dependency may require an additional step 
 
 [gt]: https://github.com/genometools/genometools
 [gt-install]: https://github.com/genometools/genometools
-[agn-install]: http://aegean.readthedocs.org/
 [agn]: http://standage.github.io/AEGeAn
+[agn-install]: http://aegean.readthedocs.org/
+[cdhit]: http://weizhongli-lab.org/cd-hit/
+[cdhit-install]: http://weizhongli-lab.org/cd-hit/download.php
 [venv]: http://docs.python-guide.org/en/latest/dev/virtualenvs/
 [curl]: http://eon01.com/blog/hacking-pycurl-installation-problem-within-virtualenv/
 [pycurl_ssl]: http://pycurl.sourceforge.net/doc/install.html#pip-and-cached-pycurl-package

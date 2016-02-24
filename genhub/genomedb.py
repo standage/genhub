@@ -321,6 +321,8 @@ class GenomeDB(object):
                 continue
             if dbfile.endswith('.tsv'):
                 continue
+            if dbfile.endswith('.protein2ilocus.txt'):
+                continue
             if dbfile in [self.gdnapath, self.gff3path, self.protpath]:
                 if not fullclean:
                     continue
