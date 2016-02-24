@@ -58,8 +58,8 @@ def check_path():
     """
     print('[GenHub] Checking PATH for executables and scripts.')
 
-    execs = ['gt', 'tidygff3', 'locuspocus', 'xtractore', 'canon-gff3',
-             'pmrna', 'lpdriver.py', 'uloci.py', 'seq-reg.py']
+    execs = ['gt', 'cd-hit', 'tidygff3', 'locuspocus', 'xtractore',
+             'canon-gff3', 'pmrna', 'lpdriver.py', 'uloci.py', 'seq-reg.py']
     paths = list()
     for exe in execs:
         try:

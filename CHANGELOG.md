@@ -2,18 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [0.3.0] - 2016-02-24
 ### Added
 - Integration with codecov.io.
-- Recipe for the *Anopheles gambiae* genome.
-- Recipe for the *Homo sapiens* genome.
-- Recipe for the *Theobroma cacao* genome.
-- Some version-specific recipes.
-    - TAIR6
-    - *Apis mellifera* assembly 2.0 / OGS 1.0
-    - *Apis mellifera* assembly 4.5 / OGS 3.2
-- Recipes for 9 species of green algae.
-- The `cleanup` and `cluster` tasks for the main build script.
+- Lots of genome recipes
+    - *Anopheles gambiae*
+    - *Homo sapiens*
+    - *Theobroma cacao*
+    - some version-specific recipes
+        - TAIR6
+        - *Apis mellifera* assembly 2.0 / OGS 1.0
+        - *Apis mellifera* assembly 4.5 / OGS 3.2
+    - 9 species of green algae
+- Implemented the `cleanup` and `cluster` tasks for the main build script.
 
 ### Changed
 - Unit test fixtures to account for AEGeAn's improved reporting of iLocus types.
