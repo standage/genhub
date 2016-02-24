@@ -337,6 +337,7 @@ def test_cleanup():
     testfiles = db.cleanup(None, True, True)
     assert set(testfiles) == set(delfiles), '%r %r' % (testfiles, delfiles)
 
+    config = genhub.test_registry.genome('Bdis')
     db = RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
     delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
                 'testdata/demo-workdir/Bdis/Bdis.gff3',
@@ -366,3 +367,23 @@ def test_cleanup():
                 'testdata/demo-workdir/Bdis/ilens.temp']
     testfiles = db.cleanup(['.miloci.', 'simple'], False, True)
     assert set(testfiles) == set(delfiles), '%r %r' % (testfiles, delfiles)
+
+    config = genhub.test_registry.genome('Vcar')
+    db = RefSeqDB('Vcar', config, workdir='testdata/demo-workdir')
+    nodelfile = 'testdata/demo-workdir/Vcar/Vcar.protein2ilocus.txt'
+    testfiles = db.cleanup(None, False, True)
+    assert nodelfile not in testfiles, 'incorrectly deleted file'
+
+
+def test_get_map():
+    """RefSeq get prot map"""
+    config = genhub.test_registry.genome('Vcar')
+    db = RefSeqDB('Vcar', config, workdir='testdata/demo-workdir')
+    mapping = dict()
+    for protid, locid in db.get_prot_map():
+        mapping[protid] = locid
+    testmap = {'XP_002945607.1': 'VcarILC-00002',
+               'XP_002945976.1': 'VcarILC-00003',
+               'XP_002945608.1': 'VcarILC-00004',
+               'XP_002945609.1': 'VcarILC-00005'}
+    assert mapping == testmap, 'get prot map fail: %r %r' % (testmap, mapping)

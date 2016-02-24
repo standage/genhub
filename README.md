@@ -55,6 +55,9 @@ genhub-build.py --workdir=/opt/data/myhub --genome=Scer download format prepare 
 
 # Download and process 23 Hymenopteran genomes, 4 at a time
 genhub-build.py --workdir=/opt/data/myhub --batch=hymenoptera --numprocs=4 download format prepare stats
+
+# Download 9 green algae genomes, cluster proteins to identify homologous iLoci
+genhub-build.py --workdir=~/mydata --batch=chlorophyta --numprocs=6 download format prepare cleanup cluster
 ```
 
 For more detailed instructions on running GenHub, see the [user manual](docs/MANUAL.md).

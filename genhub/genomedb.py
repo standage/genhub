@@ -321,6 +321,8 @@ class GenomeDB(object):
                 continue
             if dbfile.endswith('.tsv'):
                 continue
+            if dbfile.endswith('.protein2ilocus.txt'):
+                continue
             if dbfile in [self.gdnapath, self.gff3path, self.protpath]:
                 if not fullclean:
                     continue
@@ -336,6 +338,15 @@ class GenomeDB(object):
             if not dryrun:  # pragma: no cover
                 os.unlink(dbfile)
         return files_deleted
+
+    def get_prot_map(self):
+        mapfile = '%s/%s.protein2ilocus.txt' % (self.dbdir, self.label)
+        with open(mapfile, 'r') as instream:
+            for line in instream:
+                if line.strip() == '':  # pragma: no cover
+                    continue
+                protid, locid = line.strip().split()
+                yield protid, locid
 
 
 # -----------------------------------------------------------------------------
