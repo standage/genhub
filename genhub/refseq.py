@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015   Indiana University
+# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2015-2016   Indiana University
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -322,3 +322,47 @@ def test_protmap():
             testmap[protid] = locid
     assert mapping == testmap, \
         'protein mapping mismatch: %r %r' % (mapping, testmap)
+
+
+def test_cleanup():
+    """RefSeq cleanup task"""
+    config = genhub.test_registry.genome('Aech')
+    db = RefSeqDB('Aech', config, workdir='testdata/demo-workdir')
+    delfiles = ['testdata/demo-workdir/Aech/Aech.gff3']
+    testfiles = db.cleanup(None, False, True)
+    assert testfiles == delfiles, '%r %r' % (testfiles, delfiles)
+    delfiles = ['testdata/demo-workdir/Aech/Aech.gff3',
+                'testdata/demo-workdir/Aech/GCF_000204515.1_Aech_3.9_genomic.'
+                'gff.gz']
+    testfiles = db.cleanup(None, True, True)
+    assert testfiles == delfiles, '%r %r' % (testfiles, delfiles)
+
+    db = RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
+    delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
+                'testdata/demo-workdir/Bdis/Bdis.gff3',
+                'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
+                'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.txt',
+                'testdata/demo-workdir/Bdis/Bdis.miloci.fa',
+                'testdata/demo-workdir/Bdis/Bdis.miloci.gff3',
+                'testdata/demo-workdir/Bdis/Bdis.mrnas.txt',
+                'testdata/demo-workdir/Bdis/Bdis.simple-iloci.txt',
+                'testdata/demo-workdir/Bdis/ilens.temp']
+    testfiles = db.cleanup(None, False, True)
+    assert testfiles == delfiles, '%r %r' % (testfiles, delfiles)
+    delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
+                'testdata/demo-workdir/Bdis/Bdis.gff3',
+                'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
+                'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.txt',
+                'testdata/demo-workdir/Bdis/Bdis.mrnas.txt',
+                'testdata/demo-workdir/Bdis/Bdis.simple-iloci.txt',
+                'testdata/demo-workdir/Bdis/ilens.temp']
+    testfiles = db.cleanup(['.miloci.'], False, True)
+    assert testfiles == delfiles, '%r %r' % (testfiles, delfiles)
+    delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
+                'testdata/demo-workdir/Bdis/Bdis.gff3',
+                'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
+                'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.txt',
+                'testdata/demo-workdir/Bdis/Bdis.mrnas.txt',
+                'testdata/demo-workdir/Bdis/ilens.temp']
+    testfiles = db.cleanup(['.miloci.', 'simple'], False, True)
+    assert testfiles == delfiles, '%r %r' % (testfiles, delfiles)

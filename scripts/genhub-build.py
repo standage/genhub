@@ -43,23 +43,25 @@ def list_configs(registry):
 
 
 def run_build(builddata):
-    label, config, tasks, workdir = builddata
+    label, config, args = builddata
     assert 'source' in config
     assert config['source'] in sources
     constructor = dbtype[config['source']]
-    db = constructor(label, config, workdir=workdir)
+    db = constructor(label, config, workdir=args.workdir)
 
-    if 'download' in tasks:
+    if 'download' in args.task:
         db.download()
-    if 'format' in tasks:
+    if 'format' in args.task:
         db.format()
-    if 'prepare' in tasks:
+    if 'prepare' in args.task:
         genhub.iloci.prepare(db)
         genhub.proteins.prepare(db)
         genhub.mrnas.prepare(db)
         genhub.exons.prepare(db)
-    if 'stats' in tasks:
+    if 'stats' in args.task:
         genhub.stats.compute(db)
+    if 'cleanup' in args.task:
+        db.cleanup(args.keep, args.fullclean)
 
     print('[GenHub: %s] build complete!' % config['species'],
           file=sys.stderr)
@@ -80,6 +82,13 @@ def get_parser():
     parser.add_argument('-p', '--numprocs', metavar='P', type=int, default=1,
                         help='number of processors to use when processing '
                         'multiple genomes; default is 1')
+    parser.add_argument('--keep', metavar='PTN', nargs='+',
+                        help='keep files matching the specified pattern PTN '
+                        'when running the `cleanup` build task')
+    parser.add_argument('--fullclean', action='store_true',
+                        help='when running the `cleanup` build task, delete '
+                        'original (downloaded) data files as well as processed'
+                        ' data files')
     confargs = parser.add_mutually_exclusive_group()
     confargs.add_argument('-g', '--genome', default=None, metavar='LBL',
                           help='Label (or comma-separated set of labels) '
@@ -120,7 +129,7 @@ def main(args):
     builds = list()
     for label in sorted(conf):
         config = conf[label]
-        builddata = (label, config, args.task, args.workdir)
+        builddata = (label, config, args)
         builds.append(builddata)
     pool = multiprocessing.Pool(processes=args.numprocs)
     results = [pool.apply_async(run_build, args=(b,)) for b in builds]

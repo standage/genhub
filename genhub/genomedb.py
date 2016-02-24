@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015   Indiana University
+# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2015-2016   Indiana University
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -20,6 +20,7 @@ specifics for managing data from a particular source.
 """
 
 from __future__ import print_function
+import glob
 import gzip
 import hashlib
 import os
@@ -294,6 +295,47 @@ class GenomeDB(object):
                     break
                 sha.update(block)
             return sha.hexdigest()
+
+    def cleanup(self, patterns_to_keep=None, fullclean=False, dryrun=False):
+        """
+        Clean up the DB working directory.
+
+        By default, the files to be kept are the following.
+        - *.iloci.fa
+        - *.iloci.gff3
+        - *.tsv
+        - original (downloaded) data files
+        All other files are deleted.
+
+        If `fullclean` is true, the original data files are deleted as well.
+        If `patterns_to_keep` is declared, each file to be deleted is checked
+        to see if it contains any of the specified strings. If so, it is
+        spared deletion.
+
+        The `dryrun` parameter is just for unit testing.
+        """
+        dbfiles = glob.glob(self.dbdir + '/*')
+        files_deleted = list()
+        for dbfile in dbfiles:
+            if dbfile.endswith('.iloci.fa') or dbfile.endswith('.iloci.gff3'):
+                continue
+            if dbfile.endswith('.tsv'):
+                continue
+            if dbfile in [self.gdnapath, self.gff3path, self.protpath]:
+                if not fullclean:
+                    continue
+            if patterns_to_keep:
+                pattern_match = False
+                for pattern in patterns_to_keep:
+                    if pattern in dbfile:
+                        pattern_match = True
+                        break
+                if pattern_match:
+                    continue
+            files_deleted.append(dbfile)
+            if not dryrun:  # pragma: no cover
+                os.unlink(dbfile)
+        return files_deleted
 
 
 # -----------------------------------------------------------------------------
