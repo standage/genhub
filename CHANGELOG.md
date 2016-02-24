@@ -17,6 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Unit test fixtures to account for AEGeAn's improved reporting of iLocus types.
+- Protein checksum for *Xenopus tropicals*, which was recently updated to drop the *Silurana* designation.
 
 ## [0.2.1] - 2016-01-15
 ### Fixed
