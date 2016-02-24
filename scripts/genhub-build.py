@@ -29,7 +29,7 @@ dbtype = {'refseq': genhub.refseq.RefSeqDB,
           'am10': genhub.am10.Am10DB}
 
 
-def getdb(label, config):
+def getdb(label, config, args):
     assert 'source' in config
     assert config['source'] in sources
     constructor = dbtype[config['source']]
@@ -53,7 +53,7 @@ def list_configs(registry):
 
 def run_build(builddata):
     label, config, args = builddata
-    db = getdb(label, config)
+    db = getdb(label, config, args)
 
     if 'download' in args.task:
         db.download()
@@ -167,7 +167,7 @@ def main(args):
     _ = [p.get() for p in results]
 
     if 'cluster' in args.task:
-        dbs = [getdb(label, conf[label]) for label in sorted(conf)]
+        dbs = [getdb(label, conf[label], args) for label in sorted(conf)]
         cluster_proteins(dbs, args.numprocs)
 
     print('[GenHub] all builds complete!', file=sys.stderr)
