@@ -29,6 +29,14 @@ dbtype = {'refseq': genhub.refseq.RefSeqDB,
           'am10': genhub.am10.Am10DB}
 
 
+def getdb(label, config):
+    assert 'source' in config
+    assert config['source'] in sources
+    constructor = dbtype[config['source']]
+    db = constructor(label, config, workdir=args.workdir)
+    return db
+
+
 def list_configs(registry):
     print('===== Genome configurations =====')
     for label, config in registry.list_genomes():
@@ -44,7 +52,8 @@ def list_configs(registry):
 
 
 def run_build(builddata):
-    db, args = builddata
+    label, config, args = builddata
+    db = getdb(label, config)
 
     if 'download' in args.task:
         db.download()
@@ -149,22 +158,16 @@ def main(args):
                    'or `list` to show available genomes')
         raise ValueError(message)
 
-    dbs = list()
     builds = list()
     for label in sorted(conf):
-        config = conf[label]
-        assert 'source' in config
-        assert config['source'] in sources
-        constructor = dbtype[config['source']]
-        db = constructor(label, config, workdir=args.workdir)
-        dbs.append(db)
-        builddata = (db, args)
+        builddata = (label, conf[label], args)
         builds.append(builddata)
     pool = multiprocessing.Pool(processes=args.numprocs)
     results = [pool.apply_async(run_build, args=(b,)) for b in builds]
     _ = [p.get() for p in results]
 
     if 'cluster' in args.task:
+        dbs = [getdb(label, conf[label]) for label in sorted(conf)]
         cluster_proteins(dbs, args.numprocs)
 
     print('[GenHub] all builds complete!', file=sys.stderr)
