@@ -13,9 +13,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - *Apis mellifera* assembly 2.0 / OGS 1.0
     - *Apis mellifera* assembly 4.5 / OGS 3.2
 - Recipes for 9 species of green algae.
+- The `cleanup` task for the main build script.
 
 ### Changed
 - Unit test fixtures to account for AEGeAn's improved reporting of iLocus types.
+- Protein checksum for *Xenopus tropicals*, which was recently updated to drop the *Silurana* designation.
 
 ## [0.2.1] - 2016-01-15
 ### Fixed
