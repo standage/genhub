@@ -343,7 +343,7 @@ class GenomeDB(object):
         mapfile = '%s/%s.protein2ilocus.txt' % (self.dbdir, self.label)
         with open(mapfile, 'r') as instream:
             for line in instream:
-                if line.strip() == '':
+                if line.strip() == '':  # pragma: no cover
                     continue
                 protid, locid = line.strip().split()
                 yield protid, locid

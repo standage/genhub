@@ -94,7 +94,7 @@ def cluster_proteins(dbs, np=1):
             open('GenHub.hiloci.tsv', 'w') as outfile:
         for clusterid, clusterseqs in genhub.cdhit.parse_clusters(infile):
             iloci = [protmap[prot.accession] for prot in clusterseqs]
-            species = set([prot.defline.split('|')[1] for prot in clusterseqs])
+            species = set([prot.species for prot in clusterseqs])
             print(len(iloci), len(species), ','.join(iloci), ','.join(species),
                   sep='\t', file=outfile)
 

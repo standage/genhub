@@ -27,37 +27,27 @@ class ClusterSeq(object):
     @property
     def accession(self):
         """
-        Parse accession number from commonly supported formats.
+        Parse accession number from the specified format.
 
-        If the defline does not match one of the following formats, the entire
-        description (sans leading caret) will be returned.
-
-        * >gi|572257426|ref|XP_006607122.1|
-        * >gnl|Tcas|XP_008191512.1
-        * >lcl|PdomMRNAr1.2-10981.1
+            >gnl|Tcas|XP_008191512.1
         """
-        if self.defline.startswith('>gi|'):
-            acc = re.match('>gi\|\d+\|[^\|]+\|([^\|\n]+)', self.defline) \
-                        .group(1)
-        elif self.defline.startswith('>gnl|'):
-            acc = re.match('>gnl\|[^\|]+\|([^\|\n]+)', self.defline).group(1)
-        elif self.defline.startswith('lcl|'):
-            acc = re.match('>lcl\|([^\|\n]+)', self.defline).group(1)
-        else:
-            acc = self.defline[1:]
-
-        if acc.endswith('...'):
-            acc = acc[:-3]
+        assert self.defline.startswith('>gnl|')
+        acc = re.match('>gnl\|[^\|]+\|([^\|\n]+)', self.defline).group(1)
+        assert acc.endswith('...')
+        acc = acc[:-3]
         return acc
+
+    @property
+    def species(self):
+        """
+        Parse species label from the specified format.
+
+            >gnl|Tcas|XP_008191512.1
+        """
+        return self.defline.split('|')[1]
 
     def __len__(self):
         return self.length
-
-    def __str__(self):
-        return self.rawdata
-
-    def __repr__(self):
-        return self.accession
 
 
 def parse_clusters(filehandle):
@@ -79,3 +69,32 @@ def parse_clusters(filehandle):
             clusterseqs.append(seqinfo)
 
     yield clusterid, clusterseqs
+
+
+# -----------------------------------------------------------------------------
+# Unit tests
+# -----------------------------------------------------------------------------
+
+def test_parse_clusters():
+    """CD-HIT: parse clusters"""
+    clusters = list()
+    with open('testdata/misc/hymhub-head.clstr', 'r') as infile:
+        for clusterid, clusterseqs in parse_clusters(infile):
+            clusters.append(clusterseqs)
+
+    assert len(clusters) == 3
+
+    assert len(clusters[0]) == 1
+    assert len(clusters[0][0]) == 25481
+    assert clusters[0][0].species == 'Tcas'
+    assert clusters[0][0].accession == 'XP_008191512.1'
+
+    assert len(clusters[1]) == 1
+    assert len(clusters[1][0]) == 22949
+    assert clusters[1][0].species == 'Dmel'
+    assert clusters[1][0].accession == 'NP_001260032.1'
+
+    assert len(clusters[2]) == 3
+    assert clusters[2][0].species == 'Amel'
+    assert clusters[2][1].species == 'Bimp'
+    assert clusters[2][2].species == 'Bter'
