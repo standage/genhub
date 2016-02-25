@@ -60,7 +60,7 @@ def run_build(builddata):
     if 'format' in args.task:
         db.format()
     if 'prepare' in args.task:
-        genhub.iloci.prepare(db)
+        genhub.iloci.prepare(db, ilcformat=args.format)
         genhub.proteins.prepare(db)
         genhub.mrnas.prepare(db)
         genhub.exons.prepare(db)
@@ -121,6 +121,11 @@ def get_parser():
                         help='when running the `cleanup` build task, delete '
                         'original (downloaded) data files as well as processed'
                         ' data files')
+    parser.add_argument('-f', '--format', metavar='PFX', default='{}ILC-%05lu',
+                        help='format for assigning serial labels to iLoci; '
+                        'must include the placeholder {} for the species '
+                        'label, as well as a printf-style placeholder for a '
+                        'serial number; default is "{}ILC-%%05lu"')
     confargs = parser.add_mutually_exclusive_group()
     confargs.add_argument('-g', '--genome', default=None, metavar='LBL',
                           help='Label (or comma-separated set of labels) '
