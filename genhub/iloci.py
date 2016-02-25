@@ -16,7 +16,7 @@ import sys
 import genhub
 
 
-def intervals(db, delta=500, logstream=sys.stderr):
+def intervals(db, delta=500, ilcformat='{}ILC-%05lu', logstream=sys.stderr):
     """
     Compute iLocus intervals.
 
@@ -27,7 +27,7 @@ def intervals(db, delta=500, logstream=sys.stderr):
         logmsg = '[GenHub: %s] computing interval loci' % db.config['species']
         print(logmsg, file=logstream)
 
-    nameformat = db.label + 'ILC-%05lu'
+    nameformat = ilcformat.format(db.label)
     specdir = '%s/%s' % (db.workdir, db.label)
     command = 'lpdriver.py --namefmt=%s' % nameformat
     command += ' --delta=%d' % delta
@@ -146,8 +146,8 @@ def ancillary(db, logstream=sys.stderr):
 # Driver function
 # -----------------------------------------------------------------------------
 
-def prepare(db, delta=500, logstream=sys.stderr):  # pragma: no cover
-    intervals(db, delta=delta, logstream=logstream)
+def prepare(db, delta=500, ilcformat='%sILC-', logstream=sys.stderr):  # pragma: no cover # noqa
+    intervals(db, delta=delta, ilcformat=ilcformat, logstream=logstream)
     simple(db, logstream=logstream)
     representatives(db, logstream=logstream)
     sequences(db, logstream=logstream)

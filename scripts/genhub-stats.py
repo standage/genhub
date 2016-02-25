@@ -65,35 +65,6 @@ def n_content(dna):
     return float(ncount) / float(len(dna))
 
 
-def ilocus_classify(ilocus):
-    """Determine the type of gene(s), if any, encoded in this iLocus."""
-    fields = ilocus.split('\t')
-    assert len(fields) == 9
-    attrs = fields[8]
-
-    counts = {}
-    for keyvaluepair in attrs.split(';'):
-        key, value = keyvaluepair.split('=')
-        if key not in ['ID', 'fragment', 'unannot', 'merged', 'gene',
-                       'left_overlap', 'right_overlap', 'intron_gene']:
-            counts[key] = 1
-
-    if 'intron_gene' in attrs:
-        return 'intron_gene'
-
-    if len(counts) == 0:
-        return 'geneless'
-
-    if len(counts) > 1:
-        assert 'geneless' not in counts
-        return 'mixed'
-
-    rnatype = counts.keys()[0]
-    if rnatype in ['transcript', 'primary_transcript']:
-        rnatype = 'ncRNA'
-    return rnatype
-
-
 def ilocus_desc(gff3, fasta, miloci=False):
     """
     Generate a tabular record for each iLocus in the input.
@@ -133,7 +104,6 @@ def ilocus_desc(gff3, fasta, miloci=False):
         locusclass = classmatch.group(1)
         genecount = 0
         attrs = fields[8]
-        fragment = 'fragment=true' in attrs
         unannot = 'unannot=true' in attrs
         efflen = 0
         efflenmatch = re.search('effective_length=(\d+)', attrs)
@@ -148,9 +118,9 @@ def ilocus_desc(gff3, fasta, miloci=False):
         orientmatch = re.search('fg_orient=(..)', attrs)
         if orientmatch:
             orient = orientmatch.group(1)
-        values = '%s %s %d %d %.3f %.3f %.3f %s %d %r %r %s' % (
+        values = '%s %s %d %d %.3f %.3f %.3f %s %d %r %s' % (
             locusid, locuspos, locuslen, efflen, gccontent, gcskew, ncontent,
-            locusclass, genecount, fragment, unannot, orient)
+            locusclass, genecount, unannot, orient)
         yield values.split(' ')
 
 
@@ -571,7 +541,7 @@ if __name__ == '__main__':
                 open(a[2], 'w') as out:
             header = ['Species', 'LocusId', 'LocusPos', 'Length',
                       'EffectiveLength', 'GCContent', 'GCSkew', 'NContent',
-                      'LocusClass', 'GeneCount', 'Fragment', 'SeqUnannot',
+                      'LocusClass', 'GeneCount', 'SeqUnannot',
                       'FlankGeneOrient']
             print('\t'.join(header), file=out)
             for fields in ilocus_desc(gff, fa):
@@ -586,7 +556,7 @@ if __name__ == '__main__':
                 open(a[2], 'w') as out:
             header = ['Species', 'LocusId', 'LocusPos', 'Length',
                       'EffectiveLength', 'GCContent', 'GCSkew', 'NContent',
-                      'LocusClass', 'GeneCount', 'Fragment', 'SeqUnannot',
+                      'LocusClass', 'GeneCount', 'SeqUnannot',
                       'FlankGeneOrient']
             print('\t'.join(header), file=out)
             for fields in ilocus_desc(gff, fa, miloci=True):

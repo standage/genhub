@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## [0.3.1] - 2016-02-24
+### Fixed
+- Removed unnecessary `Fragment` column from `.iloci.tsv` table. Redundant with `LocusClass=fiLocus`.
+- Removed outdated code for computing `LocusClass`.
+- Fixed feature for specifying iLocus label format.
+
 ## [0.3.0] - 2016-02-24
 ### Added
 - Integration with codecov.io.
