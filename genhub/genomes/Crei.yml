@@ -8,8 +8,9 @@ Crei:
     annotfilter:
         - NC_001638.1
         - NC_005353.1
+        - GeneID:5716281
     checksums:
         gdna: dfbf20ca6489af0662ab4c9573eb945aca90c605
-        gff3: 462dfe0eb0a195bcbd92d5fe8fe7f0f292be4d10
+        gff3: 6c49e9df6d13bfdba72f892c2c242c213e3a1d4f
         prot: 98b4c542d75c64a94b4b98bcc1a3a38239b34578
     description: v3.0 from JGI
