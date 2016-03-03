@@ -60,7 +60,7 @@ def run_build(builddata):
     if 'format' in args.task:
         db.format()
     if 'prepare' in args.task:
-        genhub.iloci.prepare(db, ilcformat=args.format)
+        genhub.iloci.prepare(db, delta=args.delta, ilcformat=args.format)
         genhub.proteins.prepare(db)
         genhub.mrnas.prepare(db)
         genhub.exons.prepare(db)
@@ -114,6 +114,8 @@ def get_parser():
     parser.add_argument('-p', '--numprocs', metavar='P', type=int, default=1,
                         help='number of processors to use when processing '
                         'multiple genomes; default is 1')
+    parser.add_argument('-d', '--delta', type=int, metavar='DLT', default=500,
+                        help='iLocus extension parameter; default is 500')
     parser.add_argument('--keep', metavar='PTN', nargs='+',
                         help='keep files matching the specified pattern PTN '
                         'when running the `cleanup` build task')
