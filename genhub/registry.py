@@ -147,7 +147,7 @@ def test_genome():
     registry = Registry()
     config = registry.genome('Osat')
     assert 'accession' in config
-    assert config['accession'] == 'GCF_000005425.2'
+    assert config['accession'] == 'GCF_001433935.1'
 
     registry.update('testdata/conf')
     config = registry.genome('Osat')
