@@ -7,8 +7,14 @@ Mmus:
     build: GRCm38.p4
     annotfilter:
         - NC_005089.1
+        - NW_
+        - NT_
+    seqfilter:
+        - NC_005089.1
+        - NW_
+        - NT_
     checksums:
-        gdna: 90c0e00e3e48e35980c593b831f8568b619881d5
-        gff3: 4b312c9596b6b73faaa35078130cfb4dc17d8a6b
+        gdna: 2357e4802d5185449936f3971e41c73fa46c2fde
+        gff3: 0d4608d127d3402eecf7c65de640762cc795a749
         prot: 053976f8f370fad57a371ee8424066ae91668af9
     description: GRCm38.p4 from the Genome Reference Consortium
