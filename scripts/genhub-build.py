@@ -73,7 +73,7 @@ def run_build(builddata):
           file=sys.stderr)
 
 
-def cluster_proteins(dbs, np=1):
+def cluster_proteins(dbs, np=1, cdargs=None):
     print('[GenHub] aggregating representative proteins', file=sys.stderr)
     protmap = dict()
     with open('GenHub.prot.fa', 'w') as outstream:
@@ -86,8 +86,14 @@ def cluster_proteins(dbs, np=1):
                 protmap[protid] = locid
 
     print('[GenHub] clustering representative proteins', file=sys.stderr)
-    command = ('cd-hit -i GenHub.prot.fa -o GenHub.prot -T %d -d 0 '
-               '-c 0.50 -s 0.65 -p 1 -n 3 -aL 0.75 -aS 0.85 -g 1' % np).split()
+    if cdargs is None:
+        cdargs = '-d 0 -c 0.50 -s 0.65 -p 1 -n 3 -aL 0.75 -aS 0.85 -g 1'
+    if '-T' in cdargs:
+        message = ('warning: do not set cd-hit thread count with "-T" in '
+                   '"--cdargs", use the "--numprocs" option')
+        print(message, file=sys.stderr)
+    cdargs = '-T {} {}'.format(np, cdargs)
+    command = ('cd-hit -i GenHub.prot.fa -o GenHub.prot ' + cdargs).split()
     subprocess.check_call(command)
 
     with open('GenHub.prot.clstr', 'r') as infile, \
@@ -128,10 +134,15 @@ def get_parser():
                         'must include the placeholder {} for the species '
                         'label, as well as a printf-style placeholder for a '
                         'serial number; default is "{}ILC-%%05lu"')
+    parser.add_argument('--cdargs', metavar='ARGS', default=None,
+                        help='arguments for cd-hit (cluster task only); '
+                        'default is "-d 0 -c 0.50 -s 0.65 -p 1 -n 3 -aL 0.75 '
+                        '-aS 0.85 -g 1"; do not use cd-hit\'s "-T" option, '
+                        'use this program\'s "--numprocs" option instead')
     confargs = parser.add_mutually_exclusive_group()
     confargs.add_argument('-g', '--genome', default=None, metavar='LBL',
                           help='Label (or comma-separated set of labels) '
-                          'specifying the genome(s) to process; use the'
+                          'specifying the genome(s) to process; use the '
                           '`list` task to show all available genomes')
     confargs.add_argument('-b', '--batch', default=None, metavar='LBL',
                           help='Label of a batch of genomes to process; use '
@@ -175,7 +186,7 @@ def main(args):
 
     if 'cluster' in args.task:
         dbs = [getdb(label, conf[label], args) for label in sorted(conf)]
-        cluster_proteins(dbs, args.numprocs)
+        cluster_proteins(dbs, np=args.numprocs, cdargs=args.cdargs)
 
     print('[GenHub] all builds complete!', file=sys.stderr)
 
