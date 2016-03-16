@@ -2,9 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
-### Fixed
+## [0.3.4] - 2016-03-16
+### Added
 - Added `seqfilter` to RefSeq module and .yaml configs.
+
+### Fixed
 - Used new `seqfilter` mechanism to eliminate redundant patch and variant data from human and mouse genomes.
 - Updated rice recipe following an update to the corresponding RefSeq entry.
 
