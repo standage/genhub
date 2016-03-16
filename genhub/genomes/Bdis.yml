@@ -8,8 +8,10 @@ Bdis:
     build: Brachypodium_distachyon_v2.0
     annotfilter:
         - NC_011032.1
+    seqfilter:
+        - NC_011032.1
     checksums:
-        gdna: 65702da54927be38b37be8911643f036fdb577b1
+        gdna: a7140dde7f1bf3017a7dc2a47d37d4e56496765a
         gff3: 11c352f2483784a7acb1c3c200601969a444439f
         prot: c70e1b2df2780da33aea71fa2b61908a795c4c3e
     description: Brachypodium_distachyon_v2.0 from JGI

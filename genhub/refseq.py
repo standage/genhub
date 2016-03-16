@@ -73,10 +73,17 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
         return '%s_protein.faa.gz' % self.specbase
 
     def format_fasta(self, instream, outstream, logstream=sys.stderr):
-        for line in instream:
-            # No processing required since new RefSeq migration (2015-11-30).
-            # If any is ever needed again, do it here.
-            print(line, end='', file=outstream)
+        for defline, sequence in genhub.fasta.parse(instream):
+            if 'seqfilter' in self.config:
+                discard = False
+                for pattern in self.config['seqfilter']:
+                    if pattern in defline:
+                        discard = True
+                        break
+                if discard:
+                    continue
+            print(defline, file=outstream)
+            genhub.fasta.format(sequence, linewidth=80, outstream=outstream)
 
     def format_gff3(self, logstream=sys.stderr, debug=False):
         cmds = list()
@@ -254,6 +261,13 @@ def test_gdna_format():
     outfile = 'testdata/demo-workdir/Tcas/Tcas.gdna.fa'
     testoutfile = 'testdata/fasta/tcas-first-33-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Tcas gDNA formatting failed'
+
+    conf = genhub.test_registry.genome('Mmus')
+    mmus_db = RefSeqDB('Mmus', conf, workdir='testdata/demo-workdir')
+    mmus_db.preprocess_gdna(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Mmus/Mmus.gdna.fa'
+    testoutfile = 'testdata/fasta/mmus-gdna.fa'
+    assert filecmp.cmp(testoutfile, outfile), 'Mmus gDNA formatting failed'
 
 
 def test_annot_format():

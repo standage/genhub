@@ -9,8 +9,10 @@ Agam:
         - NC_002084.1
         - GeneID:4577453
         - GeneID:4578480
+    seqfilter:
+        - NC_002084.1
     checksums:
-        gdna: 308d2fabe7b8871ce0433e1cf47d04010836b18e
+        gdna: 1618adb863cda2c00c45d642c609b53f5e86aa02
         gff3: 182800f4787ddcfde670ccb2b0262544889c6cdf
         prot: 9586cba9beda13caf8a0f2f54272a61862f98ba9
     description: AgamP3 from the Anopheles sequencing consortium

@@ -9,8 +9,10 @@ Dmel:
     annotfilter:
         - NC_024511.2
         - exception=trans-splicing
+    seqfilter:
+        - NC_024511.2
     checksums:
-        gdna: 43fc7b8b4a37003e73fef0c61aa3903b54a24d12
+        gdna: e4176036c90a917372821bbf3498f6d232e69690
         gff3: 663c24c44972d553e60493402a7746f1fc43d7dd
         prot: f25381f7f441ddf02eb45cd2b38b003cf4ce9dfb
     description: Release 6 (plus ISO1 MT) from the FlyBase Consortium

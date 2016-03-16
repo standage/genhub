@@ -9,8 +9,11 @@ Crei:
         - NC_001638.1
         - NC_005353.1
         - GeneID:5716281
+    seqfilter:
+        - NC_001638.1
+        - NC_005353.1
     checksums:
-        gdna: dfbf20ca6489af0662ab4c9573eb945aca90c605
+        gdna: c7e8332282880cbfadc06c70ff1fa2dc6246d724
         gff3: 6c49e9df6d13bfdba72f892c2c242c213e3a1d4f
         prot: 98b4c542d75c64a94b4b98bcc1a3a38239b34578
     description: v3.0 from JGI
