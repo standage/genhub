@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Fixed
+- Added `seqfilter` to RefSeq module and .yaml configs.
+- Used new `seqfilter` mechanism to eliminate redundant patch and variant data from human and mouse genomes.
+
 ## [0.3.3] - 2016-03-03
 ### Fixed
 - Filled out partial implementation of `--delta` option for the build script.

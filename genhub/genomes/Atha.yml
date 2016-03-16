@@ -12,8 +12,11 @@ Atha:
         - GeneID:6240913
         - NC_001284.2
         - NC_000932.1
+    seqfilter:
+        - NC_001284.2
+        - NC_000932.1
+    description: TAIR10 from TAIR
     checksums:
-        gdna: 332dc85d30d297ca140d3e6dc87911747ebb4818
+        gdna: 3d8278d485c33a7920c1cfd09545bbc179fc8d00
         gff3: 3a9350d28d87e2dce07f20b0602afbd19f79ec26
         prot: 55cefaf86350639f77c520887e37c1a6a4e87451
-    description: TAIR10 from TAIR
