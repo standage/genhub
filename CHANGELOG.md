@@ -2,8 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.3.5] - 2016-03-17
+## [Unreleased]
+### Added
+- New recipe for cotton.
 
+## [0.3.5] - 2016-03-17
 ### Fixed
 - Updated test data files to compensate for corrections to LocusPocus' reporting of iLocus type.
 
