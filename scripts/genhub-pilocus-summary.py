@@ -13,6 +13,7 @@ from __future__ import print_function
 import argparse
 import pandas
 import re
+import sys
 import genhub
 
 
@@ -47,8 +48,7 @@ def get_row(iloci, premrnas, fmt):
     pilocus_occ = piloci['EffectiveLength'].sum()
     pilocus_occ_perc = pilocus_occ / effective_genome['EffectiveLength'].sum()
     single_exon_piloci = len(premrnas[premrnas['ExonCount'] == 1])
-    single_exon_perc = single_exon_piloci / pilocus_count
-    assert len(premrnas) == pilocus_count
+    single_exon_perc = single_exon_piloci / len(premrnas)
 
     if fmt == 'tsv':
         row = [species, pilocus_count, pilocus_occ, pilocus_occ_perc,
