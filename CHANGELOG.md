@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - New recipe for cotton.
 - New recipe for *Daphnia pulex*.
+- New script for creating an iLocus summary table.
 
 ## [0.3.5] - 2016-03-17
 ### Fixed
