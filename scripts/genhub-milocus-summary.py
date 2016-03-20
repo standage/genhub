@@ -13,13 +13,12 @@ from __future__ import print_function
 import argparse
 import pandas
 import re
-import sys
 import genhub
 
 
 def cli():
     """Define the command-line interface of the program."""
-    desc = 'Summarize piLocus content of the specified genome(s)'
+    desc = 'Summarize iLocus content of the specified genome(s)'
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('-v', '--version', action='version',
                         version='GenHub v%s' % genhub.__version__)
@@ -37,30 +36,43 @@ def cli():
     return parser
 
 
-def get_row(iloci, premrnas, fmt):
+def count_seqs(data):
+    """Count sequences from iLocus positions."""
+    seqids = dict()
+    for locuspos in data['LocusPos']:
+        posmatch = re.search('(\S+)_(\d+)-(\d+)', locuspos)
+        assert posmatch, 'error parsing iLocus position: ' + locuspos
+        seqid = posmatch.group(1)
+        seqids[seqid] = True
+    return len(seqids)
+
+
+def get_row(data, fmt):
     """Calculate the summary for a row of the table."""
     assert fmt in ['tsv', 'tex']
 
-    species = iloci['Species'][0]
-    piloci = iloci.loc[iloci.LocusClass.isin(['siLocus', 'ciLocus'])]
-    pilocus_count = len(piloci)
-    effective_genome = iloci.loc[iloci.LocusClass != 'fiLocus']
+    species = data['Species'][0]
+    miloci = data.loc[data.LocusClass == 'miLocus']
+    milocus_count = len(miloci)
+    effective_genome = data.loc[data.LocusClass != 'fiLocus']
     effective_genome_size = effective_genome['EffectiveLength'].sum()
-    pilocus_occ = piloci['EffectiveLength'].sum()
-    pilocus_occ_perc = pilocus_occ / effective_genome_size
-    single_exon_piloci = len(premrnas[premrnas['ExonCount'] == 1])
-    single_exon_perc = single_exon_piloci / len(premrnas)
+    milocus_occ = miloci['EffectiveLength'].sum()
+    milocus_perc = milocus_occ / effective_genome_size
+    gene_count = miloci['GeneCount'].quantile([0.25, 0.50, 0.75])
+    gilocus_types = ['siLocus', 'ciLocus', 'niLocus']
+    singletons = data.loc[data.LocusClass.isin(gilocus_types)]
 
     if fmt == 'tsv':
-        row = [species, pilocus_count, pilocus_occ, pilocus_occ_perc,
-               single_exon_piloci, single_exon_perc]
+        genecounts = ','.join(['{:.0f}'.format(gc) for gc in gene_count])
+        row = [species, milocus_count, milocus_occ, milocus_perc,
+               genecounts, len(singletons)]
     elif fmt == 'tex':
-        count = '{:,d}'.format(pilocus_count)
-        occupancy = '{:,.1f} Mb ({:.1f}\\%)'.format(pilocus_occ / 1000000,
-                                                    pilocus_occ_perc * 100)
-        sepiloci = '{:,d} ({:.1f}\\%)'.format(single_exon_piloci,
-                                              single_exon_perc * 100)
-        row = [species, count, occupancy, sepiloci]
+        count = '{:,d}'.format(milocus_count)
+        occupancy = '{:,.1f} Mb ({:,.1f}\\%)'.format(milocus_occ / 1000000,
+                                                     milocus_perc * 100)
+        genecounts = ', '.join(['{:.0f}'.format(gc) for gc in gene_count])
+        singles = '{:,d}'.format(len(singletons))
+        row = [species, count, occupancy, genecounts, singles]
 
     return row
 
@@ -77,11 +89,11 @@ def print_row(values, fmt):
 
 
 def main(args):
-    column_names = ['Species', 'piLoci', 'Occupancy', 'GenomeFraction',
-                    'SingleExon_piLoci', 'SingleExonFraction']
+    column_names = ['Species', 'miLoci', 'Occupancy', 'GenomeFraction',
+                    'GeneCountQuartiles', 'Singletons']
     if args.outfmt == 'tex':
-        column_names = ['Species', 'piLoci', 'Occupancy',
-                        'Single Exon piLoci']
+        column_names = ['Species', 'miLoci', 'Occupancy', 'Gene Count',
+                        'Singletons']
     print_row(column_names, args.outfmt)
 
     registry = genhub.registry.Registry()
@@ -93,9 +105,8 @@ def main(args):
     for species in args.species:
         config = conf[species]
         db = genhub.genomedb.GenomeDB(species, config, workdir=args.workdir)
-        iloci = pandas.read_table(db.ilocustable)
-        premrnas = pandas.read_table(db.premrnatable)
-        row = get_row(iloci, premrnas, args.outfmt)
+        data = pandas.read_table(db.milocustable)
+        row = get_row(data, args.outfmt)
         print_row(row, args.outfmt)
 
 

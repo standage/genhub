@@ -116,6 +116,11 @@ class GenomeDB(object):
         return self.file_path(filename)
 
     @property
+    def milocustable(self):
+        filename = '%s.miloci.tsv' % self.label
+        return self.file_path(filename)
+
+    @property
     def premrnatable(self):
         filename = '%s.pre-mrnas.tsv' % self.label
         return self.file_path(filename)
