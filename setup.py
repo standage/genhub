@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015   Indiana University
+# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2015-2016   Indiana University
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -30,6 +30,7 @@ setuptools.setup(name='genhub',
                           'scripts/genhub-format-gff3.py',
                           'scripts/genhub-glean-to-gff3.py',
                           'scripts/genhub-namedup.py',
+                          'scripts/genhub-ilocus-summary.py',
                           'scripts/genhub-stats.py'],
                  install_requires=['pyyaml', 'pycurl'],
                  package_data={'genhub': ['genomes/*.yml', 'genomes/*.txt']},
