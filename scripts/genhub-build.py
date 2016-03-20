@@ -58,6 +58,11 @@ def run_build(builddata):
     db = getdb(label, config, args)
 
     if 'download' in args.task:
+        assert label != 'Dpul', (
+            '"download" task not available for Daphnia pulex (Dpul) genome; '
+            'see https://github.com/standage/genhub/blob/master/docs/DPUL.md '
+            'for more details'
+        )
         db.download()
     if 'format' in args.task:
         db.format()
