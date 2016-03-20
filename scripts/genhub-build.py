@@ -114,7 +114,7 @@ def get_parser():
                         help='working directory for data files; default is '
                         '"./species"')
     parser.add_argument('-c', '--cfgdir', default=None, metavar='DIR',
-                        help='Directory (or comma-separated list of '
+                        help='directory (or comma-separated list of '
                         'directories) from which to load user-supplied genome '
                         'configuration files')
     parser.add_argument('-p', '--numprocs', metavar='P', type=int, default=1,
@@ -141,15 +141,15 @@ def get_parser():
                         'use this program\'s "--numprocs" option instead')
     confargs = parser.add_mutually_exclusive_group()
     confargs.add_argument('-g', '--genome', default=None, metavar='LBL',
-                          help='Label (or comma-separated set of labels) '
+                          help='label (or comma-separated set of labels) '
                           'specifying the genome(s) to process; use the '
                           '`list` task to show all available genomes')
     confargs.add_argument('-b', '--batch', default=None, metavar='LBL',
-                          help='Label of a batch of genomes to process; use '
+                          help='label of a batch of genomes to process; use '
                           'the `list` task to show all available '
                           'batches')
     parser.add_argument('task', nargs='+', choices=buildcmds, metavar='task',
-                        help='Build task(s) to execute; options include '
+                        help='build task(s) to execute; options include '
                         '"%s"' % '", "'.join(buildcmds))
     return parser
 

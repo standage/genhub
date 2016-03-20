@@ -110,6 +110,11 @@ class GenomeDB(object):
         filename = '%s.all.prot.fa' % self.label
         return self.file_path(filename)
 
+    @property
+    def ilocustable(self):
+        filename = '%s.iloci.tsv' % self.label
+        return self.file_path(filename)
+
     # ----------
     # Determine whether raw data files need to be compressed during download.
     # ----------
