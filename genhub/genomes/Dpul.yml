@@ -1,0 +1,13 @@
+Dpul:
+    species: Daphnia pulex
+    common: water flea
+    clade: crustacean
+    source: dpul
+    scaffolds: Daphnia_pulex.fasta
+    annotation: FrozenGeneCatalog20110204.gff3
+    proteins: FrozenGeneCatalog20110204.proteins.fasta
+    checksums:
+        gdna: 0a3213550ca5a8588b255453538c4647b4a4c13e
+        gff3: f5bced08db51e83657ce1840c16dd3664719044a
+        prot: 69ca5d0e20a3bc5e3cf1105d4f1e26c12ba1edee
+    description: JGI

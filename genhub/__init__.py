@@ -35,6 +35,7 @@ except NameError:  # pragma: no cover
 # Custom modules
 from . import pdom
 from . import am10
+from . import dpul
 
 # Versioneer
 from ._version import get_versions
