@@ -22,6 +22,7 @@ from . import ncbi_flybase
 from . import beebase
 from . import crg
 from . import tair
+from . import am10
 from . import iloci
 from . import proteins
 from . import mrnas
@@ -32,9 +33,9 @@ try:
 except NameError:  # pragma: no cover
     FileNotFoundError = IOError
 
-# Custom modules
+# Temporary modules
 from . import pdom
-from . import am10
+from . import dpul
 
 # Versioneer
 from ._version import get_versions

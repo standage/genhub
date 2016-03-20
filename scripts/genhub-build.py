@@ -19,14 +19,16 @@ import genhub
 
 buildcmds = ['list', 'download', 'format', 'prepare', 'stats', 'cluster',
              'cleanup']
-sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom', 'tair', 'am10']
+sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom', 'tair', 'am10',
+           'dpul']
 dbtype = {'refseq': genhub.refseq.RefSeqDB,
           'ncbi_flybase': genhub.ncbi_flybase.FlyBaseDB,
           'beebase': genhub.beebase.BeeBaseDB,
           'crg': genhub.crg.CrgDB,
           'pdom': genhub.pdom.PdomDB,
           'tair': genhub.tair.TairDB,
-          'am10': genhub.am10.Am10DB}
+          'am10': genhub.am10.Am10DB,
+          'dpul': genhub.dpul.DpulDB}
 
 
 def getdb(label, config, args):
@@ -56,6 +58,11 @@ def run_build(builddata):
     db = getdb(label, config, args)
 
     if 'download' in args.task:
+        assert label != 'Dpul', (
+            '"download" task not available for Daphnia pulex (Dpul) genome; '
+            'see https://github.com/standage/genhub/blob/master/docs/DPUL.md '
+            'for more details'
+        )
         db.download()
     if 'format' in args.task:
         db.format()
