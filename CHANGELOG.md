@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - New recipe for cotton.
+- New script for creating an iLocus summary table.
 
 ## [0.3.5] - 2016-03-17
 ### Fixed
