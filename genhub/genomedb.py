@@ -115,6 +115,11 @@ class GenomeDB(object):
         filename = '%s.iloci.tsv' % self.label
         return self.file_path(filename)
 
+    @property
+    def premrnatable(self):
+        filename = '%s.pre-mrnas.tsv' % self.label
+        return self.file_path(filename)
+
     # ----------
     # Determine whether raw data files need to be compressed during download.
     # ----------

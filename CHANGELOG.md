@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Added
+- New script for creating a piLocus summary table.
+
 ## [0.3.7] - 2016-03-19
 ### Fixed
 - Correctly included missing script in `setup.py`.
