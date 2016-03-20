@@ -20,6 +20,8 @@ def cli():
     """Define the command-line interface of the program."""
     desc = 'Summarize iLocus content of the specified genome(s)'
     parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('-v', '--version', action='version',
+                        version='GenHub v%s' % genhub.__version__)
     parser.add_argument('-c', '--cfgdir', default=None, metavar='DIR',
                         help='directory (or comma-separated list of '
                         'directories) from which to load user-supplied genome '
