@@ -328,6 +328,7 @@ class GenomeDB(object):
         By default, the files to be kept are the following.
         - *.iloci.fa
         - *.iloci.gff3
+        - *.miloci.gff3
         - *.tsv
         - original (downloaded) data files
         All other files are deleted.
@@ -341,13 +342,14 @@ class GenomeDB(object):
         """
         dbfiles = glob.glob(self.dbdir + '/*')
         files_deleted = list()
+        suffixes = ['.iloci.fa', '.iloci.gff3', '.miloci.gff3', '.tsv',
+                    '.protein2ilocus.txt']
         for dbfile in dbfiles:
-            if dbfile.endswith('.iloci.fa') or dbfile.endswith('.iloci.gff3'):
-                continue
-            if dbfile.endswith('.tsv'):
-                continue
-            if dbfile.endswith('.protein2ilocus.txt'):
-                continue
+            tokeep = False
+            for suffix in suffixes:
+                if dbfile.endswith(suffix):
+                    tokeep = True
+                    break
             if dbfile in [self.gdnapath, self.gff3path, self.protpath]:
                 if not fullclean:
                     continue

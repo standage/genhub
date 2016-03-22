@@ -93,6 +93,7 @@ def milocus_info(db):
                 if seqid not in singleton_count:
                     singleton_count[seqid] = 0
                 singleton_count[seqid] += 1
+    print(milocus_occ)
     return milocus_occ, singleton_count
 
 
@@ -114,10 +115,15 @@ def main(args):
             length = seqlengths[seqid]
             if length < args.length:
                 continue
-            milocus_space = milocus_occ[seqid]
+            milocus_space = 0
+            if seqid in milocus_occ:
+                milocus_space = milocus_occ[seqid]
             giloci = gilocus_counts[seqid]
-            nonsingletons = giloci - singleton_count[seqid]
-            sigma = milocus_occ[seqid] / length
+            singletons = 0
+            if seqid in singleton_count:
+                singletons = singleton_count[seqid]
+            nonsingletons = giloci - singletons
+            sigma = milocus_space / length
             phi = nonsingletons / giloci
 
             print(species, seqid, sigma, phi, sep='\t')
