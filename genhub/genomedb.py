@@ -111,6 +111,16 @@ class GenomeDB(object):
         return self.file_path(filename)
 
     @property
+    def ilocusfile(self):
+        filename = '%s.iloci.gff3' % self.label
+        return self.file_path(filename)
+
+    @property
+    def milocusfile(self):
+        filename = '%s.miloci.gff3' % self.label
+        return self.file_path(filename)
+
+    @property
     def ilocustable(self):
         filename = '%s.iloci.tsv' % self.label
         return self.file_path(filename)

@@ -47,31 +47,34 @@ def count_seqs(data):
     return len(seqids)
 
 
-def get_row(data, fmt):
+def get_row(ilocus_data, milocus_data, fmt):
     """Calculate the summary for a row of the table."""
     assert fmt in ['tsv', 'tex']
 
-    species = data['Species'][0]
-    miloci = data.loc[data.LocusClass == 'miLocus']
+    species = ilocus_data['Species'][0]
+    miloci = milocus_data.loc[milocus_data.LocusClass == 'miLocus']
     milocus_count = len(miloci)
-    effective_genome = data.loc[data.LocusClass != 'fiLocus']
+    effective_genome = milocus_data.loc[milocus_data.LocusClass != 'fiLocus']
     effective_genome_size = effective_genome['EffectiveLength'].sum()
     milocus_occ = miloci['EffectiveLength'].sum()
     milocus_perc = milocus_occ / effective_genome_size
     gene_count = miloci['GeneCount'].quantile([0.25, 0.50, 0.75])
     gilocus_types = ['siLocus', 'ciLocus', 'niLocus']
-    singletons = data.loc[data.LocusClass.isin(gilocus_types)]
+    singletons = milocus_data.loc[milocus_data.LocusClass.isin(gilocus_types)]
+    giloci = ilocus_data.loc[ilocus_data.LocusClass.isin(gilocus_types)]
+    single_frac = len(singletons) / len(giloci)
 
     if fmt == 'tsv':
         genecounts = ','.join(['{:.0f}'.format(gc) for gc in gene_count])
         row = [species, milocus_count, milocus_occ, milocus_perc,
-               genecounts, len(singletons)]
+               genecounts, len(singletons), len(giloci)]
     elif fmt == 'tex':
         count = '{:,d}'.format(milocus_count)
-        occupancy = '{:,.1f} Mb ({:,.1f}\\%)'.format(milocus_occ / 1000000,
-                                                     milocus_perc * 100)
+        occupancy = '{:,.1f} Mb ({:.1f}\\%)'.format(milocus_occ / 1000000,
+                                                    milocus_perc * 100)
         genecounts = ', '.join(['{:.0f}'.format(gc) for gc in gene_count])
-        singles = '{:,d}'.format(len(singletons))
+        singles = '{:,d} ({:.1f}\\%)'.format(len(singletons),
+                                             single_frac * 100)
         row = [species, count, occupancy, genecounts, singles]
 
     return row
@@ -90,7 +93,7 @@ def print_row(values, fmt):
 
 def main(args):
     column_names = ['Species', 'miLoci', 'Occupancy', 'GenomeFraction',
-                    'GeneCountQuartiles', 'Singletons']
+                    'GeneCountQuartiles', 'Singletons', 'SingletonFraction']
     if args.outfmt == 'tex':
         column_names = ['Species', 'miLoci', 'Occupancy', 'Gene Count',
                         'Singletons']
@@ -105,8 +108,9 @@ def main(args):
     for species in args.species:
         config = conf[species]
         db = genhub.genomedb.GenomeDB(species, config, workdir=args.workdir)
-        data = pandas.read_table(db.milocustable)
-        row = get_row(data, args.outfmt)
+        iloci = pandas.read_table(db.ilocustable)
+        miloci = pandas.read_table(db.milocustable)
+        row = get_row(iloci, miloci, args.outfmt)
         print_row(row, args.outfmt)
 
 
