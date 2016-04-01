@@ -358,7 +358,6 @@ def test_cleanup():
                 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
                 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.txt',
                 'testdata/demo-workdir/Bdis/Bdis.miloci.fa',
-                'testdata/demo-workdir/Bdis/Bdis.miloci.gff3',
                 'testdata/demo-workdir/Bdis/Bdis.mrnas.txt',
                 'testdata/demo-workdir/Bdis/Bdis.simple-iloci.txt',
                 'testdata/demo-workdir/Bdis/ilens.temp']

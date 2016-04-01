@@ -350,6 +350,8 @@ class GenomeDB(object):
                 if dbfile.endswith(suffix):
                     tokeep = True
                     break
+            if tokeep:
+                continue
             if dbfile in [self.gdnapath, self.gff3path, self.protpath]:
                 if not fullclean:
                     continue
@@ -387,6 +389,13 @@ def test_file_path():
     assert db.file_path('bogus.txt') == './Bimp/bogus.txt'
     db = GenomeDB('Bimp', config, 'wd')
     assert db.file_path('Bimp.gff3') == 'wd/Bimp/Bimp.gff3'
+
+    assert db.ilocusfile == 'wd/Bimp/Bimp.iloci.gff3'
+    assert db.milocusfile == 'wd/Bimp/Bimp.miloci.gff3'
+    assert db.ilocustable == 'wd/Bimp/Bimp.iloci.tsv'
+    assert db.milocustable == 'wd/Bimp/Bimp.miloci.tsv'
+    assert db.premrnatable == 'wd/Bimp/Bimp.pre-mrnas.tsv'
+
     checkfailed = False
     try:
         config = genhub.test_registry.genome('Amel')
