@@ -417,12 +417,12 @@ def test_props():
     assert db.protfile == './Bimp/Bimp.all.prot.fa'
     assert db.source == 'refseq'
 
-    config = genhub.test_registry.genome('Dqua')
-    db = GenomeDB('Dqua', config, workdir='/opt/data/genomes')
-    assert db.dbdir == '/opt/data/genomes/Dqua'
-    assert db.gdnafile == '/opt/data/genomes/Dqua/Dqua.gdna.fa'
-    assert db.gff3file == '/opt/data/genomes/Dqua/Dqua.gff3'
-    assert db.protfile == '/opt/data/genomes/Dqua/Dqua.all.prot.fa'
+    config = genhub.test_registry.genome('Dqcr')
+    db = GenomeDB('Dqcr', config, workdir='/opt/data/genomes')
+    assert db.dbdir == '/opt/data/genomes/Dqcr'
+    assert db.gdnafile == '/opt/data/genomes/Dqcr/Dqcr.gdna.fa'
+    assert db.gff3file == '/opt/data/genomes/Dqcr/Dqcr.gff3'
+    assert db.protfile == '/opt/data/genomes/Dqcr/Dqcr.all.prot.fa'
     assert db.source == 'crg'
 
 

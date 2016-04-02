@@ -1,14 +1,12 @@
 Dqua:
     species: Dinoponera quadriceps
     clade: ants
-    source: crg
-    scaffolds: DQUA.v01.fa.gz
-    annotation: DQUA.v01.gff3
-    proteins: DQUA.v01.pep.fa.gz
+    source: refseq
+    branch: invertebrate
+    accession: GCF_001313825.1
+    build: ASM131382v1
     checksums:
-        gdna: 1c28029476393c6f19a9a44ecb29b2ee95dbd46a
-        gff3: 17846100729d72d7cc45cb0bdbe95a4d9216b996
-        prot: 3f153ff22ba057b3d5114f7142796df9898f2f50
-    compress:
-        - gff3
-    description: CRG version v01
+        gdna: b92587077c74c535a1444fe1bba580807a4e47c7
+        gff3: 3cfc24264ccd6a7e50d37bc45c89bebd7de30ce7
+        prot: 19e66497c1a6a0a2f998d98432573848bbb386d1
+    description: ASM131382v1 from the CRG

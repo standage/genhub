@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015   Indiana University
+# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2015-2016   Indiana University
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -24,25 +24,21 @@ class PdomDB(genhub.genomedb.GenomeDB):
     def __init__(self, label, conf, workdir='.'):
         super(PdomDB, self).__init__(label, conf, workdir)
         assert self.config['source'] == 'pdom'
-        self.specbase = 'http://de.iplantcollaborative.org/dl/d'
 
     def __repr__(self):
-        return 'PdomDataStore'
+        return 'figshare'
 
     @property
     def gdnaurl(self):
-        prefix = '53B7319E-3201-4087-9607-2D541FF34DD0'
-        return '%s/%s/%s' % (self.specbase, prefix, self.gdnafilename)
+        return 'https://ndownloader.figshare.com/files/3557633'
 
     @property
     def gff3url(self):
-        prefix = 'E4944CBB-7DE4-4CA1-A889-3D2A5D2E8696'
-        return '%s/%s/%s' % (self.specbase, prefix, self.gff3filename)
+        return 'https://ndownloader.figshare.com/files/3558071'
 
     @property
     def proturl(self):
-        prefix = 'ACD29139-6619-48DF-A9F2-F75CA382E248'
-        return '%s/%s/%s' % (self.specbase, prefix, self.protfilename)
+        return 'https://ndownloader.figshare.com/files/3558059'
 
     def format_gdna(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
@@ -109,26 +105,20 @@ class PdomDB(genhub.genomedb.GenomeDB):
 # -----------------------------------------------------------------------------
 
 def test_download():
-    """PdomDataStore download"""
-    config = genhub.test_registry.genome('Pdom')
-    pdom_db = PdomDB('Pdom', config)
+    """Pdtl figshare download"""
+    config = genhub.test_registry.genome('Pdtl')
+    pdom_db = PdomDB('Pdtl', config)
 
-    assert pdom_db.gdnaurl == ('http://de.iplantcollaborative.org/dl/d/'
-                               '53B7319E-3201-4087-9607-2D541FF34DD0/'
-                               'pdom-scaffolds-unmasked-r1.2.fa.gz')
-    assert pdom_db.gff3url == ('http://de.iplantcollaborative.org/dl/d/'
-                               'E4944CBB-7DE4-4CA1-A889-3D2A5D2E8696/'
-                               'pdom-annot-r1.2.gff3')
-    assert pdom_db.proturl == ('http://de.iplantcollaborative.org/dl/d/'
-                               'ACD29139-6619-48DF-A9F2-F75CA382E248/'
-                               'pdom-annot-r1.2-proteins.fa')
-    assert '%r' % pdom_db == 'PdomDataStore'
+    assert pdom_db.gdnaurl == 'https://ndownloader.figshare.com/files/3557633'
+    assert pdom_db.gff3url == 'https://ndownloader.figshare.com/files/3558071'
+    assert pdom_db.proturl == 'https://ndownloader.figshare.com/files/3558059'
+    assert '%r' % pdom_db == 'figshare'
 
 
 def test_format():
-    """Pdom formatting task"""
-    config = genhub.test_registry_supp.genome('Pdom')
-    pdom_db = PdomDB('Pdom', config, workdir='testdata/demo-workdir')
+    """Pdtl formatting task"""
+    config = genhub.test_registry_supp.genome('Pdtl')
+    pdom_db = PdomDB('Pdtl', config, workdir='testdata/demo-workdir')
 
     pdom_db.preprocess_gdna(logstream=None)
     pdom_db.preprocess_gff3(logstream=None)
@@ -136,9 +126,9 @@ def test_format():
 
 
 def test_protids():
-    """Pdom: extract protein IDs from GFF3"""
-    config = genhub.test_registry.genome('Pdom')
-    db = PdomDB('Pdom', config)
+    """Pdtl: extract protein IDs from GFF3"""
+    config = genhub.test_registry.genome('Pdtl')
+    db = PdomDB('Pdtl', config)
 
     protids = ['PdomMRNAr1.2-08518.1', 'PdomMRNAr1.2-11420.1',
                'PdomMRNAr1.2-08519.1']
@@ -152,9 +142,9 @@ def test_protids():
 
 
 def test_protmap():
-    """Pdom: extract protein-->iLocus mapping from GFF3"""
-    config = genhub.test_registry.genome('Pdom')
-    db = PdomDB('Pdom', config)
+    """Pdtl: extract protein-->iLocus mapping from GFF3"""
+    config = genhub.test_registry.genome('Pdtl')
+    db = PdomDB('Pdtl', config)
 
     mapping = {'PdomMRNAr1.2-08518.1': 'PdomILC-18235',
                'PdomMRNAr1.2-11420.1': 'PdomILC-18237',
