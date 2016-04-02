@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015   Indiana University
+# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2015-2016   Indiana University
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -150,10 +150,10 @@ class CrgDB(genhub.genomedb.GenomeDB):
 
 def test_scaffolds():
     """CRG scaffolds download"""
-    config = genhub.test_registry.genome('Dqua')
+    config = genhub.test_registry.genome('Dqcr')
     testurl = 'http://wasp.crg.eu/DQUA.v01.fa.gz'
-    testpath = './Dqua/DQUA.v01.fa.gz'
-    dqua_db = CrgDB('Dqua', config)
+    testpath = './Dqcr/DQUA.v01.fa.gz'
+    dqua_db = CrgDB('Dqcr', config)
     assert dqua_db.gdnaurl == testurl, \
         'scaffold URL mismatch\n%s\n%s' % (dqua_db.gdnaurl, testurl)
     assert dqua_db.gdnapath == testpath, \
@@ -163,10 +163,10 @@ def test_scaffolds():
 
 def test_annot():
     """CRG annotation download"""
-    config = genhub.test_registry.genome('Dqua')
+    config = genhub.test_registry.genome('Dqcr')
     testurl = 'http://wasp.crg.eu/DQUA.v01.gff3'
-    testpath = 'CRG/Dqua/DQUA.v01.gff3.gz'
-    dqua_db = CrgDB('Dqua', config, workdir='CRG')
+    testpath = 'CRG/Dqcr/DQUA.v01.gff3.gz'
+    dqua_db = CrgDB('Dqcr', config, workdir='CRG')
     assert dqua_db.gff3url == testurl, \
         'annotation URL mismatch\n%s\n%s' % (dqua_db.gff3url, testurl)
     assert dqua_db.gff3path == testpath, \
@@ -175,10 +175,10 @@ def test_annot():
 
 def test_proteins():
     """CRG protein download"""
-    config = genhub.test_registry.genome('Dqua')
+    config = genhub.test_registry.genome('Dqcr')
     testurl = 'http://wasp.crg.eu/DQUA.v01.pep.fa.gz'
-    testpath = '/opt/db/genhub/Dqua/DQUA.v01.pep.fa.gz'
-    dqua_db = CrgDB('Dqua', config, workdir='/opt/db/genhub')
+    testpath = '/opt/db/genhub/Dqcr/DQUA.v01.pep.fa.gz'
+    dqua_db = CrgDB('Dqcr', config, workdir='/opt/db/genhub')
     assert dqua_db.proturl == testurl, \
         'protein URL mismatch\n%s\n%s' % (dqua_db.proturl, testurl)
     assert dqua_db.protpath == testpath, \
@@ -187,8 +187,8 @@ def test_proteins():
 
 def test_protids():
     """CRG: extract protein IDs from GFF3"""
-    conf = genhub.test_registry.genome('Dqua')
-    db = CrgDB('Dqua', conf)
+    conf = genhub.test_registry.genome('Dqcr')
+    db = CrgDB('Dqcr', conf)
     protids = ['DQUA011a006022P1', 'DQUA011a006023P1', 'DQUA011a006024P1']
     infile = 'testdata/gff3/dqua-275.gff3'
     testids = list()
@@ -201,8 +201,8 @@ def test_protids():
 
 def test_protmap():
     """CRG: extract protein-->iLocus mapping from GFF3"""
-    conf = genhub.test_registry.genome('Dqua')
-    db = CrgDB('Dqua', conf)
+    conf = genhub.test_registry.genome('Dqcr')
+    db = CrgDB('Dqcr', conf)
     mapping = {'DQUA011a006022P1': 'DquaILC-14465',
                'DQUA011a006023P1': 'DquaILC-14466',
                'DQUA011a006024P1': 'DquaILC-14467'}
@@ -217,6 +217,6 @@ def test_protmap():
 
 def test_format():
     """GenomeDB task drivers"""
-    conf = genhub.test_registry_supp.genome('Pcan')
-    pcan_db = CrgDB('Pcan', conf, workdir='testdata/demo-workdir')
+    conf = genhub.test_registry_supp.genome('Pccr')
+    pcan_db = CrgDB('Pccr', conf, workdir='testdata/demo-workdir')
     pcan_db.format(logstream=None)
