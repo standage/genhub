@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Pdom, Pcan, and Dqua now default to RefSeq genomes, with Toth Lab and CRG genomes available under labels Pdtl, Pccr, and Dqcr.
 
 ### Added
+- Sequence IDs are now reported for iLocus and miLocus tables.
 - New script for creating a piLocus summary table.
 
 ## [0.3.7] - 2016-03-19

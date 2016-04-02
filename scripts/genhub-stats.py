@@ -118,9 +118,9 @@ def ilocus_desc(gff3, fasta, miloci=False):
         orientmatch = re.search('fg_orient=(..)', attrs)
         if orientmatch:
             orient = orientmatch.group(1)
-        values = '%s %s %d %d %.3f %.3f %.3f %s %d %r %s' % (
-            locusid, locuspos, locuslen, efflen, gccontent, gcskew, ncontent,
-            locusclass, genecount, unannot, orient)
+        values = '%s %s %s %d %d %.3f %.3f %.3f %s %d %r %s' % (
+            locusid, fields[0], locuspos, locuslen, efflen, gccontent, gcskew,
+            ncontent, locusclass, genecount, unannot, orient)
         yield values.split(' ')
 
 
@@ -539,7 +539,7 @@ if __name__ == '__main__':
         with open(a[0], 'r') as gff, \
                 open(a[1], 'r') as fa,  \
                 open(a[2], 'w') as out:
-            header = ['Species', 'LocusId', 'LocusPos', 'Length',
+            header = ['Species', 'LocusId', 'SeqID', 'LocusPos', 'Length',
                       'EffectiveLength', 'GCContent', 'GCSkew', 'NContent',
                       'LocusClass', 'GeneCount', 'SeqUnannot',
                       'FlankGeneOrient']
@@ -554,7 +554,7 @@ if __name__ == '__main__':
         with open(a[0], 'r') as gff, \
                 open(a[1], 'r') as fa,  \
                 open(a[2], 'w') as out:
-            header = ['Species', 'LocusId', 'LocusPos', 'Length',
+            header = ['Species', 'LocusId', 'SeqID', 'LocusPos', 'Length',
                       'EffectiveLength', 'GCContent', 'GCSkew', 'NContent',
                       'LocusClass', 'GeneCount', 'SeqUnannot',
                       'FlankGeneOrient']
