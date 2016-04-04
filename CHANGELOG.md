@@ -9,7 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Sequence IDs are now reported for iLocus and miLocus tables.
 - New script for creating a piLocus summary table.
-- Recipes for chick pea and cabbage.
+- Recipes for chick pea, cabbage, and soybean.
 
 ## [0.3.7] - 2016-03-19
 ### Fixed
