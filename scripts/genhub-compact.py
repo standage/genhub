@@ -33,27 +33,46 @@ def cli():
     parser.add_argument('-l', '--length', metavar='LEN', type=int,
                         default=1000000, help='minimum length threshold; '
                         'default is 1000000 (1Mb)')
+    parser.add_argument('-i', '--iqnt', metavar='QNT', type=float,
+                        default=None, help='filter long iiLoci at the '
+                        'specified length quantile (0.0-1.0)')
+    parser.add_argument('-g', '--gqnt', metavar='QNT', type=float,
+                        default=None, help='filter short giLoci at the '
+                        'specified length quantile (0.0-1.0)')
     parser.add_argument('species', nargs='+', help='species label(s)')
     return parser
 
 
-def thresholds(seqid, iloci, iqnt=0.95, gqnt=0.05):
-    seqloci = iloci.loc[iloci.SeqID == seqid]
+def longseqs(db, minlength=1000000):
+    with open(db.gff3file, 'r') as gff3:
+        for line in gff3:
+            if not line.startswith('##sequence-region'):
+                continue
+            pattern = '##sequence-region\s+(\S+)\s+(\d+)\s+(\d+)'
+            seqreg = re.search(pattern, line)
+            assert seqreg, line
+            seqid = seqreg.group(1)
+            length = int(seqreg.group(3))
+            if length >= minlength:
+                yield seqid, length
+
+
+def thresholds(iloci, iqnt=0.95, gqnt=0.05):
     ithresh = None
     if iqnt:
-        iiloci = seqloci.loc[seqloci.LocusClass == 'iiLocus']
+        iiloci = iloci.loc[iloci.LocusClass == 'iiLocus']
         ithresh = int(iiloci['Length'].quantile(iqnt))
     gthresh = None
     if gqnt:
         gilocus_types = ['siLocus', 'ciLocus', 'niLocus']
-        giloci = seqloci.loc[seqloci.LocusClass.isin(gilocus_types)]
-        gthresh = int(giloci['Length'].quantile(iqnt))
+        giloci = iloci.loc[iloci.LocusClass.isin(gilocus_types)]
+        gthresh = int(giloci['Length'].quantile(gqnt))
     return ithresh, gthresh
 
 
 def seqlen(seqid, iloci, ithresh=None, gthresh=None):
     seqloci = iloci.loc[(iloci.SeqID == seqid) &
-                        (seqloci.LocusClass != 'fiLocus')]
+                        (iloci.LocusClass != 'fiLocus')]
     effsize = seqloci['EffectiveLength'].sum()
     if ithresh:
         longiiloci = seqloci.loc[(seqloci.LocusClass == 'iiLocus') &
@@ -67,7 +86,7 @@ def seqlen(seqid, iloci, ithresh=None, gthresh=None):
     return effsize
 
 
-def calc_phi(seqid, iloci, miloci):
+def calc_phi(seqid, iloci, miloci, gthresh=None):
     gilocus_types = ['siLocus', 'ciLocus', 'niLocus']
     giloci = iloci.loc[(iloci.SeqID == seqid) &
                        (iloci.LocusClass.isin(gilocus_types))]
@@ -94,11 +113,14 @@ def main(args):
         db = genhub.genomedb.GenomeDB(species, config, workdir=args.workdir)
         iloci = pandas.read_table(db.ilocustable)
         miloci = pandas.read_table(db.milocustable)
-        for seqid in iloci['SeqID']:
-            ithresh, gthresh = thresholds(seqid, iloci)
+        ithresh, gthresh = thresholds(iloci, args.iqnt, args.gqnt)
+        for seqid, length in longseqs(db, args.length):
             length = seqlen(seqid, iloci, ithresh, gthresh)
-            phi = calc_phi(seqid, iloci, miloci)
-            milocus_occ = miloci.loc[miloci.SeqID == seqid]['Length'].sum()
+            phi = calc_phi(seqid, iloci, miloci, gthresh)
+            milocus_occ = miloci.loc[
+                (miloci.SeqID == seqid) &
+                (miloci.LocusClass == 'miLocus')
+            ]['Length'].sum()
             sigma = milocus_occ / length
             print(species, seqid, sigma, phi, sep='\t')
 
