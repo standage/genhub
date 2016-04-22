@@ -11,6 +11,7 @@
 from __future__ import print_function
 from __future__ import division
 import argparse
+import math
 import pandas
 import re
 import sys
@@ -39,6 +40,19 @@ def cli():
     parser.add_argument('-g', '--gqnt', metavar='QNT', type=float,
                         default=None, help='filter short giLoci at the '
                         'specified length quantile (0.0-1.0)')
+    parser.add_argument('-d', '--centroid', type=float, default=None,
+                        metavar='F',
+                        help='by default, phi/sigma values are reported for '
+                        'each chromosome/scaffold of at least 1 Mb in length; '
+                        'enabling this option will instead calculate the '
+                        'average (centroid) over all such phi/sigma values; '
+                        'specify a factor "F" for filtering outliers; if a '
+                        'point has a distance of more than "F" times the '
+                        'average distance from the centroid, it is discarded '
+                        'as an outlier; after all outliers are discarded the '
+                        'centroid is recomputed')
+    parser.add_argument('-s', '--shuffled', action='store_true',
+                        help='load input from shuffled iLocus data')
     parser.add_argument('species', nargs='+', help='species label(s)')
     return parser
 
@@ -99,6 +113,30 @@ def calc_phi(seqid, iloci, miloci, gthresh=None):
     return merged / len(giloci)
 
 
+def calc_centroid(x, y, outlierfactor=2.25):
+    cent_x = sum(x) / len(x)
+    cent_y = sum(y) / len(y)
+
+    distances = list()
+    for xi, yi in zip(x, y):
+        distance = math.sqrt((xi - cent_x)**2 + (yi - cent_y)**2)
+        distances.append(distance)
+    avg_distance = sum(distances) / len(distances)
+
+    keep_x = list()
+    keep_y = list()
+    for xi, yi, di in zip(x, y, distances):
+        if di > avg_distance * outlierfactor:
+            print(xi, yi, di, avg_distance)
+            continue
+        keep_x.append(xi)
+        keep_y.append(yi)
+
+    final_cent_x = sum(keep_x) / len(keep_x)
+    final_cent_y = sum(keep_y) / len(keep_y)
+    return final_cent_x, final_cent_y
+
+
 def main(args):
     print('Species', 'SeqID', 'Sigma', 'Phi', sep='\t')
 
@@ -111,9 +149,19 @@ def main(args):
     for species in args.species:
         config = conf[species]
         db = genhub.genomedb.GenomeDB(species, config, workdir=args.workdir)
-        iloci = pandas.read_table(db.ilocustable)
-        miloci = pandas.read_table(db.milocustable)
+        if args.shuffled:
+            infile = db.file_path('{}.iloci.shuffled.tsv'.format(species))
+            iloci = pandas.read_table(infile)
+            infile = db.file_path('{}.miloci.shuffled.tsv'.format(species))
+            miloci = pandas.read_table(infile)
+        else:
+            iloci = pandas.read_table(db.ilocustable)
+            miloci = pandas.read_table(db.milocustable)
         ithresh, gthresh = thresholds(iloci, args.iqnt, args.gqnt)
+
+        phis = list()
+        sigmas = list()
+        seqids = list()
         for seqid, length in longseqs(db, args.length):
             length = seqlen(seqid, iloci, ithresh, gthresh)
             phi = calc_phi(seqid, iloci, miloci, gthresh)
@@ -122,7 +170,16 @@ def main(args):
                 (miloci.LocusClass == 'miLocus')
             ]['Length'].sum()
             sigma = milocus_occ / length
-            print(species, seqid, sigma, phi, sep='\t')
+            phis.append(phi)
+            sigmas.append(sigma)
+            seqids.append(seqid)
+
+        if args.centroid:
+            phi, sigma = calc_centroid(phis, sigmas, args.centroid)
+            print(species, 'Centroid', sigma, phi, sep='\t')
+        else:
+            for seqid, sigma, phi in zip(seqids, sigmas, phis):
+                print(species, seqid, sigma, phi, sep='\t')
 
 if __name__ == '__main__':
     main(args=cli().parse_args())
