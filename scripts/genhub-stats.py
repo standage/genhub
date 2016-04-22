@@ -75,7 +75,7 @@ def ilocus_desc(gff3, fasta, miloci=False):
     seqs = {}
     for defline, seq in genhub.fasta.parse(fasta):
         seqid = defline[1:].split(' ')[0]
-        assert seqid not in seqs
+        assert seqid not in seqs, 'duplicate seqid: ' + seqid
         seqs[seqid] = seq
 
     for entry in gff3:

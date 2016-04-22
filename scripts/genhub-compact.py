@@ -127,7 +127,6 @@ def calc_centroid(x, y, outlierfactor=2.25):
     keep_y = list()
     for xi, yi, di in zip(x, y, distances):
         if di > avg_distance * outlierfactor:
-            print(xi, yi, di, avg_distance)
             continue
         keep_x.append(xi)
         keep_y.append(yi)
