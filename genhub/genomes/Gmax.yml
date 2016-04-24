@@ -1,0 +1,19 @@
+Gmax:
+    species: Glycine max
+    common: soybean
+    clade: dicot
+    source: refseq
+    branch: plant
+    accession: GCF_000004515.4
+    build: Glycine_max_v2.0
+    annotfilter:
+        - NC_007942.1
+        - NC_020455.1
+    seqfilter:
+        - NC_007942.1
+        - NC_020455.1
+    checksums:
+        gdna: f893514cf22b4e865ab8e25969d2fe2a8e20b264
+        gff3: 71c78a9a3b48eba82623a0cfc304a97032366fd2
+        prot: 557ba82358bb3f11b6f30bc102c4bcd1141462d1
+    description: Glycine_max_v2.0 from JGI
