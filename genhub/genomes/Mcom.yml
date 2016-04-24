@@ -1,5 +1,5 @@
-Msrc:
-    species: Micromonas sp. RCC299
+Mcom:
+    species: Micromonas commoda
     clade: green algae
     source: refseq
     branch: plant
@@ -14,5 +14,5 @@ Msrc:
     checksums:
         gdna: 3b8e3a973443c2e592843a2581630c0957235e29
         gff3: 325fa07138857180ad26c63704a32255fa223b91
-        prot: db8770270843a297be87ae8f69ab2b8be4fe7f13
+        prot: 45dd93a569dd8fffbb6d8ad8c4eeeee69d10b710
     description: ASM9098v2 from the Micromonas Genome Consortium
