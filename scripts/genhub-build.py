@@ -94,7 +94,7 @@ def cluster_proteins(dbs, np=1, cdargs=None):
 
     print('[GenHub] clustering representative proteins', file=sys.stderr)
     if cdargs is None:
-        cdargs = '-d 0 -c 0.50 -s 0.65 -p 1 -n 3 -aL 0.75 -aS 0.85 -g 1'
+        cdargs = '-d 0 -c 0.50 -s 0.65 -p 1 -n 3 -aL 0.75 -aS 0.85 -g 1 -M 0'
     if '-T' in cdargs:
         message = ('warning: do not set cd-hit thread count with "-T" in '
                    '"--cdargs", use the "--numprocs" option')
