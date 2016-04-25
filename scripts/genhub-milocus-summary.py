@@ -32,6 +32,8 @@ def cli():
     parser.add_argument('--outfmt', metavar='FMT', choices=['tsv', 'tex'],
                         default='tsv', help='output format; "tsv" for machine '
                         'readability, "tex" for typesetting')
+    parser.add_argument('-s', '--shuffled', action='store_true',
+                        help='load input from shuffled iLocus data')
     parser.add_argument('species', nargs='+', help='species label(s)')
     return parser
 
@@ -108,8 +110,14 @@ def main(args):
     for species in args.species:
         config = conf[species]
         db = genhub.genomedb.GenomeDB(species, config, workdir=args.workdir)
-        iloci = pandas.read_table(db.ilocustable)
-        miloci = pandas.read_table(db.milocustable)
+        if args.shuffled:
+            infile = db.file_path('{}.iloci.shuffled.tsv'.format(species))
+            iloci = pandas.read_table(infile)
+            infile = db.file_path('{}.miloci.shuffled.tsv'.format(species))
+            miloci = pandas.read_table(infile)
+        else:
+            iloci = pandas.read_table(db.ilocustable)
+            miloci = pandas.read_table(db.milocustable)
         row = get_row(iloci, miloci, args.outfmt)
         print_row(row, args.outfmt)
 
