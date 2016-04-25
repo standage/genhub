@@ -149,10 +149,8 @@ def main(args):
         config = conf[species]
         db = genhub.genomedb.GenomeDB(species, config, workdir=args.workdir)
         if args.shuffled:
-            infile = db.file_path('{}.iloci.shuffled.tsv'.format(species))
-            iloci = pandas.read_table(infile)
-            infile = db.file_path('{}.miloci.shuffled.tsv'.format(species))
-            miloci = pandas.read_table(infile)
+            iloci = pandas.read_table(db.ilocustableshuf)
+            miloci = pandas.read_table(db.milocustableshuf)
         else:
             iloci = pandas.read_table(db.ilocustable)
             miloci = pandas.read_table(db.milocustable)

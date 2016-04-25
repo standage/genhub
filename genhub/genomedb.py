@@ -131,6 +131,16 @@ class GenomeDB(object):
         return self.file_path(filename)
 
     @property
+    def ilocustableshuf(self):
+        filename = '%s.iloci.shuffled.tsv' % self.label
+        return self.file_path(filename)
+
+    @property
+    def milocustableshuf(self):
+        filename = '%s.miloci.shuffled.tsv' % self.label
+        return self.file_path(filename)
+
+    @property
     def premrnatable(self):
         filename = '%s.pre-mrnas.tsv' % self.label
         return self.file_path(filename)
