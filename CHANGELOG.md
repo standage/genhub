@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+### Fixed
+- The `cluster` build task now uses `-M 0` by default.
+
 ### Changed
 - Pdom, Pcan, and Dqua now default to RefSeq genomes, with Toth Lab and CRG genomes available under labels Pdtl, Pccr, and Dqcr.
 
@@ -10,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Sequence IDs are now reported for iLocus and miLocus tables.
 - New script for creating a piLocus summary table.
 - Recipes for chick pea, cabbage, and soybean.
+- A `--shuffled` option to several scripts for reading from `*.shuffled.*iloci.tsv`.
 
 ## [0.3.7] - 2016-03-19
 ### Fixed
