@@ -131,12 +131,12 @@ class GenomeDB(object):
         return self.file_path(filename)
 
     @property
-    def ilocustableshuf(self):
+    def ilocustableshuf(self):  # pragma: no cover
         filename = '%s.iloci.shuffled.tsv' % self.label
         return self.file_path(filename)
 
     @property
-    def milocustableshuf(self):
+    def milocustableshuf(self):  # pragma: no cover
         filename = '%s.miloci.shuffled.tsv' % self.label
         return self.file_path(filename)
 
