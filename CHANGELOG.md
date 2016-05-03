@@ -14,7 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Sequence IDs are now reported for iLocus and miLocus tables.
 - New script for creating a piLocus summary table.
 - Recipes for chick pea, cabbage, and soybean.
-- Recipe for spider mite (non-insect arthropod).
+- Recipes for another mosquito (*Aedes aegypti*) and a spider mite (non-insect arthropod).
 - A `--shuffled` option to several scripts for reading from `*iloci.shuffled.tsv`, and improved access from the GenomeDB class.
 
 ## [0.3.7] - 2016-03-19
