@@ -1,0 +1,12 @@
+Aaeg:
+    species: Aedes aegypti
+    common: mosquito
+    source: refseq
+    branch: invertebrate
+    accession: GCF_000004015.3
+    build: AaegL2
+    checksums:
+        gdna: 27e8f1c53349b0aa4c031df0df6b196e82e48ac2
+        gff3: 197063a3bf5520a817a9174c31a154518feb4fc8
+        prot: b39db28b217e2bba655788c524db711b82f7cdf7
+    description: AaegL2 from TIGR
