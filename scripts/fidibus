@@ -118,6 +118,8 @@ def get_parser():
 
     parser.add_argument('-v', '--version', action='version',
                         version='GenHub v%s' % genhub.__version__)
+    parser.add_argument('-d', '--delta', type=int, metavar='DLT', default=500,
+                        help='iLocus extension parameter; default is 500')
     parser.add_argument('-w', '--workdir', metavar='WD', default='./species',
                         help='working directory for data files; default is '
                         '"./species"')
@@ -128,43 +130,56 @@ def get_parser():
                         help='build task(s) to execute; options include '
                         '"%s"' % '", "'.join(tasks))
 
-    ilcconf = parser.add_argument_group('iLocus configuration')
-    ilcconf.add_argument('-d', '--delta', type=int, metavar='DLT', default=500,
-                         help='iLocus extension parameter; default is 500')
-    ilcconf.add_argument('-f', '--format', metavar='PFX', default='{}ILC-%05lu',
-                         help='format for assigning serial labels to iLoci; '
-                         'must include the placeholder {} for the species '
-                         'label, as well as a printf-style placeholder for a '
-                         'serial number; default is "{}ILC-%%05lu"')
-
     refrconf = parser.add_argument_group('reference genome configuration')
     confargs = refrconf.add_mutually_exclusive_group()
     confargs.add_argument('-g', '--genome', default=None, metavar='LBL',
                           help='label (or comma-separated set of labels) '
-                          'specifying the genome(s) to process; use the '
-                          '`list` task to show all available genomes')
+                          'specifying the genome(s) to process; use the `list`'
+                          ' task to show all available reference genomes')
     confargs.add_argument('-b', '--batch', default=None, metavar='LBL',
-                          help='label of a batch of genomes to process; use '
-                          'the `list` task to show all available '
+                          help='label of a batch of reference genomes to '
+                          'process; use the `list` task to show all available '
                           'batches')
     refrconf.add_argument('-c', '--cfgdir', default=None, metavar='DIR',
                           help='directory (or comma-separated list of '
                           'directories) from which to load user-supplied '
                           'reference genome configuration files')
 
+    lclconf = parser.add_argument_group('custom genome configuration')
+    lclconf.add_argument('--local', action='store_true',
+                         help='the "--genome" and "--batch" options are used '
+                         'to specify reference genomes to be retrieved from '
+                         'public databases and pre-processed; the "--local" '
+                         'option invokes processing of a user-supplied genome '
+                         'on the local file system; see the GenHub manual for '
+                         'more information')
+    lclconf.add_argument('--gdna', type=argparse.FileType('r'),
+                         help='genomic DNA sequences (chromosomes or scaffolds'
+                         ' or contigs) in Fasta format')
+    lclconf.add_argument('--gff3', type=argparse.FileType('r'),
+                         help='genome annotation in GFF3 format')
+    lclconf.add_argument('--prot', type=argparse.FileType('r'),
+                         help='protein sequences in Fasta format')
+
     miscconf = parser.add_argument_group('miscellaneous settings')
+    miscconf.add_argument('-f', '--format', metavar='PFX',
+                          default='{}ILC-%05lu', help='format for assigning '
+                          'serial labels to iLoci; must include the '
+                          'placeholder {} for the species label, as well as a '
+                          'printf-style placeholder for a serial number; '
+                          'default is "{}ILC-%%05lu"')
     miscconf.add_argument('--keep', metavar='PTN', nargs='+',
-                        help='keep files matching the specified pattern(s) '
-                        'when running the `cleanup` build task')
+                          help='keep files matching the specified pattern(s) '
+                          'when running the `cleanup` build task')
     miscconf.add_argument('--fullclean', action='store_true',
-                        help='when running the `cleanup` build task, delete '
-                        'original (downloaded) data files as well as processed'
-                        ' data files')
+                          help='when running the `cleanup` build task, delete '
+                          'original (downloaded) data files as well as '
+                          'processed data files')
     miscconf.add_argument('--cdargs', metavar='ARGS', default=None,
-                        help='arguments for cd-hit (cluster task only); '
-                        'default is "-d 0 -c 0.50 -s 0.65 -p 1 -n 3 -aL 0.75 '
-                        '-aS 0.85 -g 1"; do not use cd-hit\'s "-T" option, '
-                        'use this program\'s "--numprocs" option instead')
+                          help='arguments for cd-hit (cluster task only); '
+                          'default is "-d 0 -c 0.50 -s 0.65 -p 1 -n 3 -aL 0.75'
+                          ' -aS 0.85 -g 1"; do not use cd-hit\'s "-T" option, '
+                          'use this program\'s "--numprocs" option instead')
     return parser
 
 
