@@ -98,12 +98,16 @@ class FeatureFormatter(object):
             return line
 
         accmatch = None
-        if self.source in ['refseq', 'ncbi_flybase']:
+        if self.source == 'refseq':
             accmatch = re.search('GeneID:([^;,\n]+)', line)
         elif self.source == 'crg':
             accmatch = re.search('ID=([^;\n]+)', line)
         elif self.source in ['pdom', 'tair', 'beebase']:
             accmatch = re.search('Name=([^;\n]+)', line)
+        elif self.source == 'local':
+            accmatch = re.search('accession=([^;\n]+)', attributes)
+            if not accmatch:
+                accmatch = re.search('Name=([^;\n]+)', attributes)
         else:
             pass
         assert accmatch, 'unable to parse gene accession: %s' % line
@@ -116,6 +120,8 @@ class FeatureFormatter(object):
         else:
             print('Warning: gene has no ID: %s' % attributes, file=sys.stderr)
 
+        if 'accession=' in line:
+            return line
         return line + ';accession=' + accession
 
     def parse_transcript(self, line):
@@ -132,13 +138,17 @@ class FeatureFormatter(object):
 
         accmatch = None
         idmatch = None
-        if self.source in ['refseq', 'ncbi_flybase']:
+        if self.source == 'refseq':
             accmatch = re.search('transcript_id=([^;\n]+)', attributes)
             idmatch = re.search('GeneID:([^;,\n]+)', attributes)
         elif self.source in ['crg', 'pdom']:
             accmatch = re.search('ID=([^;\n]+)', attributes)
         elif self.source in ['beebase', 'tair', 'am10']:
             accmatch = re.search('Name=([^;\n]+)', attributes)
+        elif self.source == 'local':
+            accmatch = re.search('accession=([^;\n]+)', attributes)
+            if not accmatch:
+                accmatch = re.search('Name=([^;\n]+)', attributes)
         else:
             pass
         assert accmatch or idmatch, \
@@ -155,6 +165,8 @@ class FeatureFormatter(object):
         else:
             print('Warning: RNA has no ID: %s' % attributes, file=sys.stderr)
 
+        if 'accession=' in line:
+            return line
         return line + ';accession=' + accession
 
     def parse_vdj(self, line):
@@ -176,6 +188,9 @@ class FeatureFormatter(object):
 
     def parse_feature(self, line):
         """Parse accession for exons, introns, and coding sequences"""
+        if 'accession=' in line:
+            return line
+
         fields = line.split('\t')
         if len(fields) != 9:
             return line
@@ -197,8 +212,6 @@ class FeatureFormatter(object):
 
 def parse_args():
     """Define the command-line interface."""
-    sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom', 'tair',
-               'am10']
     desc = 'Filter features and parse accession values'
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('-v', '--version', action='version',
@@ -207,7 +220,7 @@ def parse_args():
                         default=sys.stdout)
     parser.add_argument('-p', '--prefix', default=None, metavar='PFX',
                         help='attach the given prefix to each sequence ID')
-    parser.add_argument('--source', default='refseq', choices=sources,
+    parser.add_argument('--source', default='refseq', choices=genhub.sources,
                         help='data source; default is "refseq"')
     parser.add_argument('gff3', type=argparse.FileType('r'))
     return parser.parse_args()

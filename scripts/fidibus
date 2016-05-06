@@ -31,7 +31,7 @@ tasks = [
 
 def getdb(label, config, args):
     assert 'source' in config
-    assert config['source'] in sources
+    assert config['source'] in genhub.sources
     constructor = genhub.dbtype[config['source']]
     db = constructor(label, config, workdir=args.workdir)
     return db
@@ -47,9 +47,9 @@ def list_configs(registry):
         print(info)
     print('')
 
-    print('===== Batch configurations =====')
+    print('===== Reference genome batches =====')
     for label, batch in registry.list_batches():
-        print(label, '\t', ','.join(batch))
+        print(label, ','.join(batch), sep='\t')
 
 
 def run_build(builddata):
@@ -57,16 +57,12 @@ def run_build(builddata):
     db = getdb(label, config, args)
 
     if 'download' in args.task:
-        assert label != 'Dpul', (
-            '"download" task not available for Daphnia pulex (Dpul) genome; '
-            'see https://github.com/standage/genhub/blob/master/docs/DPUL.md '
-            'for more details'
-        )
         db.download()
-    if 'format' in args.task:
+    if 'prep' in args.task:
         db.format()
-    if 'prepare' in args.task:
+    if 'iloci' in args.task:
         genhub.iloci.prepare(db, delta=args.delta, ilcformat=args.format)
+    if 'breakdown' in args.task:
         genhub.proteins.prepare(db)
         genhub.mrnas.prepare(db)
         genhub.exons.prepare(db)
@@ -153,13 +149,13 @@ def get_parser():
                          'option invokes processing of a user-supplied genome '
                          'on the local file system; see the GenHub manual for '
                          'more information')
-    lclconf.add_argument('--gdna', type=argparse.FileType('r'),
-                         help='genomic DNA sequences (chromosomes or scaffolds'
-                         ' or contigs) in Fasta format')
-    lclconf.add_argument('--gff3', type=argparse.FileType('r'),
-                         help='genome annotation in GFF3 format')
-    lclconf.add_argument('--prot', type=argparse.FileType('r'),
-                         help='protein sequences in Fasta format')
+    lclconf.add_argument('--label', type=str, metavar='LBL',
+                         help='short unique label (typically 4 letters) for '
+                         'this data set')
+    lclconf.add_argument('--gdna', help='genomic DNA sequences (chromosomes or'
+                         ' scaffolds or contigs) in Fasta format')
+    lclconf.add_argument('--gff3', help='genome annotation in GFF3 format')
+    lclconf.add_argument('--prot', help='protein sequences in Fasta format')
 
     miscconf = parser.add_argument_group('miscellaneous settings')
     miscconf.add_argument('-f', '--format', metavar='PFX',
@@ -193,6 +189,7 @@ def main(args):
         list_configs(registry)
         sys.exit(0)
 
+    conf = None
     if args.genome:
         labels = args.genome.split(',')
         conf = registry.genomes(labels)
@@ -200,10 +197,26 @@ def main(args):
     elif args.batch:
         conf = registry.batch(args.batch)
         assert conf is not None, 'unknown batch label "%s"' % args.batch
-    else:
-        message = ('must specify a genome or batch of genomes to process, '
-                   'or `list` to show available genomes')
-        raise ValueError(message)
+
+    if args.local:
+        if conf is None:
+            conf = dict()
+        assert args.label, 'must specify "--label" with "--local"'
+        assert args.gdna, 'must specify "--gdna" with "--local"'
+        assert args.gff3, 'must specify "--gff3" with "--local"'
+        assert args.prot, 'must specify "--prot" with "--local"'
+        assert args.label not in conf, 'label conflict'
+        conf[args.label] = {
+            'gdna': args.gdna,
+            'gff3': args.gff3,
+            'prot': args.prot,
+            'source': 'local',
+            'species': args.label,
+        }
+
+    if conf is None:
+        message = ('no genomes specified, nothing to do')
+        sys.exit(0)
 
     builds = list()
     for label in sorted(conf):

@@ -21,6 +21,7 @@ from . import refseq
 from . import beebase
 from . import crg
 from . import tair
+from . import generic
 from . import iloci
 from . import proteins
 from . import mrnas
@@ -60,6 +61,7 @@ sources = {
     'pdom': 'Paper wasp genome project (Toth Lab)',
     'tair': 'TAIR6 (The Arabidopsis Information Resource)',
     'am10': 'Amel OGSv1.0 (Honeybee Genome Sequencing Consortium)',
+    'local': 'user-supplied genome (local file system)'
 }
 
 dbtype = {
@@ -69,4 +71,5 @@ dbtype = {
     'pdom': pdom.PdomDB,
     'tair': tair.TairDB,
     'am10': am10.Am10DB,
+    'local': generic.GenericDB,
 }

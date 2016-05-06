@@ -41,6 +41,7 @@ class GenomeDB(object):
         self.config = conf
         self.workdir = workdir
         assert 'source' in conf, 'data source unconfigured'
+        subprocess.call(['mkdir', '-p', self.dbdir])
 
     # ----------
     # Filenames for unprocessed data from the primary source.
@@ -187,7 +188,6 @@ class GenomeDB(object):
 
     def download_gdna(self, logstream=sys.stderr):  # pragma: no cover
         """Download genomic DNA sequence."""
-        subprocess.call(['mkdir', '-p', self.dbdir])
         if logstream is not None:
             logmsg = '[GenHub: %s] ' % self.config['species']
             logmsg += 'download genome sequence from %r' % self
