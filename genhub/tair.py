@@ -12,7 +12,7 @@
 Retrieve and format data from The Arabidopsis Information Resource.
 
 GenomeDB implementation for data residing in TAIR. Currently tested only on
-TAIR6, but presumably trivial to extend to other versions using Att6.yml as a
+TAIR6, but presumably trivial to extend to other versions using `Att6.yml` as a
 template.
 """
 

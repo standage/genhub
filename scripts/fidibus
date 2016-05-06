@@ -17,35 +17,34 @@ import subprocess
 import sys
 import genhub
 
-buildcmds = ['list', 'download', 'format', 'prepare', 'stats', 'cluster',
-             'cleanup']
-sources = ['refseq', 'ncbi_flybase', 'beebase', 'crg', 'pdom', 'tair', 'am10',
-           'dpul']
-dbtype = {'refseq': genhub.refseq.RefSeqDB,
-          'ncbi_flybase': genhub.ncbi_flybase.FlyBaseDB,
-          'beebase': genhub.beebase.BeeBaseDB,
-          'crg': genhub.crg.CrgDB,
-          'pdom': genhub.pdom.PdomDB,
-          'tair': genhub.tair.TairDB,
-          'am10': genhub.am10.Am10DB,
-          'dpul': genhub.dpul.DpulDB}
+tasks = [
+    'list',       # show info about reference genomes
+    'download',   # retrieve or check genome data files
+    'prep',       # pre-process reference genome data files
+    'iloci',      # compute iLoci
+    'breakdown',  # parse annotations and sequences for various genome features
+    'stats',      # compute descriptive statistics on various genome features
+    'cluster',    # cluster iLocus protein products
+    'cleanup',    # remove intermediate/ancillary data files
+]
 
 
 def getdb(label, config, args):
     assert 'source' in config
     assert config['source'] in sources
-    constructor = dbtype[config['source']]
+    constructor = genhub.dbtype[config['source']]
     db = constructor(label, config, workdir=args.workdir)
     return db
 
 
 def list_configs(registry):
-    print('===== Genome configurations =====')
+    print('===== Reference genomes =====')
     for label, config in registry.list_genomes():
-        print(label, config['species'], sep='\t', end='')
+        info = label + '\t' + config['species']
         if 'common' in config:
-            print('\t', config['common'], end='')
-        print('')
+            info += ' ({})'.format(config['common'])
+        info += '\t' + genhub.sources[config['source']]
+        print(info)
     print('')
 
     print('===== Batch configurations =====')
@@ -113,40 +112,33 @@ def cluster_proteins(dbs, np=1, cdargs=None):
 
 
 def get_parser():
-    desc = 'Run the main GenHub build process.'
+    desc = '"LocusPocus Fidibus": process and summarize genome data'
     parser = argparse.ArgumentParser(description=desc)
+    parser._optionals.title = 'basic configuration'
+
     parser.add_argument('-v', '--version', action='version',
                         version='GenHub v%s' % genhub.__version__)
     parser.add_argument('-w', '--workdir', metavar='WD', default='./species',
                         help='working directory for data files; default is '
                         '"./species"')
-    parser.add_argument('-c', '--cfgdir', default=None, metavar='DIR',
-                        help='directory (or comma-separated list of '
-                        'directories) from which to load user-supplied genome '
-                        'configuration files')
     parser.add_argument('-p', '--numprocs', metavar='P', type=int, default=1,
                         help='number of processors to use when processing '
                         'multiple genomes; default is 1')
-    parser.add_argument('-d', '--delta', type=int, metavar='DLT', default=500,
-                        help='iLocus extension parameter; default is 500')
-    parser.add_argument('--keep', metavar='PTN', nargs='+',
-                        help='keep files matching the specified pattern PTN '
-                        'when running the `cleanup` build task')
-    parser.add_argument('--fullclean', action='store_true',
-                        help='when running the `cleanup` build task, delete '
-                        'original (downloaded) data files as well as processed'
-                        ' data files')
-    parser.add_argument('-f', '--format', metavar='PFX', default='{}ILC-%05lu',
-                        help='format for assigning serial labels to iLoci; '
-                        'must include the placeholder {} for the species '
-                        'label, as well as a printf-style placeholder for a '
-                        'serial number; default is "{}ILC-%%05lu"')
-    parser.add_argument('--cdargs', metavar='ARGS', default=None,
-                        help='arguments for cd-hit (cluster task only); '
-                        'default is "-d 0 -c 0.50 -s 0.65 -p 1 -n 3 -aL 0.75 '
-                        '-aS 0.85 -g 1"; do not use cd-hit\'s "-T" option, '
-                        'use this program\'s "--numprocs" option instead')
-    confargs = parser.add_mutually_exclusive_group()
+    parser.add_argument('task', nargs='+', choices=tasks, metavar='task',
+                        help='build task(s) to execute; options include '
+                        '"%s"' % '", "'.join(tasks))
+
+    ilcconf = parser.add_argument_group('iLocus configuration')
+    ilcconf.add_argument('-d', '--delta', type=int, metavar='DLT', default=500,
+                         help='iLocus extension parameter; default is 500')
+    ilcconf.add_argument('-f', '--format', metavar='PFX', default='{}ILC-%05lu',
+                         help='format for assigning serial labels to iLoci; '
+                         'must include the placeholder {} for the species '
+                         'label, as well as a printf-style placeholder for a '
+                         'serial number; default is "{}ILC-%%05lu"')
+
+    refrconf = parser.add_argument_group('reference genome configuration')
+    confargs = refrconf.add_mutually_exclusive_group()
     confargs.add_argument('-g', '--genome', default=None, metavar='LBL',
                           help='label (or comma-separated set of labels) '
                           'specifying the genome(s) to process; use the '
@@ -155,9 +147,24 @@ def get_parser():
                           help='label of a batch of genomes to process; use '
                           'the `list` task to show all available '
                           'batches')
-    parser.add_argument('task', nargs='+', choices=buildcmds, metavar='task',
-                        help='build task(s) to execute; options include '
-                        '"%s"' % '", "'.join(buildcmds))
+    refrconf.add_argument('-c', '--cfgdir', default=None, metavar='DIR',
+                          help='directory (or comma-separated list of '
+                          'directories) from which to load user-supplied '
+                          'reference genome configuration files')
+
+    miscconf = parser.add_argument_group('miscellaneous settings')
+    miscconf.add_argument('--keep', metavar='PTN', nargs='+',
+                        help='keep files matching the specified pattern(s) '
+                        'when running the `cleanup` build task')
+    miscconf.add_argument('--fullclean', action='store_true',
+                        help='when running the `cleanup` build task, delete '
+                        'original (downloaded) data files as well as processed'
+                        ' data files')
+    miscconf.add_argument('--cdargs', metavar='ARGS', default=None,
+                        help='arguments for cd-hit (cluster task only); '
+                        'default is "-d 0 -c 0.50 -s 0.65 -p 1 -n 3 -aL 0.75 '
+                        '-aS 0.85 -g 1"; do not use cd-hit\'s "-T" option, '
+                        'use this program\'s "--numprocs" option instead')
     return parser
 
 

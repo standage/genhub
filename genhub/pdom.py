@@ -8,7 +8,13 @@
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
 
-"""Genome database implementation for *Polites dominula* genome data."""
+"""
+Retrieve and format data from the *Polistes dominula* genome project.
+
+This is for the original annotation (version r1.2) published by the Toth Lab
+(http://pdomgenomeproject.github.io/). The RefSeq annotation for *P. dominula*
+is handled via the refseq.py module.
+"""
 
 from __future__ import print_function
 import filecmp
