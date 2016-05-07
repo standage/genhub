@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: utf-8
 #
 # -----------------------------------------------------------------------------
 # Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
