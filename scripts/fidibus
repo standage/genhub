@@ -108,11 +108,11 @@ def get_parser():
 
     refrconf = parser.add_argument_group('reference genome configuration')
     confargs = refrconf.add_mutually_exclusive_group()
-    confargs.add_argument('-g', '--genome', default=None, metavar='LBL',
+    confargs.add_argument('-r', '--refr', default=None, metavar='LBL',
                           help='label (or comma-separated set of labels) '
                           'specifying the genome(s) to process; use the `list`'
                           ' task to show all available reference genomes')
-    confargs.add_argument('-b', '--batch', default=None, metavar='LBL',
+    confargs.add_argument('-b', '--refrbatch', default=None, metavar='LBL',
                           help='label of a batch of reference genomes to '
                           'process; use the `list` task to show all available '
                           'batches')

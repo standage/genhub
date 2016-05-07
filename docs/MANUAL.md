@@ -5,15 +5,15 @@ GenHub Manual
 
 See [the installation instructions](INSTALL.md) if you have not already installed GenHub and its dependencies.
 
-## The `genhub-build.py` program
+## The `fidibus` program
 
-Most users will want to run GenHub with the `genhub-build.py` program.
-For a complete listing of program options, execute `genhub-build.py --help` in your shell.
+The `fidibus` program is the primary user interface of the GenHub package.
+For a complete listing of program options, execute `fidibus -h` in your shell.
 The most important concepts are discussed below.
 
 ### Build tasks
 
-The build program provides 5 primary build tasks.
+The build program provides 6 primary build tasks.
 
 - `download`: download the genome sequences, annotation, and protein sequences from the official source
 - `format`: tidy up the primary data so that all data files, regardless of source, are in a common format
