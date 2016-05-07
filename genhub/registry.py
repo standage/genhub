@@ -55,30 +55,31 @@ class Registry(object):
             batch_label = os.path.splitext(filename)[0]
             self.batch_configs[batch_label] = batch
 
-    def genome(self, label):
-        """Retrieve a genome config from the registry by label."""
+    def check(self, genomes=None, batches=None):
+        if genomes:
+            for label in genomes:
+                assert label in self.genome_configs, 'unknown genome ' + label
+        if batches:
+            for label in batches:
+                assert label in self.batch_configs, 'unknown batch ' + label
+
+    def genome(self, label, workdir='.'):
         if label not in self.genome_configs:
             return None
-        return self.genome_configs[label]
-
-    def genomes(self, labels):
-        config = dict()
-        for label in labels:
-            config[label] = self.genome_configs[label]
-        return config
+        config = self.genome_configs[label]
+        constructor = genhub.dbtype[config['source']]
+        db = constructor(label, config, workdir=workdir)
+        return db
 
     def batch(self, batch_label):
         """Retrieve a batch of genome configs from the registry."""
         if batch_label not in self.batch_configs:
             return None
-        config = dict()
-        for genome_label in self.batch_configs[batch_label]:
-            config[genome_label] = self.genome_configs[genome_label]
-        return config
+        return list(self.batch_configs[batch_label])
 
     def parse_genome_config(self, config):
         """
-        Parse genome config in YAML format.
+        Parse reference genome config in YAML format.
 
         If `config` is a string it is treated as a filename, otherwise as a
         file handle or similar object.
@@ -89,7 +90,7 @@ class Registry(object):
 
     def parse_batch_config(self, config):
         """
-        Parse a batch of genome config labels from a file.
+        Parse a batch of reference genome config labels from a file.
 
         The file should contain a single genome config label per line, and
         `config` is treated as a filename.
@@ -110,11 +111,24 @@ class Registry(object):
         for label in sorted(self.batch_configs):
             yield label, self.batch_configs[label]
 
+    def list(self, outstream=None):
+        print('===== Reference genomes =====', file=outstream)
+        for label, config in self.list_genomes():
+            info = label + '\t' + config['species']
+            if 'common' in config:
+                info += ' ({})'.format(config['common'])
+            info += '\t' + genhub.sources[config['source']]
+            print(info, file=outstream)
+        print('', file=outstream)
+
+        print('===== Reference genome batches =====', file=outstream)
+        for label, batch in self.list_batches():
+            print(label, ','.join(batch), sep='\t', file=outstream)
+
 
 # -----------------------------------------------------------------------------
 # Unit tests
 # -----------------------------------------------------------------------------
-
 
 def test_list():
     """Listing genome and batch configs"""

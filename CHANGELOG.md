@@ -4,13 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- The `genhub-build.py` script is now `fidibus`.
+- Pdom, Pcan, and Dqua now default to RefSeq genomes, with Toth Lab and CRG genomes available under labels Pdtl, Pccr, and Dqcr.
+
 ### Fixed
 - The `cluster` build task now uses `-M 0` by default.
 
-### Changed
-- Pdom, Pcan, and Dqua now default to RefSeq genomes, with Toth Lab and CRG genomes available under labels Pdtl, Pccr, and Dqcr.
-
 ### Added
+- The build script (now `fidibus`) now has support for custom genomes.
 - Sequence IDs are now reported for iLocus and miLocus tables.
 - New script for creating a piLocus summary table.
 - Recipes for chick pea, cabbage, and soybean.

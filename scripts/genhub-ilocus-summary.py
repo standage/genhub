@@ -89,11 +89,9 @@ def main(args):
     if args.cfgdir:
         for cfgdirpath in args.cfgdir.split(','):
             registry.update(cfgdirpath)
-    conf = registry.genomes(args.species)
 
     for species in args.species:
-        config = conf[species]
-        db = genhub.genomedb.GenomeDB(species, config, workdir=args.workdir)
+        db = registry.genome(species, workdir=args.workdir)
         data = pandas.read_table(db.ilocustable)
         row = get_row(data, args.outfmt)
         print_row(row, args.outfmt)

@@ -29,32 +29,12 @@ tasks = [
 ]
 
 
-def getdb(label, config, args):
-    assert 'source' in config
-    assert config['source'] in genhub.sources
-    constructor = genhub.dbtype[config['source']]
-    db = constructor(label, config, workdir=args.workdir)
-    return db
-
-
-def list_configs(registry):
-    print('===== Reference genomes =====')
-    for label, config in registry.list_genomes():
-        info = label + '\t' + config['species']
-        if 'common' in config:
-            info += ' ({})'.format(config['common'])
-        info += '\t' + genhub.sources[config['source']]
-        print(info)
-    print('')
-
-    print('===== Reference genome batches =====')
-    for label, batch in registry.list_batches():
-        print(label, ','.join(batch), sep='\t')
-
-
 def run_build(builddata):
-    label, config, args = builddata
-    db = getdb(label, config, args)
+    label, localconfig, args, registry = builddata
+    if localconfig:
+        db = genhub.generic.GenericDB(label, localconfig, workdir=args.workdir)
+    else:
+        db = registry.genome(label, workdir=args.workdir)
 
     if 'download' in args.task:
         db.download()
@@ -186,48 +166,56 @@ def main(args):
             registry.update(cfgdirpath)
 
     if 'list' in args.task:
-        list_configs(registry)
+        registry.list()
         sys.exit(0)
 
-    conf = None
-    if args.genome:
-        labels = args.genome.split(',')
-        conf = registry.genomes(labels)
-        assert conf is not None, 'unknown genome label(s) "%s"' % args.genome
-    elif args.batch:
-        conf = registry.batch(args.batch)
-        assert conf is not None, 'unknown batch label "%s"' % args.batch
-
+    builds = list()
     if args.local:
-        if conf is None:
-            conf = dict()
         assert args.label, 'must specify "--label" with "--local"'
         assert args.gdna, 'must specify "--gdna" with "--local"'
         assert args.gff3, 'must specify "--gff3" with "--local"'
         assert args.prot, 'must specify "--prot" with "--local"'
-        assert args.label not in conf, 'label conflict'
-        conf[args.label] = {
+        assert args.label not in registry.genome_configs, 'label conflict'
+        localconfig = {
             'gdna': args.gdna,
             'gff3': args.gff3,
             'prot': args.prot,
             'source': 'local',
             'species': args.label,
         }
+        builddata = (args.label, localconfig, args, registry)
+        builds.append(builddata)
+    if args.genome:
+        labels = args.genome.split(',')
+        registry.check(genomes=labels)
+        for label in labels:
+            builddata = (label, None, args, registry)
+            builds.append(builddata)
+    if args.batch:
+        registry.check(batches=[args.batch])
+        labels = registry.batch(args.batch)
+        for label in labels:
+            builddata = (label, None, args, registry)
+            builds.append(builddata)
 
-    if conf is None:
+    if len(builds) == 0:
         message = ('no genomes specified, nothing to do')
         sys.exit(0)
 
-    builds = list()
-    for label in sorted(conf):
-        builddata = (label, conf[label], args)
-        builds.append(builddata)
     pool = multiprocessing.Pool(processes=args.numprocs)
     results = [pool.apply_async(run_build, args=(b,)) for b in builds]
     _ = [p.get() for p in results]
 
     if 'cluster' in args.task:
-        dbs = [getdb(label, conf[label], args) for label in sorted(conf)]
+        dbs = list()
+        for builddata in builds:
+            label, localconfig, args, registry = builddata
+            if localconfig:
+                db = genhub.generic.GenericDB(label, localconfig,
+                                              workdir=args.workdir)
+            else:
+                db = registry.genome(label, workdir=args.workdir)
+            dbs.append(db)
         cluster_proteins(dbs, np=args.numprocs, cdargs=args.cdargs)
 
     print('[GenHub] all builds complete!', file=sys.stderr)

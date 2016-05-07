@@ -13,8 +13,7 @@ GenomeDB implementation for a generic genome data set.
 """
 
 from __future__ import print_function
-import filecmp
-import gzip
+import os
 import re
 import subprocess
 import sys
@@ -42,16 +41,27 @@ class GenericDB(genhub.genomedb.GenomeDB):
     def protpath(self):
         return self.config['prot']
 
+    def download(self, logstream=sys.stderr):
+        if logstream is not None:
+            msg = '[GenHub: %s] checking input files' % self.config['species']
+            print(msg, file=logstream)
+        assert os.path.isfile(self.gdnapath), \
+            'gDNA file {} does not exist'.format(self.gdnapath)
+        assert os.path.isfile(self.gff3path), \
+            'GFF3 file {} does not exist'.format(self.gff3apath)
+        assert os.path.isfile(self.protpath), \
+            'proetin file {} does not exist'.format(self.protpath)
+
     def format_gdna(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
-            # No processing required currently.
-            # If any is ever needed, do it here.
+            if line.strip() == '':
+                continue
             print(line, end='', file=outstream)
 
     def format_prot(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
-            # No processing required currently.
-            # If any is ever needed, do it here.
+            if line.strip() == '':
+                continue
             print(line, end='', file=outstream)
 
     def format_gff3(self, logstream=sys.stderr, debug=False):
