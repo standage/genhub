@@ -111,7 +111,7 @@ class PdomDB(genhub.genomedb.GenomeDB):
 # -----------------------------------------------------------------------------
 
 def test_download():
-    """Pdtl figshare download"""
+    """Pdom r1.2: figshare download"""
     pdom_db = genhub.test_registry.genome('Pdtl')
     assert pdom_db.gdnaurl == 'https://ndownloader.figshare.com/files/3557633'
     assert pdom_db.gff3url == 'https://ndownloader.figshare.com/files/3558071'
@@ -120,7 +120,7 @@ def test_download():
 
 
 def test_format():
-    """Pdtl formatting task"""
+    """Pdom r1.2: formatting task"""
     pdom_db = genhub.test_registry_supp.genome('Pdtl',
                                                workdir='testdata/demo-workdir')
     pdom_db.preprocess_gdna(logstream=None)
@@ -129,7 +129,7 @@ def test_format():
 
 
 def test_protids():
-    """Pdtl: extract protein IDs from GFF3"""
+    """Pdom r1.2: extract protein IDs from GFF3"""
     db = genhub.test_registry.genome('Pdtl')
     protids = ['PdomMRNAr1.2-08518.1', 'PdomMRNAr1.2-11420.1',
                'PdomMRNAr1.2-08519.1']
@@ -143,7 +143,7 @@ def test_protids():
 
 
 def test_protmap():
-    """Pdtl: extract protein-->iLocus mapping from GFF3"""
+    """Pdom r1.2: extract protein-->iLocus mapping from GFF3"""
     db = genhub.test_registry.genome('Pdtl')
     mapping = {'PdomMRNAr1.2-08518.1': 'PdomILC-18235',
                'PdomMRNAr1.2-11420.1': 'PdomILC-18237',

@@ -89,7 +89,7 @@ def prepare(db, logstream=sys.stderr):  # pragma: no cover
 
 
 def test_protein_sequence():
-    """Select protein sequences"""
+    """Breakdown: select protein sequences"""
     db = genhub.test_registry.genome('Scer', workdir='testdata/demo-workdir')
     sequences(db, logstream=None)
     outfile = 'testdata/demo-workdir/Scer/Scer.prot.fa'

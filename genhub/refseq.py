@@ -184,7 +184,7 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
 
 
 def test_genome_download():
-    """RefSeq chromosomes/scaffolds download"""
+    """RefSeq: gDNA download"""
     ador_db = genhub.test_registry.genome('Ador')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
@@ -212,7 +212,7 @@ def test_genome_download():
 
 
 def test_annot_download():
-    """RefSeq annotation download"""
+    """RefSeq: annotation download"""
     ador_db = genhub.test_registry.genome('Ador')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
@@ -227,7 +227,7 @@ def test_annot_download():
 
 
 def test_proteins_download():
-    """RefSeq protein download"""
+    """RefSeq: protein download"""
     db = genhub.test_registry.genome('Ador', workdir='/home/gandalf/HymHub')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
@@ -243,7 +243,7 @@ def test_proteins_download():
 
 
 def test_gdna_format():
-    """RefSeq gDNA formatting"""
+    """RefSeq: gDNA pre-processing"""
     db = genhub.test_registry.genome('Hsal', workdir='testdata/demo-workdir')
     db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hsal/Hsal.gdna.fa'
@@ -266,7 +266,7 @@ def test_gdna_format():
 
 
 def test_annot_format():
-    """RefSeq annotation formatting"""
+    """RefSeq: annotation pre-processing"""
     db = genhub.test_registry.genome('Aech', workdir='testdata/demo-workdir')
     db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Aech/Aech.gff3'
@@ -289,7 +289,7 @@ def test_annot_format():
 
 
 def test_prot_ncbi():
-    """RefSeq protein formatting"""
+    """RefSeq: protein pre-processing"""
     db = genhub.test_registry.genome('Hsal', workdir='testdata/demo-workdir')
     db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hsal/Hsal.all.prot.fa'
@@ -328,7 +328,7 @@ def test_protmap():
 
 
 def test_cleanup():
-    """RefSeq cleanup task"""
+    """RefSeq: cleanup task"""
     db = genhub.test_registry.genome('Aech', workdir='testdata/demo-workdir')
     delfiles = ['testdata/demo-workdir/Aech/Aech.gff3']
     testfiles = db.cleanup(None, False, True)
@@ -375,7 +375,7 @@ def test_cleanup():
 
 
 def test_get_map():
-    """RefSeq get prot map"""
+    """RefSeq: get prot map"""
     db = genhub.test_registry.genome('Vcar', workdir='testdata/demo-workdir')
     mapping = dict()
     for protid, locid in db.get_prot_map():

@@ -124,7 +124,7 @@ def prepare(db, logstream=sys.stderr):  # pragma: no cover
 
 
 def test_coding_sequences():
-    """Extract coding sequences"""
+    """Breakdown: extract coding sequences"""
     db = genhub.test_registry.genome('Atha', workdir='testdata/demo-workdir')
     cds_sequences(db, logstream=None)
     outfile = 'testdata/demo-workdir/Atha/Atha.cds.fa'
@@ -133,7 +133,7 @@ def test_coding_sequences():
 
 
 def test_exon_sequences():
-    """Extract exon sequences"""
+    """Breakdown: extract exon sequences"""
     db = genhub.test_registry.genome('Atha', workdir='testdata/demo-workdir')
     exon_sequences(db, logstream=None)
     outfile = 'testdata/demo-workdir/Atha/Atha.exons.fa'
@@ -142,7 +142,7 @@ def test_exon_sequences():
 
 
 def test_intron_sequences():
-    """Extract intron sequences"""
+    """Breakdown: extract intron sequences"""
     db = genhub.test_registry.genome('Atha', workdir='testdata/demo-workdir')
     intron_sequences(db, logstream=None)
     outfile = 'testdata/demo-workdir/Atha/Atha.introns.fa'

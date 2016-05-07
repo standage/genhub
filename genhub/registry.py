@@ -136,7 +136,7 @@ class Registry(object):
 # -----------------------------------------------------------------------------
 
 def test_list():
-    """Listing genome and batch configs"""
+    """Registry: listing genome and batch configs"""
     registry = Registry()
 
     genome_labels = [x for x in registry.list_genomes()]
@@ -169,7 +169,7 @@ def test_list():
 
 
 def test_genome():
-    """Loading a genome db or configuration by label"""
+    """Registry: loading a genome db or configuration by label"""
     registry = Registry()
     db = registry.genome('Osat')
     assert 'accession' in db.config
@@ -189,7 +189,7 @@ def test_genome():
 
 
 def test_batch():
-    """Loading a batch configuration by label"""
+    """Registry: loading a batch configuration by label"""
     registry = Registry()
     labels = registry.batch('honeybees')
     assert sorted(labels) == ['Ador', 'Aflo', 'Amel']
@@ -202,7 +202,7 @@ def test_batch():
 
 
 def test_parse_genome_config():
-    """Parsing genome configurations from a file"""
+    """Registry: parsing genome configurations from a file"""
     registry = Registry()
     with open('genhub/genomes/Pbar.yml', 'r') as filehandle:
         config = registry.parse_genome_config(filehandle)

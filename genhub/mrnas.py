@@ -173,7 +173,7 @@ def prepare(db, logstream=sys.stderr):  # pragma: no cover
 
 
 def test_mature_mrna_intervals():
-    """Define mature mRNA intervals"""
+    """Breakdown: define mature mRNA intervals"""
     db = genhub.test_registry.genome('Atha', workdir='testdata/demo-workdir')
     mature_mrna_intervals(db, logstream=None)
 
@@ -198,7 +198,7 @@ def test_mature_mrna_intervals():
 
 
 def test_mrna_sequences():
-    """Extract mRNA sequences"""
+    """Breakdown: extract mRNA sequences"""
     db = genhub.test_registry.genome('Atha', workdir='testdata/demo-workdir')
     sequences(db, logstream=None)
 

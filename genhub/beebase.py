@@ -142,7 +142,7 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
 
 
 def test_scaffolds_download():
-    """BeeBase consortium scaffolds download"""
+    """BeeBase: scaffolds download"""
     emex_db = genhub.test_registry.genome('Emex')
     testurl = ('http://hymenopteragenome.org/beebase/sites/'
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
@@ -156,7 +156,7 @@ def test_scaffolds_download():
 
 
 def test_annot_download():
-    """BeeBase consortium annotation download"""
+    """BeeBase: annotation download"""
     dnov_db = genhub.test_registry.genome('Dnov', workdir='BeeBase')
     testurl = ('http://hymenopteragenome.org/beebase/sites/'
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
@@ -169,7 +169,7 @@ def test_annot_download():
 
 
 def test_proteins_download():
-    """BeeBase consortium protein download"""
+    """BeeBase: protein download"""
     hlab_db = genhub.test_registry.genome('Hlab', workdir='/opt/db/genhub')
     testurl = ('http://hymenopteragenome.org/beebase/sites/'
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
@@ -182,7 +182,7 @@ def test_proteins_download():
 
 
 def test_gdna_format():
-    """BeeBase gDNA formatting"""
+    """BeeBase: gDNA pre-processing"""
     db = genhub.test_registry.genome('Hlab', workdir='testdata/demo-workdir')
     db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.gdna.fa'
@@ -197,7 +197,7 @@ def test_gdna_format():
 
 
 def test_annotation_beebase():
-    """BeeBase annotation formatting"""
+    """BeeBase: annotation pre-processing"""
     db = genhub.test_registry.genome('Hlab', workdir='testdata/demo-workdir')
     db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.gff3'
@@ -206,7 +206,7 @@ def test_annotation_beebase():
 
 
 def test_proteins_beebase():
-    """BeeBase protein formatting"""
+    """BeeBase: protein pre-processing"""
     db = genhub.test_registry.genome('Hlab', workdir='testdata/demo-workdir')
     db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.all.prot.fa'

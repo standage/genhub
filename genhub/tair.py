@@ -160,7 +160,7 @@ class TairDB(genhub.genomedb.GenomeDB):
 
 
 def test_gdna_format():
-    """TAIR6 gDNA formatting"""
+    """TAIR6: gDNA pre-processing"""
     db = genhub.test_registry.genome('Att6', workdir='testdata/demo-workdir')
     db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Att6/Att6.gdna.fa'
@@ -181,7 +181,7 @@ def test_gdna_format():
 
 
 def test_annot_format():
-    """TAIR6 annotation formatting"""
+    """TAIR6: annotation pre-processing"""
     db = genhub.test_registry.genome('Att6', workdir='testdata/demo-workdir')
     db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Att6/Att6.gff3'

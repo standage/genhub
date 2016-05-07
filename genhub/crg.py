@@ -149,7 +149,7 @@ class CrgDB(genhub.genomedb.GenomeDB):
 
 
 def test_scaffolds():
-    """CRG scaffolds download"""
+    """CRG: scaffolds download"""
     dqua_db = genhub.test_registry.genome('Dqcr')
     testurl = 'http://wasp.crg.eu/DQUA.v01.fa.gz'
     testpath = './Dqcr/DQUA.v01.fa.gz'
@@ -161,7 +161,7 @@ def test_scaffolds():
 
 
 def test_annot():
-    """CRG annotation download"""
+    """CRG: annotation download"""
     dqua_db = genhub.test_registry.genome('Dqcr', workdir='CRG')
     testurl = 'http://wasp.crg.eu/DQUA.v01.gff3'
     testpath = 'CRG/Dqcr/DQUA.v01.gff3.gz'
@@ -172,7 +172,7 @@ def test_annot():
 
 
 def test_proteins():
-    """CRG protein download"""
+    """CRG: protein download"""
     dqua_db = genhub.test_registry.genome('Dqcr', workdir='/opt/db/genhub')
     testurl = 'http://wasp.crg.eu/DQUA.v01.pep.fa.gz'
     testpath = '/opt/db/genhub/Dqcr/DQUA.v01.pep.fa.gz'

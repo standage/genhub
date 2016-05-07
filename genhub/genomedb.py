@@ -392,7 +392,7 @@ class GenomeDB(object):
 # -----------------------------------------------------------------------------
 
 def test_file_path():
-    """GenomeDB File name resolution"""
+    """GenomeDB: file name resolution"""
     db = genhub.test_registry.genome('Bimp')
     assert db.file_path('bogus.txt') == './Bimp/bogus.txt'
     db = genhub.test_registry.genome('Bimp', workdir='wd')
@@ -415,7 +415,7 @@ def test_file_path():
 
 
 def test_props():
-    """GenomeDB properties"""
+    """GenomeDB: properties"""
     db = genhub.test_registry.genome('Bimp')
     assert db.dbdir == './Bimp'
     assert db.gdnafile == './Bimp/Bimp.gdna.fa'
@@ -432,7 +432,7 @@ def test_props():
 
 
 def test_filter_file():
-    """GenomeDB filter file"""
+    """GenomeDB: filter file"""
     db = genhub.test_registry.genome('Lalb')
     assert db.filter_file() is None
 
@@ -445,7 +445,7 @@ def test_filter_file():
 
 
 def test_compress():
-    """GenomeDB download compression"""
+    """GenomeDB: download compression"""
     db = genhub.test_registry.genome('Emex')
     assert db.compress_gdna is False
     assert db.compress_gff3 is False

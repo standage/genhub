@@ -144,7 +144,7 @@ class GenericDB(genhub.genomedb.GenomeDB):
 # -----------------------------------------------------------------------------
 
 def test_all():
-    """Generic genome"""
+    """GenericDB: the whole enchilada"""
     config = {
         'gdna': 'testdata/fasta/generic.gdna.fa.gz',
         'gff3': 'testdata/gff3/generic.gff3',
