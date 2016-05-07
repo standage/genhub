@@ -63,6 +63,11 @@ class Registry(object):
             for label in batches:
                 assert label in self.batch_configs, 'unknown batch ' + label
 
+    def config(self, label):
+        if label not in self.genome_configs:
+            return None
+        return self.genome_configs[label]
+
     def genome(self, label, workdir='.'):
         if label not in self.genome_configs:
             return None
@@ -111,7 +116,7 @@ class Registry(object):
         for label in sorted(self.batch_configs):
             yield label, self.batch_configs[label]
 
-    def list(self, outstream=None):
+    def list(self, outstream=None):  # pragma: no cover
         print('===== Reference genomes =====', file=outstream)
         for label, config in self.list_genomes():
             info = label + '\t' + config['species']
@@ -141,6 +146,13 @@ def test_list():
     txtfiles = [x for x in glob.glob('genhub/genomes/*.txt')]
     assert len(batch_labels) == len(txtfiles)
 
+    registry.check(genomes=['Otau', 'Oluc'])
+    registry.check(batches=['chlorophyta'])
+    try:
+        registry.check(batches=['BogusFooBar'])
+    except AssertionError:
+        pass
+
     registry.update('testdata/conf', clear=True)
 
     genome_labels = [x for x in registry.list_genomes()]
@@ -157,47 +169,36 @@ def test_list():
 
 
 def test_genome():
-    """Loading a genome configuration by label"""
+    """Loading a genome db or configuration by label"""
     registry = Registry()
-    config = registry.genome('Osat')
-    assert 'accession' in config
-    assert config['accession'] == 'GCF_001433935.1'
+    db = registry.genome('Osat')
+    assert 'accession' in db.config
+    assert db.config['accession'] == 'GCF_001433935.1'
 
     registry.update('testdata/conf')
-    config = registry.genome('Osat')
-    assert 'accession' in config
-    assert config['accession'] == 'BogusThisIsNotARealAccession'
+    db = registry.genome('Osat')
+    assert 'accession' in db.config
+    assert db.config['accession'] == 'BogusThisIsNotARealAccession'
 
-    config = registry.genome('Bvul')
-    assert 'scaffolds' in config
-    assert config['scaffolds'] == 'bv_ref_1.1_chrUn.fa.gz'
-
-    config = registry.genomes(['Atha', 'Bdis', 'Osat'])
-    assert len(config) == 3
-    assert sorted(config) == ['Atha', 'Bdis', 'Osat']
+    dbconfig = registry.config('Bvul')
+    assert 'scaffolds' in dbconfig
+    assert dbconfig['scaffolds'] == 'bv_ref_1.1_chrUn.fa.gz'
 
     assert registry.genome('Docc') is None
+    assert registry.config('gnilleps') is None
 
 
 def test_batch():
     """Loading a batch configuration by label"""
     registry = Registry()
-    config = registry.batch('honeybees')
-    assert len(config) == 3
-    assert sorted(config) == ['Ador', 'Aflo', 'Amel']
+    labels = registry.batch('honeybees')
+    assert sorted(labels) == ['Ador', 'Aflo', 'Amel']
 
     registry.update('testdata/conf')
-    config = registry.batch('mythical')
-    assert len(config) == 1
-    assert sorted(config) == ['Bvul']
+    labels = registry.batch('mythical')
+    assert labels == ['Bvul']
 
     assert registry.batch('nonexistent') is None
-
-    config = registry.batch('bumblebees')
-    assert len(config) == 2
-    assert sorted(config) == ['Bimp', 'Bter']
-    assert config['Bter']['accession'] == 'GCF_000214255.1'
-    assert config['Bimp']['accession'] == 'BogusAccessionForUnitTesting'
 
 
 def test_parse_genome_config():
