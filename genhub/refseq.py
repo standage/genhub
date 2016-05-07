@@ -184,14 +184,13 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
 
 
 def test_genome_download():
-    """RefSeq chromosomes/scaffolds download"""
-    config = genhub.test_registry.genome('Ador')
+    """RefSeq: gDNA download"""
+    ador_db = genhub.test_registry.genome('Ador')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
                'GCF_000469605.1_Apis_dorsata_1.3_genomic.fna.gz')
     testpath = './Ador/GCF_000469605.1_Apis_dorsata_1.3_genomic.fna.gz'
-    ador_db = RefSeqDB('Ador', config)
     assert '%r' % ador_db == 'RefSeq'
     assert ador_db.gdnaurl == testurl, \
         'scaffold URL mismatch\n%s\n%s' % (ador_db.gdnaurl, testurl)
@@ -199,13 +198,12 @@ def test_genome_download():
         'scaffold path mismatch\n%s\n%s' % (ador_db.gdnapath, testpath)
     assert ador_db.compress_gdna is False
 
-    config = genhub.test_registry.genome('Amel')
+    amel_db = genhub.test_registry.genome('Amel')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_mellifera/all_assembly_versions/'
                'GCF_000002195.4_Amel_4.5/'
                'GCF_000002195.4_Amel_4.5_genomic.fna.gz')
     testpath = './Amel/GCF_000002195.4_Amel_4.5_genomic.fna.gz'
-    amel_db = RefSeqDB('Amel', config)
     assert amel_db.gdnaurl == testurl, \
         'chromosome URL mismatch\n%s\n%s' % (amel_db.gdnaurl, testurl)
     assert amel_db.gdnapath == testpath, \
@@ -214,14 +212,13 @@ def test_genome_download():
 
 
 def test_annot_download():
-    """RefSeq annotation download"""
-    config = genhub.test_registry.genome('Ador')
+    """RefSeq: annotation download"""
+    ador_db = genhub.test_registry.genome('Ador')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
                'GCF_000469605.1_Apis_dorsata_1.3_genomic.gff.gz')
     testpath = './Ador/GCF_000469605.1_Apis_dorsata_1.3_genomic.gff.gz'
-    ador_db = RefSeqDB('Ador', config)
     assert ador_db.gff3url == testurl, \
         'annotation URL mismatch\n%s\n%s' % (ador_db.gff3url, testurl)
     assert ador_db.gff3path == testpath, \
@@ -230,77 +227,71 @@ def test_annot_download():
 
 
 def test_proteins_download():
-    """RefSeq protein download"""
-    config = genhub.test_registry.genome('Ador')
+    """RefSeq: protein download"""
+    db = genhub.test_registry.genome('Ador', workdir='/home/gandalf/HymHub')
     testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
                'GCF_000469605.1_Apis_dorsata_1.3_protein.faa.gz')
     testpath = ('/home/gandalf/HymHub/Ador/'
                 'GCF_000469605.1_Apis_dorsata_1.3_protein.faa.gz')
-    ador_db = RefSeqDB('Ador', config, workdir='/home/gandalf/HymHub')
-    assert ador_db.proturl == testurl, \
-        'protein URL mismatch\n%s\n%s' % (ador_db.proturl, testurl)
-    assert ador_db.protpath == testpath, \
-        'protein path mismatch\n%s\n%s' % (ador_db.protpath, testpath)
-    assert ador_db.compress_prot is False
+    assert db.proturl == testurl, \
+        'protein URL mismatch\n%s\n%s' % (db.proturl, testurl)
+    assert db.protpath == testpath, \
+        'protein path mismatch\n%s\n%s' % (db.protpath, testpath)
+    assert db.compress_prot is False
 
 
 def test_gdna_format():
-    """RefSeq gDNA formatting"""
-    conf = genhub.test_registry.genome('Hsal')
-    hsal_db = RefSeqDB('Hsal', conf, workdir='testdata/demo-workdir')
-    hsal_db.preprocess_gdna(logstream=None, verify=False)
+    """RefSeq: gDNA pre-processing"""
+    db = genhub.test_registry.genome('Hsal', workdir='testdata/demo-workdir')
+    db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hsal/Hsal.gdna.fa'
     testoutfile = 'testdata/fasta/hsal-first-7-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Hsal gDNA formatting failed'
 
     conf = genhub.test_registry.genome('Tcas')
-    tcas_db = RefSeqDB('Tcas', conf, workdir='testdata/demo-workdir')
-    tcas_db.preprocess_gdna(logstream=None, verify=False)
+    db = genhub.test_registry.genome('Tcas', workdir='testdata/demo-workdir')
+    db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Tcas/Tcas.gdna.fa'
     testoutfile = 'testdata/fasta/tcas-first-33-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Tcas gDNA formatting failed'
 
     conf = genhub.test_registry.genome('Mmus')
-    mmus_db = RefSeqDB('Mmus', conf, workdir='testdata/demo-workdir')
-    mmus_db.preprocess_gdna(logstream=None, verify=False)
+    db = genhub.test_registry.genome('Mmus', workdir='testdata/demo-workdir')
+    db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Mmus/Mmus.gdna.fa'
     testoutfile = 'testdata/fasta/mmus-gdna.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Mmus gDNA formatting failed'
 
 
 def test_annot_format():
-    """RefSeq annotation formatting"""
-    conf = genhub.test_registry.genome('Aech')
-    aech_db = RefSeqDB('Aech', conf, workdir='testdata/demo-workdir')
-    aech_db.preprocess_gff3(logstream=None, verify=False)
+    """RefSeq: annotation pre-processing"""
+    db = genhub.test_registry.genome('Aech', workdir='testdata/demo-workdir')
+    db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Aech/Aech.gff3'
     testfile = 'testdata/gff3/ncbi-format-aech.gff3'
     assert filecmp.cmp(outfile, testfile), 'Aech annotation formatting failed'
 
-    conf = genhub.test_registry.genome('Pbar')
-    conf['annotfilter'] = 'NW_011933506.1'
-    pbar_db = RefSeqDB('Pbar', conf, workdir='testdata/demo-workdir')
-    pbar_db.preprocess_gff3(logstream=None, verify=False)
+    db = genhub.test_registry.genome('Pbar', workdir='testdata/demo-workdir')
+    db.config['annotfilter'] = 'NW_011933506.1'
+    db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Pbar/Pbar.gff3'
     testfile = 'testdata/gff3/ncbi-format-pbar.gff3'
     assert filecmp.cmp(outfile, testfile), 'Pbar annotation formatting failed'
 
-    conf = genhub.test_registry.genome('Ador')
-    conf['annotfilter'] = ['NW_006264094.1', 'NW_006263516.1']
-    ador_db = RefSeqDB('Ador', conf, workdir='testdata/demo-workdir')
-    ador_db.preprocess_gff3(logstream=None, verify=False)
+    db = genhub.test_registry.genome('Ador', workdir='testdata/demo-workdir')
+    db.config['annotfilter'] = ['NW_006264094.1', 'NW_006263516.1']
+    db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Ador/Ador.gff3'
     testfile = 'testdata/gff3/ncbi-format-ador.gff3'
     assert filecmp.cmp(outfile, testfile), 'Ador annotation formatting failed'
 
 
 def test_prot_ncbi():
-    """RefSeq protein formatting"""
-    conf = genhub.test_registry.genome('Hsal')
-    hsal_db = RefSeqDB('Hsal', conf, workdir='testdata/demo-workdir')
-    hsal_db.preprocess_prot(logstream=None, verify=False)
+    """RefSeq: protein pre-processing"""
+    db = genhub.test_registry.genome('Hsal', workdir='testdata/demo-workdir')
+    db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hsal/Hsal.all.prot.fa'
     testoutfile = 'testdata/fasta/hsal-13-prot-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Hsal protein formatting failed'
@@ -308,8 +299,7 @@ def test_prot_ncbi():
 
 def test_protids():
     """RefSeq: extract protein IDs from GFF3"""
-    conf = genhub.test_registry.genome('Xtro')
-    db = RefSeqDB('Xtro', conf)
+    db = genhub.test_registry.genome('Xtro')
     protids = ['XP_012809995.1', 'XP_012809996.1', 'XP_012809997.1',
                'XP_012809998.1']
     infile = 'testdata/gff3/xtro-3genes.gff3'
@@ -323,8 +313,7 @@ def test_protids():
 
 def test_protmap():
     """RefSeq: extract protein-->iLocus mapping from GFF3"""
-    conf = genhub.test_registry.genome('Xtro')
-    db = RefSeqDB('Xtro', conf)
+    db = genhub.test_registry.genome('Xtro')
     mapping = {'XP_012809997.1': 'XtroILC-43374',
                'XP_012809996.1': 'XtroILC-43374',
                'XP_012809995.1': 'XtroILC-43373',
@@ -339,9 +328,8 @@ def test_protmap():
 
 
 def test_cleanup():
-    """RefSeq cleanup task"""
-    config = genhub.test_registry.genome('Aech')
-    db = RefSeqDB('Aech', config, workdir='testdata/demo-workdir')
+    """RefSeq: cleanup task"""
+    db = genhub.test_registry.genome('Aech', workdir='testdata/demo-workdir')
     delfiles = ['testdata/demo-workdir/Aech/Aech.gff3']
     testfiles = db.cleanup(None, False, True)
     assert testfiles == delfiles, '%r %r' % (testfiles, delfiles)
@@ -351,8 +339,7 @@ def test_cleanup():
     testfiles = db.cleanup(None, True, True)
     assert set(testfiles) == set(delfiles), '%r %r' % (testfiles, delfiles)
 
-    config = genhub.test_registry.genome('Bdis')
-    db = RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
+    db = genhub.test_registry.genome('Bdis', workdir='testdata/demo-workdir')
     delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
                 'testdata/demo-workdir/Bdis/Bdis.gff3',
                 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
@@ -381,17 +368,15 @@ def test_cleanup():
     testfiles = db.cleanup(['.miloci.', 'simple'], False, True)
     assert set(testfiles) == set(delfiles), '%r %r' % (testfiles, delfiles)
 
-    config = genhub.test_registry.genome('Vcar')
-    db = RefSeqDB('Vcar', config, workdir='testdata/demo-workdir')
+    db = genhub.test_registry.genome('Vcar', workdir='testdata/demo-workdir')
     nodelfile = 'testdata/demo-workdir/Vcar/Vcar.protein2ilocus.txt'
     testfiles = db.cleanup(None, False, True)
     assert nodelfile not in testfiles, 'incorrectly deleted file'
 
 
 def test_get_map():
-    """RefSeq get prot map"""
-    config = genhub.test_registry.genome('Vcar')
-    db = RefSeqDB('Vcar', config, workdir='testdata/demo-workdir')
+    """RefSeq: get prot map"""
+    db = genhub.test_registry.genome('Vcar', workdir='testdata/demo-workdir')
     mapping = dict()
     for protid, locid in db.get_prot_map():
         mapping[protid] = locid

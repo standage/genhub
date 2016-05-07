@@ -12,7 +12,7 @@
 Retrieve and format data from The Arabidopsis Information Resource.
 
 GenomeDB implementation for data residing in TAIR. Currently tested only on
-TAIR6, but presumably trivial to extend to other versions using Att6.yml as a
+TAIR6, but presumably trivial to extend to other versions using `Att6.yml` as a
 template.
 """
 
@@ -160,31 +160,29 @@ class TairDB(genhub.genomedb.GenomeDB):
 
 
 def test_gdna_format():
-    """TAIR6 gDNA formatting"""
-    conf = genhub.test_registry.genome('Att6')
-    tair_db = TairDB('Att6', conf, workdir='testdata/demo-workdir')
-    tair_db.preprocess_gdna(logstream=None, verify=False)
+    """TAIR6: gDNA pre-processing"""
+    db = genhub.test_registry.genome('Att6', workdir='testdata/demo-workdir')
+    db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Att6/Att6.gdna.fa'
     testoutfile = 'testdata/fasta/tair6-gdna-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'TAIR6 gDNA formatting failed'
 
-    assert repr(tair_db) == 'TAIR6'
+    assert repr(db) == 'TAIR6'
     ftpbase = ('ftp://ftp.arabidopsis.org/home/tair/Sequences/'
                'whole_chromosomes/OLD/chr%d.fas')
     urls = [ftpbase % x for x in (1, 2, 3, 4, 5)]
-    assert tair_db.gdnaurl == urls, tair_db.gdnaurl
+    assert db.gdnaurl == urls, db.gdnaurl
     url = ('ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR6_genome_release/'
            'TAIR6_GFF3_genes.gff')
-    assert tair_db.gff3url == url, tair_db.gff3url
+    assert db.gff3url == url, db.gff3url
     url = ('ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR6_genome_release/'
            'TAIR6_pep_20060907')
-    assert tair_db.proturl == url, tair_db.proturl
+    assert db.proturl == url, db.proturl
 
 
 def test_annot_format():
-    """TAIR6 annotation formatting"""
-    conf = genhub.test_registry.genome('Att6')
-    db = TairDB('Att6', conf, workdir='testdata/demo-workdir')
+    """TAIR6: annotation pre-processing"""
+    db = genhub.test_registry.genome('Att6', workdir='testdata/demo-workdir')
     db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Att6/Att6.gff3'
     testfile = 'testdata/gff3/tair6-format.gff3'
@@ -193,8 +191,7 @@ def test_annot_format():
 
 def test_protids():
     """TAIR6: extract protein IDs from GFF3"""
-    conf = genhub.test_registry.genome('Att6')
-    db = TairDB('Att6', conf)
+    db = genhub.test_registry.genome('Att6')
     protids = ['AT5G01010.1', 'AT5G01015.1', 'AT5G01020.1', 'AT5G01030.1',
                'AT5G01030.2', 'AT5G01040.1', 'AT5G01050.1', 'AT5G01060.1',
                'AT5G01070.1', 'AT5G01075.1']
@@ -209,8 +206,7 @@ def test_protids():
 
 def test_protmap():
     """TAIR6: extract protein-->iLocus mapping from GFF3"""
-    conf = genhub.test_registry.genome('Att6')
-    db = TairDB('Xtro', conf)
+    db = genhub.test_registry.genome('Att6')
     mapping = {'AT2G01800.1': 'Att6ILC-09797',
                'AT2G01810.1': 'Att6ILC-09799',
                'AT2G01820.1': 'Att6ILC-09801',

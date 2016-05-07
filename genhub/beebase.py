@@ -142,13 +142,12 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
 
 
 def test_scaffolds_download():
-    """BeeBase consortium scaffolds download"""
-    config = genhub.test_registry.genome('Emex')
+    """BeeBase: scaffolds download"""
+    emex_db = genhub.test_registry.genome('Emex')
     testurl = ('http://hymenopteragenome.org/beebase/sites/'
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
                'Eufriesea_mexicana.v1.0.fa.gz')
     testpath = './Emex/Eufriesea_mexicana.v1.0.fa.gz'
-    emex_db = BeeBaseDB('Emex', config)
     assert emex_db.gdnaurl == testurl, \
         'scaffold URL mismatch\n%s\n%s' % (emex_db.gdnaurl, testurl)
     assert emex_db.gdnapath == testpath, \
@@ -157,13 +156,12 @@ def test_scaffolds_download():
 
 
 def test_annot_download():
-    """BeeBase consortium annotation download"""
-    config = genhub.test_registry.genome('Dnov')
+    """BeeBase: annotation download"""
+    dnov_db = genhub.test_registry.genome('Dnov', workdir='BeeBase')
     testurl = ('http://hymenopteragenome.org/beebase/sites/'
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
                'Dufourea_novaeangliae_v1.1.gff.gz')
     testpath = 'BeeBase/Dnov/Dufourea_novaeangliae_v1.1.gff.gz'
-    dnov_db = BeeBaseDB('Dnov', config, workdir='BeeBase')
     assert dnov_db.gff3url == testurl, \
         'annotation URL mismatch\n%s\n%s' % (dnov_db.gff3url, testurl)
     assert dnov_db.gff3path == testpath, \
@@ -171,13 +169,12 @@ def test_annot_download():
 
 
 def test_proteins_download():
-    """BeeBase consortium protein download"""
-    config = genhub.test_registry.genome('Hlab')
+    """BeeBase: protein download"""
+    hlab_db = genhub.test_registry.genome('Hlab', workdir='/opt/db/genhub')
     testurl = ('http://hymenopteragenome.org/beebase/sites/'
                'hymenopteragenome.org.beebase/files/data/consortium_data/'
                'Habropoda_laboriosa_v1.2.pep.fa.gz')
     testpath = '/opt/db/genhub/Hlab/Habropoda_laboriosa_v1.2.pep.fa.gz'
-    hlab_db = BeeBaseDB('Hlab', config, workdir='/opt/db/genhub')
     assert hlab_db.proturl == testurl, \
         'protein URL mismatch\n%s\n%s' % (hlab_db.proturl, testurl)
     assert hlab_db.protpath == testpath, \
@@ -185,44 +182,39 @@ def test_proteins_download():
 
 
 def test_gdna_format():
-    """BeeBase gDNA formatting"""
-    conf = genhub.test_registry.genome('Hlab')
-    hlab_db = BeeBaseDB('Hlab', conf, workdir='testdata/demo-workdir')
-    hlab_db.preprocess_gdna(logstream=None, verify=False)
+    """BeeBase: gDNA pre-processing"""
+    db = genhub.test_registry.genome('Hlab', workdir='testdata/demo-workdir')
+    db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.gdna.fa'
     testoutfile = 'testdata/fasta/hlab-first-6-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Hlab gDNA formatting failed'
 
-    conf = genhub.test_registry.genome('Am32')
-    amel_db = BeeBaseDB('Am32', conf, workdir='testdata/demo-workdir')
-    amel_db.preprocess_gdna(logstream=None, verify=False)
+    db = genhub.test_registry.genome('Am32', workdir='testdata/demo-workdir')
+    db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Am32/Am32.gdna.fa'
     testoutfile = 'testdata/fasta/am32-gdna-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Am32 gDNA formatting failed'
 
 
 def test_annotation_beebase():
-    """BeeBase annotation formatting"""
-    conf = genhub.test_registry.genome('Hlab')
-    hlab_db = BeeBaseDB('Hlab', conf, workdir='testdata/demo-workdir')
-    hlab_db.preprocess_gff3(logstream=None, verify=False)
+    """BeeBase: annotation pre-processing"""
+    db = genhub.test_registry.genome('Hlab', workdir='testdata/demo-workdir')
+    db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.gff3'
     testfile = 'testdata/gff3/beebase-format-hlab.gff3'
     assert filecmp.cmp(outfile, testfile), 'Hlab annotation formatting failed'
 
 
 def test_proteins_beebase():
-    """BeeBase protein formatting"""
-    conf = genhub.test_registry.genome('Hlab')
-    hlab_db = BeeBaseDB('Hlab', conf, workdir='testdata/demo-workdir')
-    hlab_db.preprocess_prot(logstream=None, verify=False)
+    """BeeBase: protein pre-processing"""
+    db = genhub.test_registry.genome('Hlab', workdir='testdata/demo-workdir')
+    db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Hlab/Hlab.all.prot.fa'
     testoutfile = 'testdata/fasta/hlab-first-20-prot-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Hlab protein formatting failed'
 
-    conf = genhub.test_registry.genome('Am32')
-    amel_db = BeeBaseDB('Am32', conf, workdir='testdata/demo-workdir')
-    amel_db.preprocess_prot(logstream=None, verify=False)
+    db = genhub.test_registry.genome('Am32', workdir='testdata/demo-workdir')
+    db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Am32/Am32.all.prot.fa'
     testoutfile = 'testdata/fasta/am32-prot-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Am32 protein formatting failed'
@@ -230,8 +222,7 @@ def test_proteins_beebase():
 
 def test_protids():
     """BeeBase: extract protein IDs from GFF3"""
-    conf = genhub.test_registry.genome('Hlab')
-    db = BeeBaseDB('Hlab', conf)
+    db = genhub.test_registry.genome('Hlab')
     protids = ['Hlab050%d' % x for x in range(62, 75)]
     infile = 'testdata/gff3/hlab-238.gff3'
     testids = list()
@@ -244,8 +235,7 @@ def test_protids():
 
 def test_protmap():
     """BeeBase: extract protein-->iLocus mapping from GFF3"""
-    conf = genhub.test_registry.genome('Hlab')
-    db = BeeBaseDB('Hlab', conf)
+    db = genhub.test_registry.genome('Hlab')
     mapping = {'Hlab05074': 'HlabILC-653102', 'Hlab05071': 'HlabILC-653096',
                'Hlab05062': 'HlabILC-653079', 'Hlab05068': 'HlabILC-653090',
                'Hlab05072': 'HlabILC-653098', 'Hlab05070': 'HlabILC-653094',

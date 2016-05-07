@@ -3,7 +3,6 @@ branch = True
 omit =
     genhub/_version.py
     genhub/download.py
-    genhub/dpul.py
 
 [report]
 exclude_lines =

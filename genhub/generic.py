@@ -8,48 +8,72 @@
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
 
-"""Genome database implementation for *Daphnia pulex* genome data."""
+"""
+GenomeDB implementation for a generic genome data set.
+"""
 
 from __future__ import print_function
-import filecmp
-import gzip
+import os
 import re
 import subprocess
 import sys
 import genhub
 
 
-class DpulDB(genhub.genomedb.GenomeDB):
+class GenericDB(genhub.genomedb.GenomeDB):
 
     def __init__(self, label, conf, workdir='.'):
-        super(DpulDB, self).__init__(label, conf, workdir)
-        assert self.config['source'] == 'dpul'
+        super(GenericDB, self).__init__(label, conf, workdir)
+        assert 'gdna' in self.config
+        assert 'gff3' in self.config
+        assert 'prot' in self.config
+        assert self.config['source'] == 'local'
 
-    def __repr__(self):
-        return 'DpulDB'
+    @property
+    def gdnapath(self):
+        return self.config['gdna']
+
+    @property
+    def gff3path(self):
+        return self.config['gff3']
+
+    @property
+    def protpath(self):
+        return self.config['prot']
+
+    def download(self, logstream=sys.stderr):
+        subprocess.call(['mkdir', '-p', self.dbdir])
+        if logstream is not None:  # pragma: no cover
+            msg = '[GenHub: %s] checking input files' % self.config['species']
+            print(msg, file=logstream)
+        assert os.path.isfile(self.gdnapath), \
+            'gDNA file {} does not exist'.format(self.gdnapath)
+        assert os.path.isfile(self.gff3path), \
+            'GFF3 file {} does not exist'.format(self.gff3apath)
+        assert os.path.isfile(self.protpath), \
+            'proetin file {} does not exist'.format(self.protpath)
 
     def format_gdna(self, instream, outstream, logstream=sys.stderr):
+        subprocess.call(['mkdir', '-p', self.dbdir])
         for line in instream:
-            # No processing required currently.
-            # If any is ever needed, do it here.
+            if line.strip() == '':
+                continue
             print(line, end='', file=outstream)
 
     def format_prot(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
             if line.strip() == '':
                 continue
-            if line.startswith('>'):
-                if line.strip().endswith('|'):
-                    line = line[:-2] + '\n'
-                protid = line.split('|')[-1]
-                line = '>' + protid
             print(line, end='', file=outstream)
 
     def format_gff3(self, logstream=sys.stderr, debug=False):
         cmds = list()
-        cmds.append('tidygff3 < %s' % self.gff3path)
-        cmds.append('genhub-format-gff3.py --source pdom -')
+        if self.gff3path.endswith('.gz'):  # pragma: no cover
+            cmds.append('gunzip -c %s' % self.gff3path)
+        else:
+            cmds.append('cat %s' % self.gff3path)
         cmds.append('seq-reg.py - %s' % self.gdnafile)
+        cmds.append('genhub-format-gff3.py --source local -')
         cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
 
         commands = ' | '.join(cmds)
@@ -72,8 +96,10 @@ class DpulDB(genhub.genomedb.GenomeDB):
         for line in instream:
             if '\tmRNA\t' not in line:
                 continue
-            namematch = re.search('Name=([^;\n]+)', line)
-            assert namematch, 'cannot parse mRNA name: ' + line
+            namematch = re.search('protein_id=([^;\n]+)', line)
+            if not namematch:  # pragma: no cover
+                namematch = re.search('Name=([^;\n]+)', line)
+            assert namematch, 'cannot parse protein ID/name/accession: ' + line
             yield namematch.group(1)
 
     def protein_mapping(self, instream):
@@ -100,12 +126,41 @@ class DpulDB(genhub.genomedb.GenomeDB):
                 ilocusid = idmatch.group(2)
                 gene2loci[geneid] = ilocusid
             elif feattype == 'mRNA':
-                pattern = 'Parent=([^;\n]+);.*Name=([^;\n]+)'
-                idmatch = re.search(pattern, attrs)
-                assert idmatch, \
-                    'Unable to parse mRNA and gene IDs: %s' % attrs
-                protid = idmatch.group(2)
+                idmatch = re.search('Parent=([^;\n]+)', attrs)
+                protmatch = re.search('protein_id=([^;\n]+)', attrs)
+                if not protmatch:  # pragma: no cover
+                    protmatch = re.search('Name=([^;\n]+)', attrs)
+                assert idmatch and protmatch, \
+                    'Unable to parse protein and gene IDs: %s' % attrs
+                protid = protmatch.group(1)
                 geneid = idmatch.group(1)
                 locusid = gene2loci[geneid]
                 locusname = locusid2name[locusid]
                 yield protid, locusname
+
+
+# -----------------------------------------------------------------------------
+# Unit tests
+# -----------------------------------------------------------------------------
+
+def test_all():
+    """GenericDB: the whole enchilada"""
+    config = {
+        'gdna': 'testdata/fasta/generic.gdna.fa.gz',
+        'gff3': 'testdata/gff3/generic.gff3',
+        'prot': 'testdata/fasta/generic.prot.fa',
+        'source': 'local',
+        'species': 'Gnrc',
+    }
+    db = GenericDB('Gnrc', config, workdir='testdata/demo-workdir')
+    db.download(logstream=None)
+    db.prep(logstream=None)
+    genhub.iloci.prepare(db, ilcformat='{}ILC-%05lu', logstream=None)
+    genhub.proteins.prepare(db, logstream=None)
+    genhub.mrnas.prepare(db, logstream=None)
+    genhub.exons.prepare(db, logstream=None)
+    genhub.stats.compute(db, logstream=None)
+
+    sha1 = 'f3629aedbd683dd4dcf158ac12d3549e5c9081a0'
+    testsha1 = db.file_sha1('testdata/demo-workdir/Gnrc/Gnrc.iloci.tsv')
+    assert testsha1 == sha1, ('generic iLocus stats checksum failed')

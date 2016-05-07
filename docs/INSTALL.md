@@ -1,7 +1,7 @@
 Installing GenHub
 =================
 
-Installing GenHub itself should be pretty painless.
+The installation of the GenHub package itself should be pretty painless.
 The easiest way to install is with `pip`.
 
 ```bash
@@ -19,7 +19,7 @@ cd genhub-x.y.z
 python setup.py install
 ```
 
-Either of these methods will install the `pyyaml` and `pycurl` dependencies.
+Either of these methods will also install the `pyyaml` and `pycurl` dependencies.
 See below if you have trouble installing `pycurl` in a virtual environment.
 
 ## External software

@@ -130,50 +130,46 @@ class Am10DB(genhub.genomedb.GenomeDB):
 
 
 def test_gdna_format():
-    """Am10 gDNA formatting"""
-    conf = genhub.test_registry.genome('Am10')
-    amel_db = Am10DB('Am10', conf, workdir='testdata/demo-workdir')
-    amel_db.preprocess_gdna(logstream=None, verify=False)
+    """Amel OGSv1.0: gDNA formatting"""
+    db = genhub.test_registry.genome('Am10', workdir='testdata/demo-workdir')
+    db.preprocess_gdna(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Am10/Am10.gdna.fa'
     testoutfile = 'testdata/fasta/am10-gdna-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Am10 gDNA formatting failed'
 
-    assert repr(amel_db) == 'OGS1.0'
+    assert repr(db) == 'OGS1.0'
     url = ('http://hymenopteragenome.org/drupal/sites/'
            'hymenopteragenome.org.beebase/files/data/Amel_2.0_scaffolds.fa.gz')
-    assert amel_db.gdnaurl == url, amel_db.gdnaurl
+    assert db.gdnaurl == url, db.gdnaurl
     url = ('http://hymenopteragenome.org/drupal/sites/'
            'hymenopteragenome.org.beebase/files/data/amel_OGSv1.0.gff.gz')
-    assert amel_db.gff3url == url, amel_db.gff3url
+    assert db.gff3url == url, db.gff3url
     url = ('http://hymenopteragenome.org/drupal/sites/'
            'hymenopteragenome.org.beebase/files/data/amel_OGSv1.0_pep.fa.gz')
-    assert amel_db.proturl == url, amel_db.proturl
+    assert db.proturl == url, db.proturl
 
 
 def test_annotation_am10():
-    """Am10 annotation formatting"""
-    conf = genhub.test_registry.genome('Am10')
-    amel_db = Am10DB('Am10', conf, workdir='testdata/demo-workdir')
-    amel_db.preprocess_gff3(logstream=None, verify=False)
+    """Amel OGSv1.0: annotation pre-processing"""
+    db = genhub.test_registry.genome('Am10', workdir='testdata/demo-workdir')
+    db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Am10/Am10.gff3'
     testfile = 'testdata/gff3/am10-format.gff3'
     assert filecmp.cmp(outfile, testfile), 'Am10 annotation formatting failed'
 
 
 def test_proteins_am10():
-    """Am10 protein formatting"""
-    conf = genhub.test_registry.genome('Am10')
-    amel_db = Am10DB('Am10', conf, workdir='testdata/demo-workdir')
-    amel_db.preprocess_prot(logstream=None, verify=False)
+    """Amel OGSv1.0: protein formatting"""
+    db = genhub.test_registry.genome('Am10', workdir='testdata/demo-workdir')
+    db.preprocess_prot(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Am10/Am10.all.prot.fa'
     testoutfile = 'testdata/fasta/am10-prot-out.fa'
     assert filecmp.cmp(testoutfile, outfile), 'Am10 protein formatting failed'
 
 
 def test_protids():
-    """Am10: extract protein IDs from GFF3"""
-    conf = genhub.test_registry.genome('Am10')
-    db = Am10DB('Am10', conf)
+    """Amel OGSv1.0: extract protein IDs from GFF3"""
+    db = genhub.test_registry.genome('Am10')
     protids = ['GB18127-PA', 'GB12533-PA', 'GB12334-PA', 'GB13832-PA',
                'GB10374-PA', 'GB11673-PA', 'GB17405-PA', 'GB15709-PA',
                'GB13454-PA', 'GB16202-PA', 'GB15597-PA', 'GB13411-PA',
@@ -192,9 +188,8 @@ def test_protids():
 
 
 def test_protmap():
-    """Am10: extract protein-->iLocus mapping from GFF3"""
-    conf = genhub.test_registry.genome('Am10')
-    db = Am10DB('Am10', conf)
+    """Amel OGSv1.0: extract protein-->iLocus mapping from GFF3"""
+    db = genhub.test_registry.genome('Am10')
     mapping = {'GB18571-PA': 'Am10ILC-00345', 'GB13022-PA': 'Am10ILC-00347'}
     infile = 'testdata/gff3/am10-loci.gff3'
     testmap = dict()

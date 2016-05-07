@@ -105,11 +105,9 @@ def main(args):
     if args.cfgdir:
         for cfgdirpath in args.cfgdir.split(','):
             registry.update(cfgdirpath)
-    conf = registry.genomes(args.species)
 
     for species in args.species:
-        config = conf[species]
-        db = genhub.genomedb.GenomeDB(species, config, workdir=args.workdir)
+        db = registry.genome(species, workdir=args.workdir)
         if args.shuffled:
             iloci = pandas.read_table(db.ilocustableshuf)
             miloci = pandas.read_table(db.milocustableshuf)

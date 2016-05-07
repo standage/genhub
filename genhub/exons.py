@@ -124,36 +124,27 @@ def prepare(db, logstream=sys.stderr):  # pragma: no cover
 
 
 def test_coding_sequences():
-    """Extract coding sequences"""
-    config = genhub.test_registry.genome('Atha')
-    db = genhub.refseq.RefSeqDB('Atha', config,
-                                workdir='testdata/demo-workdir')
+    """Breakdown: extract coding sequences"""
+    db = genhub.test_registry.genome('Atha', workdir='testdata/demo-workdir')
     cds_sequences(db, logstream=None)
-
     outfile = 'testdata/demo-workdir/Atha/Atha.cds.fa'
     testfile = 'testdata/fasta/atha-cds.fa'
     assert filecmp.cmp(outfile, testfile), 'coding sequence extraction failed'
 
 
 def test_exon_sequences():
-    """Extract exon sequences"""
-    config = genhub.test_registry.genome('Atha')
-    db = genhub.refseq.RefSeqDB('Atha', config,
-                                workdir='testdata/demo-workdir')
+    """Breakdown: extract exon sequences"""
+    db = genhub.test_registry.genome('Atha', workdir='testdata/demo-workdir')
     exon_sequences(db, logstream=None)
-
     outfile = 'testdata/demo-workdir/Atha/Atha.exons.fa'
     testfile = 'testdata/fasta/atha-exons.fa'
     assert filecmp.cmp(outfile, testfile), 'exon sequence extraction failed'
 
 
 def test_intron_sequences():
-    """Extract intron sequences"""
-    config = genhub.test_registry.genome('Atha')
-    db = genhub.refseq.RefSeqDB('Atha', config,
-                                workdir='testdata/demo-workdir')
+    """Breakdown: extract intron sequences"""
+    db = genhub.test_registry.genome('Atha', workdir='testdata/demo-workdir')
     intron_sequences(db, logstream=None)
-
     outfile = 'testdata/demo-workdir/Atha/Atha.introns.fa'
     testfile = 'testdata/fasta/atha-introns.fa'
     assert filecmp.cmp(outfile, testfile), 'intron sequence extraction failed'

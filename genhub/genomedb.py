@@ -71,9 +71,7 @@ class GenomeDB(object):
 
     @property
     def protfilename(self):
-        if 'proteins' in self.config:
-            return self.config['proteins']
-        return 'protein.fa.gz'
+        return self.config['proteins']
 
     # ----------
     # Complete file paths for unprocessed data.
@@ -217,12 +215,13 @@ class GenomeDB(object):
 
     def download(self, logstream=sys.stderr):  # pragma: no cover
         """Run download task."""
+        subprocess.call(['mkdir', '-p', self.dbdir])
         self.download_gdna(logstream)
         self.download_gff3(logstream)
         self.download_prot(logstream)
 
-    def format(self, logstream=sys.stderr, verify=True):  # pragma: no cover
-        """Run format task"""
+    def prep(self, logstream=sys.stderr, verify=True):  # pragma: no cover
+        """Run prep task"""
         self.preprocess_gdna(logstream=logstream, verify=verify)
         self.preprocess_gff3(logstream=logstream, verify=verify)
         self.preprocess_prot(logstream=logstream, verify=verify)
@@ -393,11 +392,10 @@ class GenomeDB(object):
 # -----------------------------------------------------------------------------
 
 def test_file_path():
-    """GenomeDB File name resolution"""
-    config = genhub.test_registry.genome('Bimp')
-    db = GenomeDB('Bimp', config)
+    """GenomeDB: file name resolution"""
+    db = genhub.test_registry.genome('Bimp')
     assert db.file_path('bogus.txt') == './Bimp/bogus.txt'
-    db = GenomeDB('Bimp', config, 'wd')
+    db = genhub.test_registry.genome('Bimp', workdir='wd')
     assert db.file_path('Bimp.gff3') == 'wd/Bimp/Bimp.gff3'
 
     assert db.ilocusfile == 'wd/Bimp/Bimp.iloci.gff3'
@@ -408,8 +406,7 @@ def test_file_path():
 
     checkfailed = False
     try:
-        config = genhub.test_registry.genome('Amel')
-        db = GenomeDB('Amel', config)
+        db = genhub.test_registry.genome('Amel')
         path = db.file_path('Amel.iloci.gff3', check=True)
     except FileNotFoundError as e:
         checkfailed = True
@@ -418,17 +415,15 @@ def test_file_path():
 
 
 def test_props():
-    """GenomeDB properties"""
-    config = genhub.test_registry.genome('Bimp')
-    db = GenomeDB('Bimp', config)
+    """GenomeDB: properties"""
+    db = genhub.test_registry.genome('Bimp')
     assert db.dbdir == './Bimp'
     assert db.gdnafile == './Bimp/Bimp.gdna.fa'
     assert db.gff3file == './Bimp/Bimp.gff3'
     assert db.protfile == './Bimp/Bimp.all.prot.fa'
     assert db.source == 'refseq'
 
-    config = genhub.test_registry.genome('Dqcr')
-    db = GenomeDB('Dqcr', config, workdir='/opt/data/genomes')
+    db = genhub.test_registry.genome('Dqcr', workdir='/opt/data/genomes')
     assert db.dbdir == '/opt/data/genomes/Dqcr'
     assert db.gdnafile == '/opt/data/genomes/Dqcr/Dqcr.gdna.fa'
     assert db.gff3file == '/opt/data/genomes/Dqcr/Dqcr.gff3'
@@ -437,15 +432,26 @@ def test_props():
 
 
 def test_filter_file():
-    """GenomeDB filter file"""
-    config = genhub.test_registry.genome('Lalb')
-    db = GenomeDB('Lalb', config)
+    """GenomeDB: filter file"""
+    db = genhub.test_registry.genome('Lalb')
     assert db.filter_file() is None
 
-    config = genhub.test_registry.genome('Drer')
-    db = GenomeDB('Drer', config)
+    db = genhub.test_registry.genome('Drer')
     ff = db.filter_file()
     with open(ff.name, 'r') as infile:
         excludestr = infile.read()
         assert excludestr.strip() == 'NC_002333.2'
     os.unlink(ff.name)
+
+
+def test_compress():
+    """GenomeDB: download compression"""
+    db = genhub.test_registry.genome('Emex')
+    assert db.compress_gdna is False
+    assert db.compress_gff3 is False
+    assert db.compress_prot is False
+
+    db.config['compress'] = ['gdna', 'prot', 'gff3']
+    assert db.compress_gdna is True
+    assert db.compress_gff3 is True
+    assert db.compress_prot is True

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: utf-8
 #
 # -----------------------------------------------------------------------------
 # Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
@@ -18,11 +19,10 @@ from . import fasta
 from . import cdhit
 from . import genomedb
 from . import refseq
-from . import ncbi_flybase
 from . import beebase
 from . import crg
 from . import tair
-from . import am10
+from . import generic
 from . import iloci
 from . import proteins
 from . import mrnas
@@ -33,9 +33,9 @@ try:
 except NameError:  # pragma: no cover
     FileNotFoundError = IOError
 
-# Temporary modules
+# Custom modules
+from . import am10
 from . import pdom
-from . import dpul
 
 # Versioneer
 from ._version import get_versions
@@ -53,3 +53,24 @@ try:
     test_registry_supp.update('testdata/conf')
 except FileNotFoundError:  # pragma: no cover
     pass
+
+
+sources = {
+    'refseq': 'NCBI RefSeq',
+    'beebase': 'BeeBase Consortium',
+    'crg': 'Wasp/ant genome project (Centro de Regulación Genómica)',
+    'pdom': 'Paper wasp genome project (Toth Lab)',
+    'tair': 'TAIR6 (The Arabidopsis Information Resource)',
+    'am10': 'Amel OGSv1.0 (Honeybee Genome Sequencing Consortium)',
+    'local': 'user-supplied genome (local file system)'
+}
+
+dbtype = {
+    'refseq': refseq.RefSeqDB,
+    'beebase': beebase.BeeBaseDB,
+    'crg': crg.CrgDB,
+    'pdom': pdom.PdomDB,
+    'tair': tair.TairDB,
+    'am10': am10.Am10DB,
+    'local': generic.GenericDB,
+}

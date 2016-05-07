@@ -51,7 +51,7 @@ If everything looks good up to this point, you're ready to go!
 
 ### Registry
 
-The `registry` module implements a class for managing genome configurations.
+The `registry` module implements a class for managing reference genome configurations.
 
 - A *genome configuration* is data in YAML format containing metadata about an annotated genome: specifically, the information needed to download and pre-process the genome sequence, the genome annotation, and the protein sequences.
 - A *batch configuration* is data in plain text format containing labels for a set of related genome configurations.
@@ -68,16 +68,17 @@ Processing that is specific to genomes from a particular source is implemented i
 
 - `BeeBase`: this subclass is used for handling genomes listed as "BeeBase Consortium Data" at [HymenopteraBase](http://hymenopteragenome.org/).
 - `CRG`: this subclass is used for handling two genomes published semi-officially to [a web page at the Centre de Regulacio Genomica](http://wasp.crg.eu/).
-- `FlyBaseDB`: this subclass was required previously for handling *Drosophila melanogaster* FlyBase data on NCBI, which (at the time) was organized differently from most other genomes stored there.
   The GenBank and RefSeq FTP sites have since been streamlined, but this class has been kept for sake of reproducibility (the old FlyBase data is still available in the FTP archives).
 - `PdomDB`: this subclass is used for handling *Polistes dominula* data which, for much of GenHub's development, has had no formal distribution source.
 - `RefSeqDB`: this subclass is used for handling genomes published in NCBI's RefSeq.
 
 Genome configurations and the `GenomeDB` classes work closely together: each subclass implements the procedures needed to download and process data from a particular source, and the genome configuration provides details for downloading a specific data set.
 
-### Data type modules
+The `GenericDB` class handles user-supplied custom genome data sets.
 
-Several modules are provided for handling and describing various data types once the sequences and annotations have been downloaded and properly formatted.
+### Feature type modules
+
+Several modules are provided for handling and describing various genome features types once the sequences and annotations have been downloaded and properly formatted.
 
 - `iloci`: this module is for handling interval loci (iLoci), the primary organizational unit of GenHub.
   Each iLocus represents the genomic context of a single gene, a set of overlapping genes, or an intergenic region.
@@ -96,11 +97,5 @@ In this context, *handling* means managing sequences, parsing annotations, and d
 
 ### Build script (and other scripts)
 
-The `genhub-build.py` script implements the primary end-user interface to GenHub (other scripts in the `scripts/` directory support the core GenHub code and will not be discussed in depth here).
-The build script provides the following user-facing tasks.
-
-- `list`: show all available genomes and exit
-- `download`: download the genome sequence, annotation, and protein sequences from their primary source
-- `format`: tidy up the primary data so that all data files, regardless of source, are in a common format
-- `prepare`: extract sequences and parse annotations for various data types (as described in the *Data type modules* section) in preparation to calculate descriptive statistics
-- `stats`: calculate descriptive statistics for the various data types
+The `fidibus` script implements the primary end-user interface to GenHub.
+All other scripts in the `scripts/` directory support this core program and will not be discussed in depth here.

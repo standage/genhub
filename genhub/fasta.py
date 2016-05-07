@@ -74,7 +74,7 @@ def compare(stream1, stream2):
 
 
 def test_parse():
-    """Fasta parsing"""
+    """Fasta: parsing"""
     data = ('>seq1\n'
             'ACGT\n'
             '>seq2\n'
@@ -93,7 +93,7 @@ def test_parse():
 
 
 def test_format_seq():
-    """Sequence formatting"""
+    """Fasta: sequence formatting"""
     seq = ('TCTCCCTCCA'
            'ACGCCCGAAC'
            'GTGTCTGCTC'
@@ -134,7 +134,7 @@ def test_format_seq():
 
 
 def test_select():
-    """Sequence extraction"""
+    """Fasta: sequence extraction"""
     data = ('>seq1\n'
             'ACGT\n'
             '>seq2\n'
@@ -149,7 +149,7 @@ def test_select():
 
 
 def test_compare():
-    """Order-independent sequence comparison"""
+    """Fasta: order-independent sequence comparison"""
     data1 = ('>seq1\n'
              'ACGT\n'
              '>seq2\n'

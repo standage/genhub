@@ -55,30 +55,36 @@ class Registry(object):
             batch_label = os.path.splitext(filename)[0]
             self.batch_configs[batch_label] = batch
 
-    def genome(self, label):
-        """Retrieve a genome config from the registry by label."""
+    def check(self, genomes=None, batches=None):
+        if genomes:
+            for label in genomes:
+                assert label in self.genome_configs, 'unknown genome ' + label
+        if batches:
+            for label in batches:
+                assert label in self.batch_configs, 'unknown batch ' + label
+
+    def config(self, label):
         if label not in self.genome_configs:
             return None
         return self.genome_configs[label]
 
-    def genomes(self, labels):
-        config = dict()
-        for label in labels:
-            config[label] = self.genome_configs[label]
-        return config
+    def genome(self, label, workdir='.'):
+        if label not in self.genome_configs:
+            return None
+        config = self.genome_configs[label]
+        constructor = genhub.dbtype[config['source']]
+        db = constructor(label, config, workdir=workdir)
+        return db
 
     def batch(self, batch_label):
         """Retrieve a batch of genome configs from the registry."""
         if batch_label not in self.batch_configs:
             return None
-        config = dict()
-        for genome_label in self.batch_configs[batch_label]:
-            config[genome_label] = self.genome_configs[genome_label]
-        return config
+        return list(self.batch_configs[batch_label])
 
     def parse_genome_config(self, config):
         """
-        Parse genome config in YAML format.
+        Parse reference genome config in YAML format.
 
         If `config` is a string it is treated as a filename, otherwise as a
         file handle or similar object.
@@ -89,7 +95,7 @@ class Registry(object):
 
     def parse_batch_config(self, config):
         """
-        Parse a batch of genome config labels from a file.
+        Parse a batch of reference genome config labels from a file.
 
         The file should contain a single genome config label per line, and
         `config` is treated as a filename.
@@ -110,14 +116,27 @@ class Registry(object):
         for label in sorted(self.batch_configs):
             yield label, self.batch_configs[label]
 
+    def list(self, outstream=None):  # pragma: no cover
+        print('===== Reference genomes =====', file=outstream)
+        for label, config in self.list_genomes():
+            info = label + '\t' + config['species']
+            if 'common' in config:
+                info += ' ({})'.format(config['common'])
+            info += '\t' + genhub.sources[config['source']]
+            print(info, file=outstream)
+        print('', file=outstream)
+
+        print('===== Reference genome batches =====', file=outstream)
+        for label, batch in self.list_batches():
+            print(label, ','.join(batch), sep='\t', file=outstream)
+
 
 # -----------------------------------------------------------------------------
 # Unit tests
 # -----------------------------------------------------------------------------
 
-
 def test_list():
-    """Listing genome and batch configs"""
+    """Registry: listing genome and batch configs"""
     registry = Registry()
 
     genome_labels = [x for x in registry.list_genomes()]
@@ -126,6 +145,13 @@ def test_list():
     batch_labels = [x for x in registry.list_batches()]
     txtfiles = [x for x in glob.glob('genhub/genomes/*.txt')]
     assert len(batch_labels) == len(txtfiles)
+
+    registry.check(genomes=['Otau', 'Oluc'])
+    registry.check(batches=['chlorophyta'])
+    try:
+        registry.check(batches=['BogusFooBar'])
+    except AssertionError:
+        pass
 
     registry.update('testdata/conf', clear=True)
 
@@ -143,51 +169,40 @@ def test_list():
 
 
 def test_genome():
-    """Loading a genome configuration by label"""
+    """Registry: loading a genome db or configuration by label"""
     registry = Registry()
-    config = registry.genome('Osat')
-    assert 'accession' in config
-    assert config['accession'] == 'GCF_001433935.1'
+    db = registry.genome('Osat')
+    assert 'accession' in db.config
+    assert db.config['accession'] == 'GCF_001433935.1'
 
     registry.update('testdata/conf')
-    config = registry.genome('Osat')
-    assert 'accession' in config
-    assert config['accession'] == 'BogusThisIsNotARealAccession'
+    db = registry.genome('Osat')
+    assert 'accession' in db.config
+    assert db.config['accession'] == 'BogusThisIsNotARealAccession'
 
-    config = registry.genome('Bvul')
-    assert 'scaffolds' in config
-    assert config['scaffolds'] == 'bv_ref_1.1_chrUn.fa.gz'
-
-    config = registry.genomes(['Atha', 'Bdis', 'Osat'])
-    assert len(config) == 3
-    assert sorted(config) == ['Atha', 'Bdis', 'Osat']
+    dbconfig = registry.config('Bvul')
+    assert 'scaffolds' in dbconfig
+    assert dbconfig['scaffolds'] == 'bv_ref_1.1_chrUn.fa.gz'
 
     assert registry.genome('Docc') is None
+    assert registry.config('gnilleps') is None
 
 
 def test_batch():
-    """Loading a batch configuration by label"""
+    """Registry: loading a batch configuration by label"""
     registry = Registry()
-    config = registry.batch('honeybees')
-    assert len(config) == 3
-    assert sorted(config) == ['Ador', 'Aflo', 'Amel']
+    labels = registry.batch('honeybees')
+    assert sorted(labels) == ['Ador', 'Aflo', 'Amel']
 
     registry.update('testdata/conf')
-    config = registry.batch('mythical')
-    assert len(config) == 1
-    assert sorted(config) == ['Bvul']
+    labels = registry.batch('mythical')
+    assert labels == ['Bvul']
 
     assert registry.batch('nonexistent') is None
 
-    config = registry.batch('bumblebees')
-    assert len(config) == 2
-    assert sorted(config) == ['Bimp', 'Bter']
-    assert config['Bter']['accession'] == 'GCF_000214255.1'
-    assert config['Bimp']['accession'] == 'BogusAccessionForUnitTesting'
-
 
 def test_parse_genome_config():
-    """Parsing genome configurations from a file"""
+    """Registry: parsing genome configurations from a file"""
     registry = Registry()
     with open('genhub/genomes/Pbar.yml', 'r') as filehandle:
         config = registry.parse_genome_config(filehandle)

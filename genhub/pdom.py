@@ -8,7 +8,13 @@
 # licensed under the BSD 3-clause license: see LICENSE.txt.
 # -----------------------------------------------------------------------------
 
-"""Genome database implementation for *Polites dominula* genome data."""
+"""
+Retrieve and format data from the *Polistes dominula* genome project.
+
+This is for the original annotation (version r1.2) published by the Toth Lab
+(http://pdomgenomeproject.github.io/). The RefSeq annotation for *P. dominula*
+is handled via the refseq.py module.
+"""
 
 from __future__ import print_function
 import filecmp
@@ -105,10 +111,8 @@ class PdomDB(genhub.genomedb.GenomeDB):
 # -----------------------------------------------------------------------------
 
 def test_download():
-    """Pdtl figshare download"""
-    config = genhub.test_registry.genome('Pdtl')
-    pdom_db = PdomDB('Pdtl', config)
-
+    """Pdom r1.2: figshare download"""
+    pdom_db = genhub.test_registry.genome('Pdtl')
     assert pdom_db.gdnaurl == 'https://ndownloader.figshare.com/files/3557633'
     assert pdom_db.gff3url == 'https://ndownloader.figshare.com/files/3558071'
     assert pdom_db.proturl == 'https://ndownloader.figshare.com/files/3558059'
@@ -116,20 +120,17 @@ def test_download():
 
 
 def test_format():
-    """Pdtl formatting task"""
-    config = genhub.test_registry_supp.genome('Pdtl')
-    pdom_db = PdomDB('Pdtl', config, workdir='testdata/demo-workdir')
-
+    """Pdom r1.2: formatting task"""
+    pdom_db = genhub.test_registry_supp.genome('Pdtl',
+                                               workdir='testdata/demo-workdir')
     pdom_db.preprocess_gdna(logstream=None)
     pdom_db.preprocess_gff3(logstream=None)
     pdom_db.preprocess_prot(logstream=None)
 
 
 def test_protids():
-    """Pdtl: extract protein IDs from GFF3"""
-    config = genhub.test_registry.genome('Pdtl')
-    db = PdomDB('Pdtl', config)
-
+    """Pdom r1.2: extract protein IDs from GFF3"""
+    db = genhub.test_registry.genome('Pdtl')
     protids = ['PdomMRNAr1.2-08518.1', 'PdomMRNAr1.2-11420.1',
                'PdomMRNAr1.2-08519.1']
     infile = 'testdata/gff3/pdom-266.gff3'
@@ -142,10 +143,8 @@ def test_protids():
 
 
 def test_protmap():
-    """Pdtl: extract protein-->iLocus mapping from GFF3"""
-    config = genhub.test_registry.genome('Pdtl')
-    db = PdomDB('Pdtl', config)
-
+    """Pdom r1.2: extract protein-->iLocus mapping from GFF3"""
+    db = genhub.test_registry.genome('Pdtl')
     mapping = {'PdomMRNAr1.2-08518.1': 'PdomILC-18235',
                'PdomMRNAr1.2-11420.1': 'PdomILC-18237',
                'PdomMRNAr1.2-08519.1': 'PdomILC-18238'}
