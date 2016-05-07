@@ -146,7 +146,9 @@ class FeatureFormatter(object):
         elif self.source in ['beebase', 'tair', 'am10']:
             accmatch = re.search('Name=([^;\n]+)', attributes)
         elif self.source == 'local':
-            accmatch = re.search('accession=([^;\n]+)', attributes)
+            accmatch = re.search('protein_id=([^;\n]+)', attributes)
+            if not accmatch:
+                accmatch = re.search('accession=([^;\n]+)', attributes)
             if not accmatch:
                 accmatch = re.search('Name=([^;\n]+)', attributes)
         else:

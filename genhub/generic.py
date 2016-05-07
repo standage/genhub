@@ -42,7 +42,8 @@ class GenericDB(genhub.genomedb.GenomeDB):
         return self.config['prot']
 
     def download(self, logstream=sys.stderr):
-        if logstream is not None:
+        subprocess.call(['mkdir', '-p', self.dbdir])
+        if logstream is not None:  # pragma: no cover
             msg = '[GenHub: %s] checking input files' % self.config['species']
             print(msg, file=logstream)
         assert os.path.isfile(self.gdnapath), \
@@ -53,6 +54,7 @@ class GenericDB(genhub.genomedb.GenomeDB):
             'proetin file {} does not exist'.format(self.protpath)
 
     def format_gdna(self, instream, outstream, logstream=sys.stderr):
+        subprocess.call(['mkdir', '-p', self.dbdir])
         for line in instream:
             if line.strip() == '':
                 continue
@@ -66,7 +68,7 @@ class GenericDB(genhub.genomedb.GenomeDB):
 
     def format_gff3(self, logstream=sys.stderr, debug=False):
         cmds = list()
-        if self.gff3path.endswith('.gz'):
+        if self.gff3path.endswith('.gz'):  # pragma: no cover
             cmds.append('gunzip -c %s' % self.gff3path)
         else:
             cmds.append('cat %s' % self.gff3path)
@@ -95,7 +97,7 @@ class GenericDB(genhub.genomedb.GenomeDB):
             if '\tmRNA\t' not in line:
                 continue
             namematch = re.search('protein_id=([^;\n]+)', line)
-            if not namematch:
+            if not namematch:  # pragma: no cover
                 namematch = re.search('Name=([^;\n]+)', line)
             assert namematch, 'cannot parse protein ID/name/accession: ' + line
             yield namematch.group(1)
@@ -126,7 +128,7 @@ class GenericDB(genhub.genomedb.GenomeDB):
             elif feattype == 'mRNA':
                 idmatch = re.search('Parent=([^;\n]+)', attrs)
                 protmatch = re.search('protein_id=([^;\n]+)', attrs)
-                if not protmatch:
+                if not protmatch:  # pragma: no cover
                     protmatch = re.search('Name=([^;\n]+)', attrs)
                 assert idmatch and protmatch, \
                     'Unable to parse protein and gene IDs: %s' % attrs
@@ -140,3 +142,25 @@ class GenericDB(genhub.genomedb.GenomeDB):
 # -----------------------------------------------------------------------------
 # Unit tests
 # -----------------------------------------------------------------------------
+
+def test_all():
+    """Generic genome"""
+    config = {
+        'gdna': 'testdata/fasta/generic.gdna.fa.gz',
+        'gff3': 'testdata/gff3/generic.gff3',
+        'prot': 'testdata/fasta/generic.prot.fa',
+        'source': 'local',
+        'species': 'Gnrc',
+    }
+    db = GenericDB('Gnrc', config, workdir='testdata/demo-workdir')
+    db.download(logstream=None)
+    db.format(logstream=None)
+    genhub.iloci.prepare(db, ilcformat='{}ILC-%05lu', logstream=None)
+    genhub.proteins.prepare(db, logstream=None)
+    genhub.mrnas.prepare(db, logstream=None)
+    genhub.exons.prepare(db, logstream=None)
+    genhub.stats.compute(db, logstream=None)
+
+    sha1 = 'f3629aedbd683dd4dcf158ac12d3549e5c9081a0'
+    testsha1 = db.file_sha1('testdata/demo-workdir/Gnrc/Gnrc.iloci.tsv')
+    assert testsha1 == sha1, ('generic iLocus stats checksum failed')

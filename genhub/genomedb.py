@@ -185,6 +185,7 @@ class GenomeDB(object):
 
     def download_gdna(self, logstream=sys.stderr):  # pragma: no cover
         """Download genomic DNA sequence."""
+        subprocess.call(['mkdir', '-p', self.dbdir])
         if logstream is not None:
             logmsg = '[GenHub: %s] ' % self.config['species']
             logmsg += 'download genome sequence from %r' % self
