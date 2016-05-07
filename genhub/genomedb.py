@@ -41,7 +41,6 @@ class GenomeDB(object):
         self.config = conf
         self.workdir = workdir
         assert 'source' in conf, 'data source unconfigured'
-        subprocess.call(['mkdir', '-p', self.dbdir])
 
     # ----------
     # Filenames for unprocessed data from the primary source.
@@ -217,6 +216,7 @@ class GenomeDB(object):
 
     def download(self, logstream=sys.stderr):  # pragma: no cover
         """Run download task."""
+        subprocess.call(['mkdir', '-p', self.dbdir])
         self.download_gdna(logstream)
         self.download_gff3(logstream)
         self.download_prot(logstream)
@@ -394,10 +394,9 @@ class GenomeDB(object):
 
 def test_file_path():
     """GenomeDB File name resolution"""
-    config = genhub.test_registry.genome('Bimp')
-    db = GenomeDB('Bimp', config)
+    db = genhub.test_registry.genome('Bimp')
     assert db.file_path('bogus.txt') == './Bimp/bogus.txt'
-    db = GenomeDB('Bimp', config, 'wd')
+    db = genhub.test_registry.genome('Bimp', workdir='wd')
     assert db.file_path('Bimp.gff3') == 'wd/Bimp/Bimp.gff3'
 
     assert db.ilocusfile == 'wd/Bimp/Bimp.iloci.gff3'
@@ -408,8 +407,7 @@ def test_file_path():
 
     checkfailed = False
     try:
-        config = genhub.test_registry.genome('Amel')
-        db = GenomeDB('Amel', config)
+        db = genhub.test_registry.genome('Amel')
         path = db.file_path('Amel.iloci.gff3', check=True)
     except FileNotFoundError as e:
         checkfailed = True
@@ -419,16 +417,14 @@ def test_file_path():
 
 def test_props():
     """GenomeDB properties"""
-    config = genhub.test_registry.genome('Bimp')
-    db = GenomeDB('Bimp', config)
+    db = genhub.test_registry.genome('Bimp')
     assert db.dbdir == './Bimp'
     assert db.gdnafile == './Bimp/Bimp.gdna.fa'
     assert db.gff3file == './Bimp/Bimp.gff3'
     assert db.protfile == './Bimp/Bimp.all.prot.fa'
     assert db.source == 'refseq'
 
-    config = genhub.test_registry.genome('Dqcr')
-    db = GenomeDB('Dqcr', config, workdir='/opt/data/genomes')
+    db = genhub.test_registry.genome('Dqcr', workdir='/opt/data/genomes')
     assert db.dbdir == '/opt/data/genomes/Dqcr'
     assert db.gdnafile == '/opt/data/genomes/Dqcr/Dqcr.gdna.fa'
     assert db.gff3file == '/opt/data/genomes/Dqcr/Dqcr.gff3'
@@ -438,12 +434,10 @@ def test_props():
 
 def test_filter_file():
     """GenomeDB filter file"""
-    config = genhub.test_registry.genome('Lalb')
-    db = GenomeDB('Lalb', config)
+    db = genhub.test_registry.genome('Lalb')
     assert db.filter_file() is None
 
-    config = genhub.test_registry.genome('Drer')
-    db = GenomeDB('Drer', config)
+    db = genhub.test_registry.genome('Drer')
     ff = db.filter_file()
     with open(ff.name, 'r') as infile:
         excludestr = infile.read()
