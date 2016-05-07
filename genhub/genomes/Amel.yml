@@ -14,6 +14,6 @@ Amel:
         - NC_001566.1
     checksums:
         gdna: d301a875b9cd8320eca1c31cb9ebfd4f79edf7ed
-        gff3: d307280da175bdb0a6afe6c0e47de5764562825f
+        gff3: 2db266667ae9a2332522cd8efd9209472661597d
         prot: 7181e4fac161c90d2ee99917afdeac08cd3d9c7b
     description: Amel_4.5 from HGSC@Baylor
