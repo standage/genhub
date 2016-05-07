@@ -214,4 +214,4 @@ def test_format():
     """GenomeDB task drivers"""
     db = genhub.test_registry_supp.genome('Pccr',
                                           workdir='testdata/demo-workdir')
-    db.format(logstream=None)
+    db.prep(logstream=None)

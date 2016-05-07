@@ -154,7 +154,7 @@ def test_all():
     }
     db = GenericDB('Gnrc', config, workdir='testdata/demo-workdir')
     db.download(logstream=None)
-    db.format(logstream=None)
+    db.prep(logstream=None)
     genhub.iloci.prepare(db, ilcformat='{}ILC-%05lu', logstream=None)
     genhub.proteins.prepare(db, logstream=None)
     genhub.mrnas.prepare(db, logstream=None)

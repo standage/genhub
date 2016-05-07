@@ -220,8 +220,8 @@ class GenomeDB(object):
         self.download_gff3(logstream)
         self.download_prot(logstream)
 
-    def format(self, logstream=sys.stderr, verify=True):  # pragma: no cover
-        """Run format task"""
+    def prep(self, logstream=sys.stderr, verify=True):  # pragma: no cover
+        """Run prep task"""
         self.preprocess_gdna(logstream=logstream, verify=verify)
         self.preprocess_gff3(logstream=logstream, verify=verify)
         self.preprocess_prot(logstream=logstream, verify=verify)

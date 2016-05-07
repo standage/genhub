@@ -160,7 +160,7 @@ def prepare(db, delta=500, ilcformat='%sILC-', logstream=sys.stderr):  # pragma:
 
 
 def test_intervals():
-    """Breakdown: compute iLocus intervals"""
+    """iLoci: compute iLocus intervals"""
     db = genhub.test_registry.genome('Bdis', workdir='testdata/demo-workdir')
     intervals(db, logstream=None)
 
@@ -174,7 +174,7 @@ def test_intervals():
 
 
 def test_simple():
-    """Breakdown: determine simple iLoci"""
+    """iLoci: determine simple iLoci"""
     db = genhub.test_registry.genome('Bdis', workdir='testdata/demo-workdir')
     simple(db, logstream=None)
 
@@ -184,7 +184,7 @@ def test_simple():
 
 
 def test_reps():
-    """Breakdown: select representative gene models for each iLocus"""
+    """iLoci: select representative gene models for each iLocus"""
     db = genhub.test_registry.genome('Bdis', workdir='testdata/demo-workdir')
     representatives(db, logstream=None)
 
@@ -194,7 +194,7 @@ def test_reps():
 
 
 def test_sequences():
-    """Breakdown: extract iLocus sequences"""
+    """iLoci: extract iLocus sequences"""
     db = genhub.test_registry.genome('Bdis', workdir='testdata/demo-workdir')
     sequences(db, logstream=None)
 
@@ -208,7 +208,7 @@ def test_sequences():
 
 
 def test_ancillary():
-    """Breakdown: process ancillary data for iLoci"""
+    """iLoci: process ancillary data for iLoci"""
     db = genhub.test_registry.genome('Bdis', workdir='testdata/demo-workdir')
     ancillary(db, logstream=None)
 

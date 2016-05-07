@@ -39,7 +39,7 @@ def run_build(builddata):
     if 'download' in args.task:
         db.download()
     if 'prep' in args.task:
-        db.format()
+        db.prep()
     if 'iloci' in args.task:
         genhub.iloci.prepare(db, delta=args.delta, ilcformat=args.format)
     if 'breakdown' in args.task:
