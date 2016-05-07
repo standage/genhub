@@ -161,9 +161,8 @@ def prepare(db, delta=500, ilcformat='%sILC-', logstream=sys.stderr):  # pragma:
 
 def test_intervals():
     """Parse iLocus intervals"""
-    config = genhub.test_registry.genome('Bdis')
-    d = genhub.refseq.RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
-    intervals(d, logstream=None)
+    db = genhub.test_registry.genome('Bdis', workdir='testdata/demo-workdir')
+    intervals(db, logstream=None)
 
     outfile = 'testdata/demo-workdir/Bdis/Bdis.iloci.gff3'
     testfile = 'testdata/gff3/bdis-iloci.gff3'
@@ -176,9 +175,8 @@ def test_intervals():
 
 def test_simple():
     """Determine simple iLoci"""
-    config = genhub.test_registry.genome('Bdis')
-    d = genhub.refseq.RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
-    simple(d, logstream=None)
+    db = genhub.test_registry.genome('Bdis', workdir='testdata/demo-workdir')
+    simple(db, logstream=None)
 
     outfile = 'testdata/demo-workdir/Bdis/Bdis.simple-iloci.txt'
     testfile = 'testdata/misc/bdis-simple.txt'
@@ -187,9 +185,8 @@ def test_simple():
 
 def test_reps():
     """Select representative gene models for each iLocus"""
-    config = genhub.test_registry.genome('Bdis')
-    d = genhub.refseq.RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
-    representatives(d, logstream=None)
+    db = genhub.test_registry.genome('Bdis', workdir='testdata/demo-workdir')
+    representatives(db, logstream=None)
 
     outfile = 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3'
     testfile = 'testdata/gff3/bdis-reps.gff3'
@@ -198,9 +195,8 @@ def test_reps():
 
 def test_sequences():
     """Extract iLocus sequences"""
-    config = genhub.test_registry.genome('Bdis')
-    d = genhub.refseq.RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
-    sequences(d, logstream=None)
+    db = genhub.test_registry.genome('Bdis', workdir='testdata/demo-workdir')
+    sequences(db, logstream=None)
 
     outfile = 'testdata/demo-workdir/Bdis/Bdis.iloci.fa'
     testfile = 'testdata/fasta/bdis-iloci.fa'
@@ -213,9 +209,8 @@ def test_sequences():
 
 def test_ancillary():
     """Process ancillary data for iLoci"""
-    config = genhub.test_registry.genome('Bdis')
-    d = genhub.refseq.RefSeqDB('Bdis', config, workdir='testdata/demo-workdir')
-    ancillary(d, logstream=None)
+    db = genhub.test_registry.genome('Bdis', workdir='testdata/demo-workdir')
+    ancillary(db, logstream=None)
 
     outfile = 'testdata/demo-workdir/Bdis/Bdis.ilens.tsv'
     testfile = 'testdata/misc/bdis-ilens.tsv'

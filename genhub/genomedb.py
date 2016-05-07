@@ -71,9 +71,7 @@ class GenomeDB(object):
 
     @property
     def protfilename(self):
-        if 'proteins' in self.config:
-            return self.config['proteins']
-        return 'protein.fa.gz'
+        return self.config['proteins']
 
     # ----------
     # Complete file paths for unprocessed data.
@@ -443,3 +441,16 @@ def test_filter_file():
         excludestr = infile.read()
         assert excludestr.strip() == 'NC_002333.2'
     os.unlink(ff.name)
+
+
+def test_compress():
+    """GenomeDB download compression"""
+    db = genhub.test_registry.genome('Emex')
+    assert db.compress_gdna is False
+    assert db.compress_gff3 is False
+    assert db.compress_prot is False
+
+    db.config['compress'] = ['gdna', 'prot', 'gff3']
+    assert db.compress_gdna is True
+    assert db.compress_gff3 is True
+    assert db.compress_prot is True

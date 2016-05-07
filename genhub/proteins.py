@@ -90,10 +90,8 @@ def prepare(db, logstream=sys.stderr):  # pragma: no cover
 
 def test_protein_sequence():
     """Select protein sequences"""
-    config = genhub.test_registry.genome('Scer')
-    d = genhub.refseq.RefSeqDB('Scer', config, workdir='testdata/demo-workdir')
-    sequences(d, logstream=None)
-
+    db = genhub.test_registry.genome('Scer', workdir='testdata/demo-workdir')
+    sequences(db, logstream=None)
     outfile = 'testdata/demo-workdir/Scer/Scer.prot.fa'
     testfile = 'testdata/fasta/scer-few-prots.fa'
     assert filecmp.cmp(outfile, testfile), 'Protein sequence selection failed'
