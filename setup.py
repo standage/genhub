@@ -17,8 +17,8 @@ import versioneer
 setuptools.setup(name='genhub',
                  version=versioneer.get_version(),
                  cmdclass=versioneer.get_cmdclass(),
-                 description=('Collect and pre-process annotated genome '
-                              'assemblies'),
+                 description=('Explore eukaryotic genome composition and '
+                              'organization with iLoci'),
                  url='http://github.com/standage/genhub',
                  author='Daniel Standage',
                  author_email='daniel.standage@gmail.com',
