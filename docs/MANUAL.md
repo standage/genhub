@@ -1,6 +1,23 @@
 GenHub Manual
 =============
 
+## Summary
+
+GenHub is a companion to the [AEGeAn Toolkit](agn) and provides a framework for analysis of eukaryotic genome composition and organization.
+GenHub calculates a variety of statistics on *interval loci (iLoci)* computed from user-supplied genome data.
+It can also retrieve reference genomes directly from public databases (such as NCBI RefSeq) for easily reproducible comparative analyses.
+
+GenHub is free for use under a permissive open source [license](LICENSE.txt).
+
+## LocusPocus Fidibus!
+
+The AEGeAn Toolkit provides `LocusPocus`, a basic program for computing iLoci from a genome annotation.
+The `Fidibus` program from GenHub provides a more comprehensive pipeline around `LocusPocus`, integrating genome and protein sequences and performing additional pre-processing, post-processing, error-checking, and calculation of summary statistics for iLoci and additional genome features.
+
+Each iLocus captures the genomic context of a single gene, a group of overlapping genes, or an intergenic region.
+iLoci provide a detailed and granular representation of the entire genome that is robust to improvements to the assembly and annotation.
+See our upcoming paper (Standage and Brendel, 2016) for more information.
+
 ## Installation
 
 See [the installation instructions](INSTALL.md) if you have not already installed GenHub and its dependencies.
@@ -17,7 +34,7 @@ The build program provides 6 primary build tasks.
 
 - `download`: download the reference genome sequence, annotation, and protein sequences from the official source; in the case of user-supplied genomes on the local file system, verify that the specified files exist
 - `prep`: pre-process the primary data, tidying it up so that all data files, regardless of source, are in a common format
-- `iLoci`: compute iLoci and extract iLocus sequences
+- `iloci`: compute iLoci and extract iLocus sequences
 - `breakdown`: extract sequences and parse annotations for various genome features to facilitate calculating descriptive statistics
 - `stats`: calculate descriptive statistics for various genome features
 - `cleanup`: remove intermediate data files to reduce storage needs

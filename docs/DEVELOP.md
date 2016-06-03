@@ -19,7 +19,7 @@ GenHub is implemented in the [Python programming language](https://www.python.or
 
 ### Dependencies
 
-GenHub delegates many processing tasks to external programs from the [GenomeTools library](http://genometools.org) and the [AEGeAn Toolkit](http://standage.github.io/AEGeAn/).
+GenHub delegates many processing tasks to external programs from the [GenomeTools library](http://genometools.org) and the [AEGeAn Toolkit](http://brendelgroup.github.io/AEGeAn/).
 These software packages must be installed on your system before you can run or develop GenHub.
 
 GenHub also depends on several Python modules.
