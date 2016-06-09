@@ -351,8 +351,7 @@ class GenomeDB(object):
         """
         dbfiles = glob.glob(self.dbdir + '/*')
         files_deleted = list()
-        suffixes = ['.iloci.fa', '.iloci.gff3', '.miloci.gff3', '.tsv',
-                    '.protein2ilocus.tsv']
+        suffixes = ['.iloci.fa', '.iloci.gff3', '.miloci.gff3', '.tsv']
         for dbfile in dbfiles:
             tokeep = False
             for suffix in suffixes:

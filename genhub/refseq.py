@@ -343,7 +343,6 @@ def test_cleanup():
     delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
                 'testdata/demo-workdir/Bdis/Bdis.gff3',
                 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
-                'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.txt',
                 'testdata/demo-workdir/Bdis/Bdis.miloci.fa',
                 'testdata/demo-workdir/Bdis/Bdis.mrnas.txt',
                 'testdata/demo-workdir/Bdis/Bdis.simple-iloci.txt',
@@ -353,7 +352,6 @@ def test_cleanup():
     delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
                 'testdata/demo-workdir/Bdis/Bdis.gff3',
                 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
-                'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.txt',
                 'testdata/demo-workdir/Bdis/Bdis.mrnas.txt',
                 'testdata/demo-workdir/Bdis/Bdis.simple-iloci.txt',
                 'testdata/demo-workdir/Bdis/ilens.temp']
@@ -362,7 +360,6 @@ def test_cleanup():
     delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
                 'testdata/demo-workdir/Bdis/Bdis.gff3',
                 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
-                'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.txt',
                 'testdata/demo-workdir/Bdis/Bdis.mrnas.txt',
                 'testdata/demo-workdir/Bdis/ilens.temp']
     testfiles = db.cleanup(['.miloci.', 'simple'], False, True)
