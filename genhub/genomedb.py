@@ -288,13 +288,15 @@ class GenomeDB(object):
                     message += ('\n\nTo proceed in spite of this failure, re-'
                                 'run with the `--relax` option enabled.')
                     raise Exception(message)
-                else:
-                    message += ', proceeding anyway'
-                    print('Warning:', message, file=sys.stderr)
+                else:  # pragma: no cover
+                    if logstream is not None:
+                        message += ', proceeding anyway'
+                        print('Warning:', message, file=logstream)
         else:  # pragma: no cover
-            message = 'Cannot verify integrity of %s ' % self.label
-            message += '%s without a checksum' % datatypes[datatype]
-            print(message, file=logstream)
+            if logstream is not None:
+                message = 'Cannot verify integrity of %s ' % self.label
+                message += '%s without a checksum' % datatypes[datatype]
+                print(message, file=logstream)
 
     def preprocess_gdna(self, logstream=sys.stderr, verify=True, strict=True):
         self.preprocess('gdna', logstream, verify, strict)
