@@ -28,16 +28,52 @@ It is a companion to the `LocusPocus` program included in the [AEGeAn Toolkit](h
 For a complete listing of program options, execute `fidibus -h` in your shell.
 The most important concepts are discussed below.
 
+### Data inputs
+
+If you are analyzing a newly sequenced and/or non-model genome with `Fidibus`, you will need to provide 3 input files.
+
+- *a genomic DNA file*: chromosome, scaffold, and/or contig sequences in Fasta format
+- *a genome annotation file*: genes, mRNAs, and related features in GFF3 format
+    - unique accessions for each gene and transcript should be provided using the `accession` or `Name` attribute (the `ID` attribute is unsuitable as it is for use only within a GFF3 file and is not guaranteed to be consistent between multiple GFF3 files)
+    - genome sequence IDs (GFF3 column 1) much match IDs from gDNA Fasta file
+- *a protein file*: protein sequences in Fasta format
+    - protein sequence IDs must match their corresponding mRNA accessions
+
+You can also compute statistics for a model organism genome, either simultaneously with or separate from any user-supplied genome.
+Run `fidibus list` to see the list of all supported reference genomes.
+You can use its 4-letter label to download and process the data with `fidibus`.
+For example, the label for the budding yeast *Saccharomyces cerevisiae* is `Scer`, so you would process its genome like so.
+
+```
+fidibus --workdir=data/ --refr=Scer download prep iloci breakdown stats
+```
+
+If your model organism is not supported by GenHub, but you think it should be, submit a request on our issue tracker at https://github.com/standage/genhub/issues/new.
+If the genome is in RefSeq, adding support to GenHub is usually trivial.
+If not, you will need to specify the location from which the genome sequences, genome annotation, and protein sequences can be downloaded.
+
+
+### Data outputs
+
+For each genome you analyze, `Fidibus` will create a dedicated subdirectory in your specified working directory.
+Details about the working directory structure and contents are discussed in the **Working directory** section below.
+Most users will be interested in the various data tables (`.tsv` files) produced by `Fidibus`, which can easily be loaded into R, Python, or other data analysis environments for analysis and visualization.
+
+
 ### Build tasks
 
-The build program provides 6 primary build tasks.
+The build program provides 7 primary build tasks.
 
 - `download`: download the reference genome sequence, annotation, and protein sequences from the official source; in the case of user-supplied genomes on the local file system, verify that the specified files exist
 - `prep`: pre-process the primary data, tidying it up so that all data files, regardless of source, are in a common format
 - `iloci`: compute iLoci and extract iLocus sequences
 - `breakdown`: extract sequences and parse annotations for various genome features to facilitate calculating descriptive statistics
 - `stats`: calculate descriptive statistics for various genome features
+- `cluster`: identify putative gene families by clustering iLocus protein products for multiple related genomes
 - `cleanup`: remove intermediate data files to reduce storage needs
+
+The first five tasks have linear dependencies and must be invoked in the order shown above.
+The `cluster` task relies on the `breakdown` task, and does not require the `stats` task to be complete before being run.
 
 A special build task, `list`, is provided for displaying all available reference genomes.
 
@@ -52,6 +88,11 @@ Specify the number of processors you want to dedicate to GenHub with the `--nump
 Sometimes the best way to learn is to see some examples.
 
 ```bash
+# Compute iLoci for a user-supplied genome
+fidibus --workdir=./ --local --gdna=MyGenome.fasta --gff3=MyAnnotation.gff3 \
+        --prot=MyProteins.fasta --label=Gnm1 \
+        prep iloci
+
 # Show all available reference genomes
 fidibus list
 
@@ -117,7 +158,7 @@ These include the following.
 - unprocessed data files downloaded directly from public databases (in the case of reference genomes)
     - usually compressed
     - start with `GCF` in the case of RefSeq genomes
-- pre-processed genome data
+- pre-processed genome data (produced by `prep` task)
     - genome sequences (`Xxxx.gdna.fa`)
     - genome annotation (`Xxxx.gff3`)
     - protein sequences (`Xxxx.all.prot.fa`)
