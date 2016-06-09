@@ -220,19 +220,20 @@ class GenomeDB(object):
         self.download_gff3(logstream)
         self.download_prot(logstream)
 
-    def prep(self, logstream=sys.stderr, verify=True):  # pragma: no cover
+    def prep(self, logstream=sys.stderr, verify=True,
+             strict=True):  # pragma: no cover
         """Run prep task"""
-        self.preprocess_gdna(logstream=logstream, verify=verify)
-        self.preprocess_gff3(logstream=logstream, verify=verify)
-        self.preprocess_prot(logstream=logstream, verify=verify)
+        self.preprocess_gdna(logstream=logstream, verify=verify, strict=strict)
+        self.preprocess_gff3(logstream=logstream, verify=verify, strict=strict)
+        self.preprocess_prot(logstream=logstream, verify=verify, strict=strict)
 
-    def preprocess(self, datatype, logstream=sys.stderr, verify=True):
+    def preprocess(self, datatype, logstream=sys.stderr, verify=True,
+                   strict=True):
         """
         Preprocess genome data files.
 
-        To read from or write to a custom input/output streams (rather than the
-        default file locations), set `instream` and/or `outstream` to a
-        readable or writeable file handle, a stringio, or similar object.
+        Set `verify` to False to skip shasum checks for pre-processed data. Set
+        `strict` to False to proceed in case of failed verification.
 
         Note that this is a wrapper function: each subclass must implement 3
         methods (`format_gdna`, `format_gff3`, and `format_prot`) to do the
@@ -278,22 +279,31 @@ class GenomeDB(object):
         if 'checksums' in self.config and datatype in self.config['checksums']:
             sha1 = self.config['checksums'][datatype]
             testsha1 = self.file_sha1(outfile)
-            assert testsha1 == sha1, ('%s %s integrity check failed\n%s\n%s' %
-                                      (self.label, datatypes[datatype],
-                                       testsha1, sha1))
+            passed = testsha1 == sha1
+            if not passed:
+                message = '{} {} integrity check failed\n{}\n{}'.format(
+                    self.label, datatypes[datatype], testsha1, sha1
+                )
+                if strict:
+                    message += ('\n\nTo proceed in spite of this failure, re-'
+                    'run with the `--relax` option enabled.')
+                    raise Exception(message)
+                else:
+                    message += ', proceeding anyway'
+                    print('Warning:', message, file=sys.stderr)
         else:  # pragma: no cover
             message = 'Cannot verify integrity of %s ' % self.label
             message += '%s without a checksum' % datatypes[datatype]
             print(message, file=logstream)
 
-    def preprocess_gdna(self, logstream=sys.stderr, verify=True):
-        self.preprocess('gdna', logstream, verify)
+    def preprocess_gdna(self, logstream=sys.stderr, verify=True, strict=True):
+        self.preprocess('gdna', logstream, verify, strict)
 
-    def preprocess_gff3(self, logstream=sys.stderr, verify=True):
-        self.preprocess('gff3', logstream, verify)
+    def preprocess_gff3(self, logstream=sys.stderr, verify=True, strict=True):
+        self.preprocess('gff3', logstream, verify, strict)
 
-    def preprocess_prot(self, logstream=sys.stderr, verify=True):
-        self.preprocess('prot', logstream, verify)
+    def preprocess_prot(self, logstream=sys.stderr, verify=True, strict=True):
+        self.preprocess('prot', logstream, verify, strict)
 
     def filter_file(self):
         """

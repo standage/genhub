@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- A `relax` option to `fidibus` to proceed with prep task despite failed shasum verification.
+
 ### Changed
 - Ancillary files `.ilocus.mrnas.txt` and `.protein2ilocus.txt` are not `.tsv` files with headers.
 - Extensive documentation updates.
