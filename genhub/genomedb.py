@@ -286,7 +286,7 @@ class GenomeDB(object):
                 )
                 if strict:
                     message += ('\n\nTo proceed in spite of this failure, re-'
-                    'run with the `--relax` option enabled.')
+                                'run with the `--relax` option enabled.')
                     raise Exception(message)
                 else:
                     message += ', proceeding anyway'
