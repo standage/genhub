@@ -369,7 +369,7 @@ def test_cleanup():
     assert set(testfiles) == set(delfiles), '%r %r' % (testfiles, delfiles)
 
     db = genhub.test_registry.genome('Vcar', workdir='testdata/demo-workdir')
-    nodelfile = 'testdata/demo-workdir/Vcar/Vcar.protein2ilocus.txt'
+    nodelfile = 'testdata/demo-workdir/Vcar/Vcar.protein2ilocus.tsv'
     testfiles = db.cleanup(None, False, True)
     assert nodelfile not in testfiles, 'incorrectly deleted file'
 

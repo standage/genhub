@@ -352,7 +352,7 @@ class GenomeDB(object):
         dbfiles = glob.glob(self.dbdir + '/*')
         files_deleted = list()
         suffixes = ['.iloci.fa', '.iloci.gff3', '.miloci.gff3', '.tsv',
-                    '.protein2ilocus.txt']
+                    '.protein2ilocus.tsv']
         for dbfile in dbfiles:
             tokeep = False
             for suffix in suffixes:
@@ -378,8 +378,9 @@ class GenomeDB(object):
         return files_deleted
 
     def get_prot_map(self):
-        mapfile = '%s/%s.protein2ilocus.txt' % (self.dbdir, self.label)
+        mapfile = '%s/%s.protein2ilocus.tsv' % (self.dbdir, self.label)
         with open(mapfile, 'r') as instream:
+            next(instream)
             for line in instream:
                 if line.strip() == '':  # pragma: no cover
                     continue
