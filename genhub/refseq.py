@@ -301,7 +301,6 @@ def test_annot_format():
     db.preprocess_gff3(logstream=None, verify=True, strict=False)
 
 
-
 def test_prot_ncbi():
     """RefSeq: protein pre-processing"""
     db = genhub.test_registry.genome('Hsal', workdir='testdata/demo-workdir')
