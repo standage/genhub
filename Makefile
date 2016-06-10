@@ -7,7 +7,7 @@ check:
 
 test:
 	@ rm -f .coverage
-	@ nosetests -v --with-coverage --cover-package=genhub genhub/*.py
+	@ py.test --cov=genhub/ genhub/*.py
 
 testmore:
 	@ set -e && for conf in $$(ls genhub/genomes/*.yml | grep -v -e Mmus -e Btau -e Emex -e Drer -e Hsap | $(shufcmd) | head -2); do label=$$(basename $$conf .yml); echo $$label; fidibus --refr=$$label --workdir=scratch/testmore/ download prep iloci breakdown stats; rm -r scratch/testmore/; done
