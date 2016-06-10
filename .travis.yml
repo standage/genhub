@@ -12,7 +12,7 @@ before_install:
     - mkdir -p $HOME/.python-eggs
     - chmod og-w $HOME/.python-eggs
     - bash dev/travis-prereqs.sh
-    - pip install --upgrade pip nose pep8 coverage codecov
+    - pip install --upgrade pip pytest pytest-cov pep8 coverage codecov
 install:
     - python setup.py install
 before_script:
