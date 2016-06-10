@@ -2,6 +2,7 @@
 .coverage
 .*.swp
 scratch/
+.cache/
 
 # Just Python things
 *.pyc

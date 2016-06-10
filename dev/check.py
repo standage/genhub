@@ -19,7 +19,7 @@ def check_import():
     print('[GenHub] Checking Python modules.')
 
     basemod = [('yaml', 'pyyaml'), ('pycurl', 'pycurl')]
-    devmod = ['pep8', 'nose', 'coverage']
+    devmod = ['pep8', 'pytest', 'pytest-cov', 'coverage']
 
     packages = dict()
     for importname, packagename in basemod:

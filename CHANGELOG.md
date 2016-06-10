@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Ancillary files `.ilocus.mrnas.txt` and `.protein2ilocus.txt` are not `.tsv` files with headers.
 - Extensive documentation updates.
+- Switched from nose to py.test as the testing framework.
 
 ### Removed
 - Deprecated `genhub-fix-trna.py` script.
