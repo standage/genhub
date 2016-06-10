@@ -19,7 +19,7 @@ GenHub is implemented in the [Python programming language](https://www.python.or
 
 ### Dependencies
 
-GenHub delegates many processing tasks to external programs from the [GenomeTools library](http://genometools.org) and the [AEGeAn Toolkit](http://standage.github.io/AEGeAn/).
+GenHub delegates many processing tasks to external programs from the [GenomeTools library](http://genometools.org) and the [AEGeAn Toolkit](http://brendelgroup.github.io/AEGeAn/).
 These software packages must be installed on your system before you can run or develop GenHub.
 
 GenHub also depends on several Python modules.
@@ -60,17 +60,62 @@ The `registry` module implements a class for managing reference genome configura
 A couple of registry objects are stored in the `genhub` package's global space for use as unit testing fixtures.
 These are not intended to be accessed by end-user-facing code.
 
+### Configuration files
+
+Information necessary for retrieving and processing reference genomes is stored in configuration files in YAML format.
+In the source code distribution, these files are stored in the `genhub/genomes/` directory.
+When installed via pip or from source, these files are copied to the `site-packages/genhub/genomes/` directory corresponding to the user-specified system-wide or virtual environment installation directory.
+
+Creating a new configuration file for a genome stored in RefSeq or one of the other already supported databases should generally be straightforward.
+Creating a new configuration for a genome from a new source will require the implementation of a new `GenomeDB` subclass: see below.
+
+To create a new RefSeq YAML configuration, use the following protocol.
+
+- Select a new 4-letter label for the genome.
+  The convention is the first letter of the genus (upper case), followed by the first 3 letters of the species (lower case).
+  This has not yet led to any collisions, so when possible follow this convention.
+- Copy one of the existing GenHub `.yml` files with `source: refseq` and name the file using the new 4-letter label.
+- Locate the desired assembly in the RefSeq FTP site.
+  Starting at ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/, click on the appropriate clade (`invertebrate`, `vertebrate_mammal`, and so on) --> the species name --> `all_assembly_versions` --> the desired assembly version --> and then the file ending in `_assembly_stats.txt`.
+  This file contains some information we'll need for the new YAML file.
+- In the new YAML file, replace the label on the first line of the file with the new 4-letter label.
+- Provide the name of the species using conventional binomial nomenclature.
+  If there is a common name for the species, this should also be provided.
+  Optionally, one or more labels indicating the clade(s) to which the species belongs can be provided, although this information is not yet used by GenHub.
+- Make sure the **source** attribute is set to `refseq`.
+- Set the **branch** attribute to the appropriate subdirectory of the RefSeq FTP root directory: `invertebrate`, `vertebrate_mammal`, and so on.
+- Set the **accession** attribute to the **RefSeq assembly accession** specified in the `_assembly_stats.txt` file on the FTP site.
+  This should begin with the letters `GCF`.
+- Set the **build** attribute to the assembly name.
+  Often it is sufficient to use the **Assembly name** attribute from the `_assembly_stats.txt` file, but if the assembly name contains spaces or non-standard characters, you'll need to double check the name of the file.
+  The name will be of the format `GCF_xxxxxx.x_BUILD_assembly_stats.txt`, and the **build** attribute should in the new YAML file should be set to the value of the `BUILD` portion of the filename.
+- If the assembly includes organellar genomes, you'll need to add the corresponding sequence IDs to the **annotfilter** and **seqfilter** attributes.
+  See `Amel.yml` for an example.
+  This attribute can also filter out problematic gene models or other genome features if needed.
+  Simply provide a string that would filter these out of the GFF3 file *a la* `grep -v`.
+- The **checksums** attribute contains a list of shasums for pre-processed data.
+  You will not be able to fill this in until you have run the new configuration through the `prep` task.
+  Once you have run `fidibus --relax prep` on the new configuration, examine and do some sanity checking on the pre-processed files `Xxxx.gdna.fa`, `Xxxx.gff3`, and `Xxxx.all.prot.fa`.
+  If there are no apparent issues, compute checksums for these files using the `shasum` shell command and copy the checksums to the YAML file: **gdna** for the `Xxxx.gdna.fa` file's shasum, **gff3** for the `Xxxx.gff3` file's checksum, and **prot** for the `Xxxx.all.prot.fa` file's checksum.
+  These checksums are used to verify the integrity of the data files and pre-processing on subsequent invokations of `Fidibus`: if the checksums don't match up, either the original data sources have changed, or the pre-processing procedure has changed.
+  In either case, the data need to be re-examined to determine what the differences are.
+  Often, minor updates to the RefSeq GFF3 file will simply require recomputing the checksum.
+- Finally, provide a brief description of the genome assembly, annotation, and/or source.
+
+You can drop this new YAML file into the `genhub/genomes/` directory, or you can specify an alternate directory with the `--cfgdir` setting.
+
 ### GenomeDB
 
 The `genomedb` module implements a class for retrieving, processing, and managing data files.
 The `GenomeDB` class is abstract, meaning that it defines some behavior shared by several subclasses and is not intended to be instantiated directly.
 Processing that is specific to genomes from a particular source is implemented in various subclasses that extend the base `GenomeDB` class.
 
-- `BeeBase`: this subclass is used for handling genomes listed as "BeeBase Consortium Data" at [HymenopteraBase](http://hymenopteragenome.org/).
-- `CRG`: this subclass is used for handling two genomes published semi-officially to [a web page at the Centre de Regulacio Genomica](http://wasp.crg.eu/).
-  The GenBank and RefSeq FTP sites have since been streamlined, but this class has been kept for sake of reproducibility (the old FlyBase data is still available in the FTP archives).
+- `Am10DB`: this subclass is for the *Apis mellifera* genome, annotation version OGSv1.0.
+- `BeeBaseDB`: this subclass is used for handling genomes listed as "BeeBase Consortium Data" at [HymenopteraBase](http://hymenopteragenome.org/).
+- `CrgDB`: this subclass is used for handling two genomes published semi-officially to [a web page at the Centre de Regulacio Genomica](http://wasp.crg.eu/).
 - `PdomDB`: this subclass is used for handling *Polistes dominula* data which, for much of GenHub's development, has had no formal distribution source.
 - `RefSeqDB`: this subclass is used for handling genomes published in NCBI's RefSeq.
+- `TairDB`: this subclass is for the *Arabidopsis thaliana* genome, version TAIR6.
 
 Genome configurations and the `GenomeDB` classes work closely together: each subclass implements the procedures needed to download and process data from a particular source, and the genome configuration provides details for downloading a specific data set.
 
@@ -98,4 +143,4 @@ In this context, *handling* means managing sequences, parsing annotations, and d
 ### Build script (and other scripts)
 
 The `fidibus` script implements the primary end-user interface to GenHub.
-All other scripts in the `scripts/` directory support this core program and will not be discussed in depth here.
+All other scripts in the `scripts/` directory support this core program and are discussed briefly in the [user manual](MANUAL.md).

@@ -73,7 +73,7 @@ def representatives(db, logstream=sys.stderr):
     specdir = '%s/%s' % (db.workdir, db.label)
     infile = '%s/%s.iloci.gff3' % (specdir, db.label)
     outfile = '%s/%s.ilocus.mrnas.gff3' % (specdir, db.label)
-    mapfile = '%s/%s.ilocus.mrnas.txt' % (specdir, db.label)
+    mapfile = '%s/%s.ilocus.mrnas.tsv' % (specdir, db.label)
     grepproc = subprocess.Popen(['grep', '-v', '\tintron\t', infile],
                                 stdout=subprocess.PIPE,
                                 universal_newlines=True)
@@ -136,10 +136,14 @@ def ancillary(db, logstream=sys.stderr):
     with open(filensfile, 'w') as outstream:
         subprocess.check_call(cmd, stdout=outstream)
 
-    infile = '%s/%s.ilocus.mrnas.txt' % (specdir, db.label)
+    infile = '%s/%s.ilocus.mrnas.tsv' % (specdir, db.label)
     outfile = '%s/%s.mrnas.txt' % (specdir, db.label)
     with open(outfile, 'w') as outstream:
-        subprocess.check_call(['cut', '-f', '2', infile], stdout=outstream)
+        proc1 = subprocess.Popen(['cut', '-f', '2', infile],
+                                 stdout=subprocess.PIPE)
+        proc2 = subprocess.Popen(['tail', '-n', '+2'], stdin=proc1.stdout,
+                                 stdout=outstream)
+        proc2.communicate()
 
 
 # -----------------------------------------------------------------------------
@@ -220,6 +224,6 @@ def test_ancillary():
     testfile = 'testdata/misc/bdis-filens.tsv'
     assert filecmp.cmp(outfile, testfile), 'flanking iLocus length failed'
 
-    outfile = 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.txt'
-    testfile = 'testdata/misc/bdis-ilocus-mrnas.txt'
+    outfile = 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.tsv'
+    testfile = 'testdata/misc/bdis-ilocus-mrnas.tsv'
     assert filecmp.cmp(outfile, testfile), 'iLocus rep cut failed'

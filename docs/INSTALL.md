@@ -31,12 +31,15 @@ The optional packages are only required for the specified features.
 
 - required packages
     - the [GenomeTools library][gt] ([installation instructions][gt-install]), version 1.5.8 or higher
-    - the [AEGeAn Toolkit][agn] ([installation instructions][agn-install]), version 0.15.0 or higher
+    - the [AEGeAn Toolkit][agn] ([installation instructions][agn-install]), version 0.16.0 or higher
+        - be sure to run `make install-scripts` or add AEGeAn's `data/scripts/` directory to your `$PATH` as part of your setup
 - optional packages
     - the [CD-HIT package][cdhit] ([installation instructions][cdhit-install]), tested with version 4.6.4;
       required only for the `cluster` build task
     - the [pandas][pandas] data analysis library ([installation instructions][pandas-install]);
       required only for data summary scripts
+
+If installing from source, you can invoke `make check` from the GenHub root directory to check whether all software prerequisites have been satisfied.
 
 ## Troubleshooting PycURL installation
 
