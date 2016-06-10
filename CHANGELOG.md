@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- A `relax` option to `fidibus` to proceed with prep task despite failed shasum verification.
+
+### Changed
+- Ancillary files `.ilocus.mrnas.txt` and `.protein2ilocus.txt` are not `.tsv` files with headers.
+- Extensive documentation updates.
+
+### Removed
+- Deprecated `genhub-fix-trna.py` script.
+
 ## [0.4.0] - 2016-05-09
 
 ### Changed

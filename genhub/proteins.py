@@ -67,8 +67,9 @@ def mapping(db, logstream=sys.stderr):  # pragma: no cover
 
     specdir = '%s/%s' % (db.workdir, db.label)
     infile = '%s/%s.iloci.gff3' % (specdir, db.label)
-    outfile = '%s/%s.protein2ilocus.txt' % (specdir, db.label)
+    outfile = '%s/%s.protein2ilocus.tsv' % (specdir, db.label)
     with open(infile, 'r') as instream, open(outfile, 'w') as outstream:
+        print('ProteinID', 'piLocusID', sep='\t', file=outstream)
         for protid, ilocusid in db.protein_mapping(instream):
             print(protid, ilocusid, sep='\t', file=outstream)
 
