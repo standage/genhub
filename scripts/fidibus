@@ -39,7 +39,7 @@ def run_build(builddata):
     if 'download' in args.task:
         db.download()
     if 'prep' in args.task:
-        db.prep()
+        db.prep(strict=not args.relax)
     if 'iloci' in args.task:
         genhub.iloci.prepare(db, delta=args.delta, ilcformat=args.format)
     if 'breakdown' in args.task:
@@ -138,6 +138,9 @@ def get_parser():
     lclconf.add_argument('--prot', help='protein sequences in Fasta format')
 
     miscconf = parser.add_argument_group('miscellaneous settings')
+    miscconf.add_argument('-x', '--relax', action='store_true',
+                          help='continue with processing in case of a failed '
+                          'data integrity check during the `prep` task')
     miscconf.add_argument('-f', '--format', metavar='PFX',
                           default='{}ILC-%05lu', help='format for assigning '
                           'serial labels to iLoci; must include the '

@@ -7,7 +7,7 @@ mkdir -p $HOME/local/src $HOME/local/bin $HOME/local/lib $HOME/local/include
 if [ ! -f "$HOME/local/tgz/master.tar.gz" ]; then
     mkdir -p $HOME/local/tgz
     wget -P $HOME/local/tgz http://genometools.org/pub/binary_distributions/gt-1.5.8-Linux_x86_64-64bit-complete.tar.gz
-    wget -P $HOME/local/tgz https://github.com/standage/AEGeAn/archive/master.tar.gz
+    wget -P $HOME/local/tgz https://github.com/BrendelGroup/AEGeAn/archive/master.tar.gz
 fi
 
 # Install GenomeTools

@@ -287,6 +287,19 @@ def test_annot_format():
     testfile = 'testdata/gff3/ncbi-format-ador.gff3'
     assert filecmp.cmp(outfile, testfile), 'Ador annotation formatting failed'
 
+    db.config['checksums']['gff3'] = 'b0gU$h@sH'
+    passed = False
+    try:
+        db.preprocess_gff3(logstream=None, verify=True)
+    except Exception as e:
+        if 'integrity check failed' in str(e):
+            passed = True
+        else:  # pragma: no cover
+            raise e
+    assert passed is True, 'Ador bogus hash validated'
+
+    db.preprocess_gff3(logstream=None, verify=True, strict=False)
+
 
 def test_prot_ncbi():
     """RefSeq: protein pre-processing"""
@@ -343,7 +356,6 @@ def test_cleanup():
     delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
                 'testdata/demo-workdir/Bdis/Bdis.gff3',
                 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
-                'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.txt',
                 'testdata/demo-workdir/Bdis/Bdis.miloci.fa',
                 'testdata/demo-workdir/Bdis/Bdis.mrnas.txt',
                 'testdata/demo-workdir/Bdis/Bdis.simple-iloci.txt',
@@ -353,7 +365,6 @@ def test_cleanup():
     delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
                 'testdata/demo-workdir/Bdis/Bdis.gff3',
                 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
-                'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.txt',
                 'testdata/demo-workdir/Bdis/Bdis.mrnas.txt',
                 'testdata/demo-workdir/Bdis/Bdis.simple-iloci.txt',
                 'testdata/demo-workdir/Bdis/ilens.temp']
@@ -362,14 +373,13 @@ def test_cleanup():
     delfiles = ['testdata/demo-workdir/Bdis/Bdis.gdna.fa',
                 'testdata/demo-workdir/Bdis/Bdis.gff3',
                 'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.gff3',
-                'testdata/demo-workdir/Bdis/Bdis.ilocus.mrnas.txt',
                 'testdata/demo-workdir/Bdis/Bdis.mrnas.txt',
                 'testdata/demo-workdir/Bdis/ilens.temp']
     testfiles = db.cleanup(['.miloci.', 'simple'], False, True)
     assert set(testfiles) == set(delfiles), '%r %r' % (testfiles, delfiles)
 
     db = genhub.test_registry.genome('Vcar', workdir='testdata/demo-workdir')
-    nodelfile = 'testdata/demo-workdir/Vcar/Vcar.protein2ilocus.txt'
+    nodelfile = 'testdata/demo-workdir/Vcar/Vcar.protein2ilocus.tsv'
     testfiles = db.cleanup(None, False, True)
     assert nodelfile not in testfiles, 'incorrectly deleted file'
 
