@@ -3,6 +3,7 @@
 # -----------------------------------------------------------------------------
 # Copyright (c) 2016   Daniel Standage <daniel.standage@gmail.com>
 # Copyright (c) 2016   Indiana University
+# Copyright (C) 2016   The Regents of the University of California.
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -53,25 +54,35 @@ def sequences(db, logstream=sys.stderr):
             genhub.fasta.format(seq, outstream=outstream)
 
 
-def mapping(db, logstream=sys.stderr):  # pragma: no cover
+def mapping(db, only_reps=False, logstream=sys.stderr):
     """
     Retrieve mapping of protein IDs to iLocus IDs.
 
     The `db` variable, a `GenomeDB` object, must implement a `protein_mapping`
     method for this retrieval.
     """
-    if logstream is not None:
+    if logstream is not None: # pragma: no cover
         logmsg = '[GenHub: %s] ' % db.config['species']
         logmsg += 'parsing protein->iLocus mapping'
         print(logmsg, file=logstream)
 
     specdir = '%s/%s' % (db.workdir, db.label)
     infile = '%s/%s.iloci.gff3' % (specdir, db.label)
-    outfile = '%s/%s.protein2ilocus.tsv' % (specdir, db.label)
+    if only_reps:
+        outfile = '%s/%s.protein2ilocus.repr.tsv' % (specdir, db.label)
+        repfile = '%s/%s.protids.txt' % (specdir, db.label)
+        protreps = dict()
+        with open(repfile, 'r') as repstream:
+            for line in repstream:
+                protid = line.strip()
+                protreps[protid] = True
+    else:
+        outfile = '%s/%s.protein2ilocus.tsv' % (specdir, db.label)
     with open(infile, 'r') as instream, open(outfile, 'w') as outstream:
         print('ProteinID', 'piLocusID', sep='\t', file=outstream)
         for protid, ilocusid in db.protein_mapping(instream):
-            print(protid, ilocusid, sep='\t', file=outstream)
+            if not only_reps or protid in protreps:
+                print(protid, ilocusid, sep='\t', file=outstream)
 
 
 # -----------------------------------------------------------------------------
@@ -81,7 +92,8 @@ def mapping(db, logstream=sys.stderr):  # pragma: no cover
 def prepare(db, logstream=sys.stderr):  # pragma: no cover
     ids(db, logstream=logstream)
     sequences(db, logstream=logstream)
-    mapping(db, logstream=logstream)
+    mapping(db, only_reps=False, logstream=logstream)
+    mapping(db, only_reps=True, logstream=logstream)
 
 
 # -----------------------------------------------------------------------------
