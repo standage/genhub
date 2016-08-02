@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - A `relax` option to `fidibus` to proceed with prep task despite failed shasum verification.
+- A spec file for validating iLocus GFF3 files with `gt speck`.
 
 ### Changed
 - Ancillary files `.ilocus.mrnas.txt` and `.protein2ilocus.txt` are not `.tsv` files with headers.
