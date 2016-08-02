@@ -61,7 +61,7 @@ def mapping(db, only_reps=False, logstream=sys.stderr):
     The `db` variable, a `GenomeDB` object, must implement a `protein_mapping`
     method for this retrieval.
     """
-    if logstream is not None: # pragma: no cover
+    if logstream is not None:  # pragma: no cover
         logmsg = '[GenHub: %s] ' % db.config['species']
         logmsg += 'parsing protein->iLocus mapping'
         print(logmsg, file=logstream)
