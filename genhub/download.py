@@ -11,6 +11,7 @@
 
 """Simple module for downloading data with PycURL"""
 
+from __future__ import print_function
 import gzip
 import pycurl
 import sys
