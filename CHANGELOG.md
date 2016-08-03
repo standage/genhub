@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - A `relax` option to `fidibus` to proceed with prep task despite failed shasum verification.
 - The `*.protein2ilocus.repr.tsv` file containing mapping for iLocus representatives only.
+- Better exception handling/reporting for failed downloads.
 
 ### Changed
 - Ancillary files `.ilocus.mrnas.txt` and `.protein2ilocus.txt` are not `.tsv` files with headers.

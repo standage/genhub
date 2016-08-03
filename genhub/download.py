@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015   Indiana University
+# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2015-2016   Indiana University
+# Copyright (c) 2016        The Regents of the University of California
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -12,6 +13,7 @@
 
 import gzip
 import pycurl
+import sys
 
 
 def url_download(urldata, localpath, compress=False, follow=True):
@@ -32,10 +34,14 @@ def url_download(urldata, localpath, compress=False, follow=True):
 
     with openfunc(localpath, 'wb') as out:
         for url in urls:
-            c = pycurl.Curl()
-            c.setopt(c.URL, url)
-            c.setopt(c.WRITEDATA, out)
-            if follow:
-                c.setopt(c.FOLLOWLOCATION, True)
-            c.perform()
-            c.close()
+            try:
+                c = pycurl.Curl()
+                c.setopt(c.URL, url)
+                c.setopt(c.WRITEDATA, out)
+                if follow:
+                    c.setopt(c.FOLLOWLOCATION, True)
+                c.perform()
+                c.close()
+            except pycurl.error as e:
+                print('Error: unable to download URL::', url, file=sys.stderr)
+                raise e
