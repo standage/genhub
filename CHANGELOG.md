@@ -17,7 +17,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - transcript evidence descriptions and other metadata
     - feature types for annotated mobile elements, antisense transcripts, origins of replication, and various other features
     - an update to the *C. elegans* annotation (< 1% gene models affected)
-    - an update to the *D. rerio* annotation (≈ 3% CDSs, ≈ 10% gene models affected)
+    - an update to the *D. rerio* annotation (≈ 3% CDS exons, ≈ 10% all exons affected)
+    - an update to the *M. musculus* annotation (1% CDS exons, 5% of all exons affected)
 
 ### Removed
 - Deprecated `genhub-fix-trna.py` script.
