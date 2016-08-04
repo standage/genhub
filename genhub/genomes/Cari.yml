@@ -12,6 +12,6 @@ Cari:
         - NC_011163.1
     checksums:
         gdna: f014c6e79ada4bc5de256a4415395d3a89f0cb58
-        gff3: 99c9234071f6cda431c0594f70c83a2c49086941
-        prot: 0790bafded1a250f999eb0d835d5d9ea36224fc6
+        gff3: 7cc980985b24102b5bc24afd4970cdbab39305f3
+        prot: 73930e03d405623557902f50d010182e2622e916
     description: Build ASM33114v1 from BGI

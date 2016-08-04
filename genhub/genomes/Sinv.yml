@@ -13,6 +13,6 @@ Sinv:
         - NC_014672.1
     checksums:
         gdna: 85f90adfa3663d5aee9b698b0dc1dac5132e3832
-        gff3: ccbe6bb367bbae90724a3362ec138ee6ebc6934d
+        gff3: e3c7da343eae86d2ab601003caeb62d376015dba
         prot: 34f140008239cc319225e0e4c6a00d345f2b50be
     description: Si_gnG from the University of Lausanne

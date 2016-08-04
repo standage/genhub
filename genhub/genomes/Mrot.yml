@@ -8,6 +8,6 @@ Mrot:
     build: MROT_1.0
     checksums:
         gdna: 94837ed0a2ec223505a5a5d23f391f7afe39ed73
-        gff3: 7d60b8b6e8acbc971d2c4d064bcbdb143f5eaf1a
+        gff3: fdcdac42a01f89febb0b59ff69656a131f64445e
         prot: 0d4275649a842448dadd8525da8bf8636eed4fa6
     description: MROT_1.0 from the University of Maryland
