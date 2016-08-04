@@ -12,7 +12,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Ancillary files `.ilocus.mrnas.txt` and `.protein2ilocus.txt` are not `.tsv` files with headers.
 - Extensive documentation updates.
 - Switched from nose to py.test as the testing framework.
-- Updated checksums for many NCBI annotations to compensate for changes in `##species` pragmas, transcript metadata, and annotations for mobile elements, antisense transcripts, origins of replication, and various other features.
+- Updated checksums for many NCBI annotations to compensate for:
+    - changes in `##species` pragmas
+    - transcript evidence descriptions and other metadata
+    - feature types for annotated mobile elements, antisense transcripts, origins of replication, and various other features
+    - an update to the *C. elegans* annotation (< 1% gene models affected)
+    - an update to the *D. rerio* annotation (≈ 3% CDSs, ≈ 10% gene models affected)
 
 ### Removed
 - Deprecated `genhub-fix-trna.py` script.

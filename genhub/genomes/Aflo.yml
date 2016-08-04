@@ -26,6 +26,6 @@ Aflo:
         - 'GeneID:100868109'
     checksums:
         gdna: cadd39c59a1d5b10c67c78d8c2c3e38a8aa091ae
-        gff3: 25b41c7fb8ec641edac856ab8ad11486d493bf64
+        gff3: 22fe8e1bae43f8c33b57ba4841d112fe11d74c61
         prot: 05b76c748e7a8002894ee48825f3739a4b1a5a1a
     description: Aflo_1.0 from HGSC@Baylor
