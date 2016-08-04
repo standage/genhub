@@ -10,6 +10,6 @@ Bimp:
     build: BIMP_2.0
     checksums:
         gdna: 311bb5a6f3caf75c48b7c83ead6fdcb7b6bbb4a2
-        gff3: 50b2b0dcfcf9e5840417ed2ae3f0f7f9e4e7636a
+        gff3: a7106864ca2eb38b6b5dca800c5c98400df9b216
         prot: b694e018b0c8a5194746e6ac52eca34df0385154
     description: BIMP_2.0 from University of Illinois

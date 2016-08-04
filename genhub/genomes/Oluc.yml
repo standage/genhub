@@ -7,6 +7,6 @@ Oluc:
     build: ASM9206v1
     checksums:
         gdna: 5d1b5aaf55e4bf15d72d701935877641f25afa42
-        gff3: 7697572d693eb6944323a19dacdd3a75250761bc
+        gff3: 071ac022d42f3a742e5c4aa908690b9b5592617f
         prot: 3726074a747deb6732c477f86c36d50ab806418f
     description: ASM9206v1 from JGI

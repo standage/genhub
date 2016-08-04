@@ -8,6 +8,6 @@ Pdom:
     build: Pdom_r1.2
     checksums:
         gdna: 4b2d1859b64bf1c89f480e2ce50c7f8d6e4d83a6
-        gff3: 36258c2afa2211b4d9591c7b9ba16197afe41001
+        gff3: 1bd437794bfdb0a9cda1992d3a559ec2282573ab
         prot: f5e9c384bc182e3e50029ad3fdf2a8f4afbdfd83
     description: Pdom r1.2 from the Toth lab

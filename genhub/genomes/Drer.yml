@@ -12,6 +12,6 @@ Drer:
         - NC_002333.2
     checksums:
         gdna: a94a614ac7592fad2f274c24fc67d7b9ccd5f5b3
-        gff3: 86cfdb01209513bbac6a3a65672cb422ceab0eb1
-        prot: 51ecdf02b022799598ba4770fbb4def25c535bb2
+        gff3: 72eb6a8e69ac772f9ac9f084043a9a6c05e23786
+        prot: ce0857d220b62d68badbe2bdb8823cd83bcf2025
     description: GRCz10 from the Genome Reference Consortium

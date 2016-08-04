@@ -12,6 +12,6 @@ Xtro:
     build: Xtropicalis_v7
     checksums:
         gdna: 4d12fdfc16987669d9ea8c76561b358449dc7f85
-        gff3: dec368cc20869449aaf5fef4d80f7370712b941e
-        prot: a319182a059c90d6bd1453c86762decd4d7a8cfc
+        gff3: fbcbb0e4aa911014ff70b6a8d34c86fe51bdc734
+        prot: da57293d96402a43cf4cebf8d25d9360c258bca9
     description: Xtropicalis_v7 from JGI
