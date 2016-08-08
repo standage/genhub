@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 # Copyright (c) 2016   Daniel Standage <daniel.standage@gmail.com>
 # Copyright (c) 2016   Indiana University
-# Copyright (C) 2016   The Regents of the University of California.
+# Copyright (c) 2016   The Regents of the University of California
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.

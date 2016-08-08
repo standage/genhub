@@ -3,6 +3,7 @@
 # -----------------------------------------------------------------------------
 # Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
 # Copyright (c) 2015-2016   Indiana University
+# Copyright (c) 2016        The Regents of the University of California
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -33,7 +34,8 @@ setuptools.setup(name='genhub',
                           'scripts/genhub-pilocus-summary.py',
                           'scripts/genhub-milocus-summary.py',
                           'scripts/genhub-stats.py',
-                          'scripts/genhub-compact.py'],
+                          'scripts/genhub-compact.py',
+                          'scripts/genhub-monitor-refseq.py'],
                  install_requires=['pyyaml', 'pycurl'],
                  package_data={'genhub': ['genomes/*.yml', 'genomes/*.txt']},
                  classifiers=[
