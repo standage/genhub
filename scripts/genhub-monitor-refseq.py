@@ -78,7 +78,7 @@ class GenomeDBCache(object):
         newfiles = [self.newprefix + '_' + suf for suf in suffixes]
         tempfiles = [self.db.gdnapath, self.db.gff3path, self.db.protpath]
         for cfp, nf, tf in zip(cachefilepatterns, newfiles, tempfiles):
-            cachefiles = glob.glob(cfp)
+            cachefiles = sorted(glob.glob(cfp))
             if len(cachefiles) == 0:
                 message = (
                     'No cachefile for comparison with {tf}; creating new cache'
