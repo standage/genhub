@@ -26,10 +26,14 @@ import genhub
 
 class RefSeqDB(genhub.genomedb.GenomeDB):
 
+    @classmethod
+    def base(self):
+        return 'ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq'
+
     def __init__(self, label, conf, workdir='.'):
         super(RefSeqDB, self).__init__(label, conf, workdir)
 
-        assert self.config['source'] == 'refseq'
+        assert self.config['source'] in ['refseq', 'genbank']
         assert 'branch' in self.config
         assert 'species' in self.config
         assert 'accession' in self.config
@@ -38,8 +42,7 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
         species = self.config['species'].replace(' ', '_')
         self.acc = self.config['accession'] + '_' + self.config['build']
 
-        base = 'ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq'
-        url_parts = [base, self.config['branch'], species,
+        url_parts = [self.base(), self.config['branch'], species,
                      'all_assembly_versions', self.acc]
         self.specbase = '/'.join(url_parts + [self.acc])
         self.format_gdna = self.format_fasta
@@ -92,7 +95,7 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
             excludefile = self.filter_file()
             cmds.append('grep -vf %s' % excludefile.name)
         cmds.append('tidygff3')
-        cmds.append('genhub-format-gff3.py --source refseq -')
+        cmds.append('genhub-format-gff3.py --source %s -' % str(self).lower())
         if 'fixseqreg' in self.config and self.config['fixseqreg'] is True:
             cmds.append('seq-reg.py - %s' % self.gdnafile)  # pragma: no cover
         cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
@@ -176,6 +179,16 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
                     ilocusid = gene2loci[geneid]
                     ilocusname = locusid2name[ilocusid]
                     yield proteinid, ilocusname
+
+
+class GenbankDB(RefSeqDB):
+
+    @classmethod
+    def base(self):
+        return 'ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank'
+
+    def __repr__(self):
+        return 'Genbank'
 
 
 # -----------------------------------------------------------------------------

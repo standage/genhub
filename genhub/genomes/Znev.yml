@@ -1,0 +1,8 @@
+Znev:
+    species: Zootermopsis nevadensis
+    common: dampwood termite
+    source: genbank
+    branch: invertebrate
+    accession: GCA_000696155.1
+    build: ZooNev1.0
+    description: ZooNev 1.0 from BGI

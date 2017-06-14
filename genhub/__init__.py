@@ -57,6 +57,7 @@ except FileNotFoundError:  # pragma: no cover
 
 sources = {
     'refseq': 'NCBI RefSeq',
+    'genbank': 'NCBI Genbank',
     'beebase': 'BeeBase Consortium',
     'crg': 'Wasp/ant genome project (Centro de Regulación Genómica)',
     'pdom': 'Paper wasp genome project (Toth Lab)',
@@ -67,6 +68,7 @@ sources = {
 
 dbtype = {
     'refseq': refseq.RefSeqDB,
+    'genbank': refseq.GenbankDB,
     'beebase': beebase.BeeBaseDB,
     'crg': crg.CrgDB,
     'pdom': pdom.PdomDB,
