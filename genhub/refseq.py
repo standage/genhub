@@ -408,3 +408,10 @@ def test_get_map():
                'XP_002945608.1': 'VcarILC-00004',
                'XP_002945609.1': 'VcarILC-00005'}
     assert mapping == testmap, 'get prot map fail: %r %r' % (testmap, mapping)
+
+
+def test_genbank():
+    """Genbank: smoke test"""
+    db = genhub.test_registry.genome('Znev')
+    assert str(db) == 'Genbank'
+    assert db.base() == 'ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank'
