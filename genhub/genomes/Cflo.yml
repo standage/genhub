@@ -8,6 +8,6 @@ Cflo:
     build: CamFlo_1.0
     checksums:
         gdna: 389d8de5a0a8a43b91ce51d5d9c22cbf5e7b779f
-        gff3: 309f0ad67ce997550ec8fe4a25a27dfdac1d6796
-        prot: dd7443dcbbe7698755a5ddf021f7888301429abe
+        gff3: 48d0ce0eb9919c52d7c3cba61bf972a56b8844ff
+        prot: ebc8f0000580f6841a3c1d82057811896267cb8a
     description: CamFlo_1.0 from BGI-Shenzhen
