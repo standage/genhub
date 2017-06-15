@@ -19,7 +19,6 @@ from . import fasta
 from . import cdhit
 from . import genomedb
 from . import refseq
-from . import beebase
 from . import crg
 from . import hymbase
 from . import tair
@@ -71,7 +70,7 @@ sources = {
 dbtype = {
     'refseq': refseq.RefSeqDB,
     'genbank': refseq.GenbankDB,
-    'beebase': beebase.BeeBaseDB,
+    'beebase': hymbase.BeeBaseDB,
     'crg': crg.CrgDB,
     'hymbase': hymbase.HymBaseDB,
     'pdom': pdom.PdomDB,
