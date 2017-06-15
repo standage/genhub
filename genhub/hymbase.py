@@ -225,6 +225,7 @@ def test_annotation_hymbase():
     assert filecmp.cmp(outfile, testfile), 'Cfhb annotation formatting failed'
 
     db = genhub.test_registry.genome('Sihb', workdir='testdata/demo-workdir')
+    db.preprocess_gdna(logstream=None, verify=False)
     db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Sihb/Sihb.gff3'
     testfile = 'testdata/gff3/hymbase-format-sihb.gff3'
