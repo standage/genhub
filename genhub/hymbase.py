@@ -69,14 +69,15 @@ class HymBaseDB(genhub.genomedb.GenomeDB):
         if 'annotfilter' in self.config:
             excludefile = self.filter_file()
             cmds.append('grep -vf %s' % excludefile.name)
-        cmds.append('grep -v "\tregion\t"')
+        cmds.append("grep -v '\tregion\t'")
+        cmds.append('genhub-uniq.py')
         cmds.append('genhub-namedup.py')
         cmds.append('tidygff3')
         cmds.append('genhub-format-gff3.py --source beebase -')
         cmds.append('seq-reg.py - %s' % self.gdnafile)
         cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
 
-        commands = ' | '.join(cmds)
+        commands =  'bash -o pipefail -c "%s"' % ' | '.join(cmds)
         if debug:  # pragma: no cover
             print('DEBUG: running command: %s' % commands, file=logstream)
         proc = subprocess.Popen(commands, shell=True, universal_newlines=True,
