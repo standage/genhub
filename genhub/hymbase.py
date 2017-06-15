@@ -218,6 +218,7 @@ def test_scaffolds_download():
 def test_annotation_hymbase():
     """HymBase: annotation pre-processing"""
     db = genhub.test_registry.genome('Cfhb', workdir='testdata/demo-workdir')
+    db.preprocess_gdna(logstream=None, verify=False)
     db.preprocess_gff3(logstream=None, verify=False)
     outfile = 'testdata/demo-workdir/Cfhb/Cfhb.gff3'
     testfile = 'testdata/gff3/hymbase-format-cfhb.gff3'
