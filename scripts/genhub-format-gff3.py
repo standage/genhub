@@ -138,6 +138,7 @@ class FeatureFormatter(object):
 
         accmatch = None
         idmatch = None
+        parentaccession = None
         if self.source == 'refseq':
             accmatch = re.search('transcript_id=([^;\n]+)', attributes)
             idmatch = re.search('GeneID:([^;,\n]+)', attributes)
