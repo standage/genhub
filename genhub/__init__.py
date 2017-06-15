@@ -19,8 +19,8 @@ from . import fasta
 from . import cdhit
 from . import genomedb
 from . import refseq
-from . import beebase
 from . import crg
+from . import hymbase
 from . import tair
 from . import generic
 from . import iloci
@@ -60,6 +60,7 @@ sources = {
     'genbank': 'NCBI Genbank',
     'beebase': 'BeeBase Consortium',
     'crg': 'Wasp/ant genome project (Centro de Regulación Genómica)',
+    'hymbase': 'Hymenoptera Genome Database',
     'pdom': 'Paper wasp genome project (Toth Lab)',
     'tair': 'TAIR6 (The Arabidopsis Information Resource)',
     'am10': 'Amel OGSv1.0 (Honeybee Genome Sequencing Consortium)',
@@ -69,8 +70,9 @@ sources = {
 dbtype = {
     'refseq': refseq.RefSeqDB,
     'genbank': refseq.GenbankDB,
-    'beebase': beebase.BeeBaseDB,
+    'beebase': hymbase.BeeBaseDB,
     'crg': crg.CrgDB,
+    'hymbase': hymbase.HymBaseDB,
     'pdom': pdom.PdomDB,
     'tair': tair.TairDB,
     'am10': am10.Am10DB,

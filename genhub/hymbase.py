@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # -----------------------------------------------------------------------------
-# Copyright (c) 2015-2016   Daniel Standage <daniel.standage@gmail.com>
-# Copyright (c) 2015-2016   Indiana University
+# Copyright (c) 2017   Daniel Standage <daniel.standage@gmail.com>
+# Copyright (c) 2017   Regents of the University of California.
 #
 # This file is part of genhub (http://github.com/standage/genhub) and is
 # licensed under the BSD 3-clause license: see LICENSE.txt.
@@ -24,39 +24,40 @@ import sys
 import genhub
 
 
-class BeeBaseDB(genhub.genomedb.GenomeDB):
+class HymBaseDB(genhub.genomedb.GenomeDB):
+
+    def specbase(self):
+        genus = self.config['species'].split()[0].lower()
+        base = 'http://hymenopteragenome.org/drupal/sites/'
+        base += 'hymenopteragenome.org.%s/files/data' % genus
+        return base
 
     def __init__(self, label, conf, workdir='.'):
-        super(BeeBaseDB, self).__init__(label, conf, workdir)
-        assert self.config['source'] == 'beebase'
-        self.specbase = ('http://hymenopteragenome.org/beebase/sites/'
-                         'hymenopteragenome.org.beebase/files/data/'
-                         'consortium_data')
+        super(HymBaseDB, self).__init__(label, conf, workdir)
+        assert self.config['source'] in ['hymbase', 'beebase']
 
     def __repr__(self):
-        return 'BeeBase'
+        return 'HymenopteraBase'
 
     @property
     def gdnaurl(self):
-        return '%s/%s' % (self.specbase, self.gdnafilename)
+        return '%s/%s' % (self.specbase(), self.gdnafilename)
 
     @property
     def gff3url(self):
-        return '%s/%s' % (self.specbase, self.gff3filename)
+        return '%s/%s' % (self.specbase(), self.gff3filename)
 
     @property
     def proturl(self):
-        return '%s/%s' % (self.specbase, self.protfilename)
+        return '%s/%s' % (self.specbase(), self.protfilename)
 
     def format_gdna(self, instream, outstream, logstream=sys.stderr):
-        for line in instream:
-            if line.startswith('>scaffold'):
-                line = line.replace('scaffold', '%sScf_' % self.label)
-            elif line.startswith('>Group'):
-                line = line.replace('Group', '%sGroup' % self.label)
-            print(line, end='', file=outstream)
+        self.format_fasta(instream, outstream, logstream)
 
     def format_prot(self, instream, outstream, logstream=sys.stderr):
+        self.format_fasta(instream, outstream, logstream)
+
+    def format_fasta(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
             if line.startswith('>gnl|'):
                 deflinematch = re.search('>gnl\|[^\|]+\|(\S+)', line)
@@ -68,15 +69,18 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
     def format_gff3(self, logstream=sys.stderr, debug=False):
         cmds = list()
         cmds.append('gunzip -c %s' % self.gff3path)
+        if 'annotfilter' in self.config:
+            excludefile = self.filter_file()
+            cmds.append('grep -vf %s' % excludefile.name)
+        cmds.append("grep -v '\tregion\t'")
+        cmds.append('genhub-uniq.py')
         cmds.append('genhub-namedup.py')
-        cmds.append("sed 's/scaffold/%sScf_/'" % self.label)
-        cmds.append("sed 's/Group/%sGroup/'" % self.label)
         cmds.append('tidygff3')
         cmds.append('genhub-format-gff3.py --source beebase -')
         cmds.append('seq-reg.py - %s' % self.gdnafile)
         cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
 
-        commands = ' | '.join(cmds)
+        commands = 'bash -o pipefail -c "%s"' % ' | '.join(cmds)
         if debug:  # pragma: no cover
             print('DEBUG: running command: %s' % commands, file=logstream)
         proc = subprocess.Popen(commands, shell=True, universal_newlines=True,
@@ -85,7 +89,6 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
         for line in stderr.split('\n'):  # pragma: no cover
             if 'has not been previously introduced' not in line and \
                'does not begin with "##gff-version"' not in line and \
-               'illegal uppercase attribute "Shift"' not in line and \
                'has the wrong phase' not in line and \
                line != '':
                 print(line, file=logstream)
@@ -136,12 +139,118 @@ class BeeBaseDB(genhub.genomedb.GenomeDB):
                 yield protid, locusname
 
 
+class BeeBaseDB(HymBaseDB):
+
+    def specbase(self):
+        return ('http://hymenopteragenome.org/beebase/sites/'
+                'hymenopteragenome.org.beebase/files/data/consortium_data')
+
+    def __init__(self, label, conf, workdir='.'):
+        super(BeeBaseDB, self).__init__(label, conf, workdir)
+        assert self.config['source'] == 'beebase'
+
+    def __repr__(self):
+        return 'BeeBase'
+
+    def format_gdna(self, instream, outstream, logstream=sys.stderr):
+        for line in instream:
+            if line.startswith('>scaffold'):
+                line = line.replace('scaffold', '%sScf_' % self.label)
+            elif line.startswith('>Group'):
+                line = line.replace('Group', '%sGroup' % self.label)
+            print(line, end='', file=outstream)
+
+    def format_prot(self, instream, outstream, logstream=sys.stderr):
+        for line in instream:
+            if line.startswith('>gnl|'):
+                deflinematch = re.search('>gnl\|[^\|]+\|(\S+)', line)
+                assert deflinematch, line
+                protid = deflinematch.group(1)
+                line = line.replace('>', '>%s ' % protid)
+            print(line, end='', file=outstream)
+
+    def format_gff3(self, logstream=sys.stderr, debug=False):
+        cmds = list()
+        cmds.append('gunzip -c %s' % self.gff3path)
+        cmds.append('genhub-namedup.py')
+        cmds.append("sed 's/scaffold/%sScf_/'" % self.label)
+        cmds.append("sed 's/Group/%sGroup/'" % self.label)
+        cmds.append('tidygff3')
+        cmds.append('genhub-format-gff3.py --source beebase -')
+        cmds.append('seq-reg.py - %s' % self.gdnafile)
+        cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
+
+        commands = 'bash -o pipefail -c "%s"' % ' | '.join(cmds)
+        if debug:  # pragma: no cover
+            print('DEBUG: running command: %s' % commands, file=logstream)
+        proc = subprocess.Popen(commands, shell=True, universal_newlines=True,
+                                stderr=subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+        for line in stderr.split('\n'):  # pragma: no cover
+            if 'has not been previously introduced' not in line and \
+               'does not begin with "##gff-version"' not in line and \
+               'illegal uppercase attribute "Shift"' not in line and \
+               'has the wrong phase' not in line and \
+               line != '':
+                print(line, file=logstream)
+        assert proc.returncode == 0, \
+            'annot cleanup command failed: %s' % commands
+
+
 # -----------------------------------------------------------------------------
 # Unit tests
 # -----------------------------------------------------------------------------
 
 
 def test_scaffolds_download():
+    """HymBase: scaffolds download"""
+    cfdb = genhub.test_registry.genome('Cfhb')
+    testurl = ('http://hymenopteragenome.org/drupal/sites/hymenopteragenome.'
+               'org.camponotus/files/data/Cflo_3.3_scaffolds.fa.gz')
+    testpath = './Cfhb/Cflo_3.3_scaffolds.fa.gz'
+    assert cfdb.gdnaurl == testurl, \
+        'scaffold URL mismatch\n%s\n%s' % (cfdb.gdnaurl, testurl)
+    assert cfdb.gdnapath == testpath, \
+        'scaffold path mismatch\n%s\n%s' % (cfdb.gdnapath, testpath)
+    assert '%r' % cfdb == 'HymenopteraBase'
+
+
+def test_annotation_hymbase():
+    """HymBase: annotation pre-processing"""
+    db = genhub.test_registry.genome('Cfhb', workdir='testdata/demo-workdir')
+    db.preprocess_gdna(logstream=None, verify=False)
+    db.preprocess_gff3(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Cfhb/Cfhb.gff3'
+    testfile = 'testdata/gff3/hymbase-format-cfhb.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Cfhb annotation formatting failed'
+
+    db = genhub.test_registry.genome('Sihb', workdir='testdata/demo-workdir')
+    db.preprocess_gdna(logstream=None, verify=False)
+    db.preprocess_gff3(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Sihb/Sihb.gff3'
+    testfile = 'testdata/gff3/hymbase-format-sihb.gff3'
+    assert filecmp.cmp(outfile, testfile), 'Sihb annotation formatting failed'
+
+
+def test_gdna_format_hymbase():
+    """HymBase: gDNA pre-processing"""
+    db = genhub.test_registry.genome('Sihb', workdir='testdata/demo-workdir')
+    db.preprocess_gdna(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Sihb/Sihb.gdna.fa'
+    testoutfile = 'testdata/fasta/hymbase-format-sihb.fa'
+    assert filecmp.cmp(testoutfile, outfile), 'Sihb gDNA formatting failed'
+
+
+def test_proteins_hymbase():
+    """HymBase: protein pre-processing"""
+    db = genhub.test_registry.genome('Sihb', workdir='testdata/demo-workdir')
+    db.preprocess_prot(logstream=None, verify=False)
+    outfile = 'testdata/demo-workdir/Sihb/Sihb.all.prot.fa'
+    testoutfile = 'testdata/fasta/hymbase-format-Sihb-prot.fa'
+    assert filecmp.cmp(testoutfile, outfile), 'Sihb protein formatting failed'
+
+
+def test_scaffolds_download_beebase():
     """BeeBase: scaffolds download"""
     emex_db = genhub.test_registry.genome('Emex')
     testurl = ('http://hymenopteragenome.org/beebase/sites/'
