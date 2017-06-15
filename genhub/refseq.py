@@ -100,7 +100,7 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
             cmds.append('seq-reg.py - %s' % self.gdnafile)  # pragma: no cover
         cmds.append('gt gff3 -sort -tidy -o %s -force' % self.gff3file)
 
-        commands = ' | '.join(cmds)
+        commands = 'bash -o pipefail -c "%s"' % ' | '.join(cmds)
         if debug:  # pragma: no cover
             print('DEBUG: running command: %s' % commands, file=logstream)
         proc = subprocess.Popen(commands, shell=True, universal_newlines=True,
