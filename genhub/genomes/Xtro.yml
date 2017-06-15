@@ -11,7 +11,7 @@ Xtro:
         - NC_006839.1
     build: Xtropicalis_v7
     checksums:
-        gdna: 4d12fdfc16987669d9ea8c76561b358449dc7f85
+        gdna: d22165e97b9f73700504db02f7862ad9ab98ebca
         gff3: fbcbb0e4aa911014ff70b6a8d34c86fe51bdc734
-        prot: da57293d96402a43cf4cebf8d25d9360c258bca9
+        prot: 269ab00ef8872f8a5e78bd39eec5a00d2f101ba1
     description: Xtropicalis_v7 from JGI

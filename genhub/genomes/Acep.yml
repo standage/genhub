@@ -8,6 +8,6 @@ Acep:
     build: Attacep1.0
     checksums:
         gdna: 473902070fe165f0f8a8e5a64edf2509b11af72b
-        gff3: 49f73b8aa9cae062a9c0626df03a149ba7fc8261
+        gff3: e9c8bf76fde17be8d1cddcb34617cb243ae448be
         prot: 0f8685aff6f2b6b7fdb961182c743330bd5bbec4
     description: AttaCep1.0 from WashU GSC
