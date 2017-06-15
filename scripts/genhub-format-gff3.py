@@ -132,9 +132,13 @@ class FeatureFormatter(object):
 
         ftype = fields[2]
         attributes = fields[8]
-        if ftype not in ['mRNA', 'tRNA', 'rRNA', 'ncRNA', 'miRNA', 'snRNA',
-                         'snoRNA', 'lnc_RNA', 'transcript',
-                         'primary_transcript']:
+        ttypes = [
+            'mRNA', 'tRNA', 'rRNA', 'transcript', 'primary_transcript',
+            'ncRNA', 'miRNA', 'snRNA', 'snoRNA', 'lnc_RNA', 'SRP_RNA',
+            'antisense_RNA', 'RNase_P_RNA', 'telomerase_RNA', 'piRNA',
+            'RNase_MRP_RNA'
+        ]
+        if ftype not in ttypes:
             return line
 
         accmatch = None
