@@ -102,7 +102,7 @@ class FeatureFormatter(object):
             accmatch = re.search('GeneID:([^;,\n]+)', line)
         elif self.source == 'crg':
             accmatch = re.search('ID=([^;\n]+)', line)
-        elif self.source in ['pdom', 'tair', 'beebase']:
+        elif self.source in ['genbank', 'pdom', 'tair', 'beebase']:
             accmatch = re.search('Name=([^;\n]+)', line)
         elif self.source == 'local':
             accmatch = re.search('accession=([^;\n]+)', attributes)
@@ -141,6 +141,9 @@ class FeatureFormatter(object):
         if self.source == 'refseq':
             accmatch = re.search('transcript_id=([^;\n]+)', attributes)
             idmatch = re.search('GeneID:([^;,\n]+)', attributes)
+        elif self.source == 'genbank':
+            parentid = re.search('Parent=([^;\n]+)', attributes).group(1)
+            parentaccession = self.id2acc[parentid]
         elif self.source in ['crg', 'pdom']:
             accmatch = re.search('ID=([^;\n]+)', attributes)
         elif self.source in ['beebase', 'tair', 'am10']:
@@ -153,10 +156,12 @@ class FeatureFormatter(object):
                 accmatch = re.search('Name=([^;\n]+)', attributes)
         else:
             pass
-        assert accmatch or idmatch, \
+        assert accmatch or idmatch or parentaccession, \
             'unable to parse transcript accession: %s' % line
         if accmatch:
             accession = accmatch.group(1)
+        elif parentaccession:
+            accession = '{}.{}'.format(parentaccession, ftype)
         else:
             accession = '%s:%s' % (idmatch.group(1), ftype)
 
