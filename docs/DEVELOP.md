@@ -3,7 +3,7 @@ GenHub Development
 
 ## Introduction
 
-As of yet, GenHub development has essentially been a one-man show.
+As of yet, GenHub development has essentially been a one-man show (with substantial non-technical contributions from colleagues).
 Early versions of this software were written in support of a specific research project.
 As the needs of that project and related projects grew, the need for more robust software (and concomitantly a more robust development process) emerged.
 GenHub in its current incarnation is a more generalized and sturdy solution to those original research problems.
@@ -30,7 +30,7 @@ Additional Python modules are required for GenHub development: `pytest` and `cov
 
 ### Distribution
 
-The source code, test data, and other supporting files have been organized to facilitate GenHub's distribution as a [Python package](https://docs.python.org/3/tutorial/modules.html#packages).
+The source code, test data, and other supporting files have been organized to facilitate GenHub's distribution as a [Python package](https://docs.python.org/3/tutorial/modules.html#packages) on [PyPI](https://pypi.python.org/pypi).
 When installed on a user's system, the core GenHub modules and scripts are copied to a dedicated location where they can be found by Python and the user's `PATH`, respectively.
 
 ## Getting started
@@ -111,10 +111,10 @@ The `GenomeDB` class is abstract, meaning that it defines some behavior shared b
 Processing that is specific to genomes from a particular source is implemented in various subclasses that extend the base `GenomeDB` class.
 
 - `Am10DB`: this subclass is for the *Apis mellifera* genome, annotation version OGSv1.0.
-- `BeeBaseDB`: this subclass is used for handling genomes listed as "BeeBase Consortium Data" at [HymenopteraBase](http://hymenopteragenome.org/).
+- `HymBaseDB`: this subclass is used for handling genomes from the Hymenoptera Genome Database, with a dedicated subsubclass for genomes listed as "BeeBase Consortium Data" at [HymenopteraBase](http://hymenopteragenome.org/).
 - `CrgDB`: this subclass is used for handling two genomes published semi-officially to [a web page at the Centre de Regulacio Genomica](http://wasp.crg.eu/).
 - `PdomDB`: this subclass is used for handling *Polistes dominula* data which, for much of GenHub's development, has had no formal distribution source.
-- `RefSeqDB`: this subclass is used for handling genomes published in NCBI's RefSeq.
+- `RefSeqDB`: this subclass is used for handling genomes published in NCBI's RefSeq and Genbank databases.
 - `TairDB`: this subclass is for the *Arabidopsis thaliana* genome, version TAIR6.
 
 Genome configurations and the `GenomeDB` classes work closely together: each subclass implements the procedures needed to download and process data from a particular source, and the genome configuration provides details for downloading a specific data set.

@@ -19,8 +19,16 @@ cd genhub-x.y.z
 python setup.py install
 ```
 
-Either of these methods will also install the `pyyaml` and `pycurl` dependencies.
+To install the latest unreleased version, pip can install directly from GitHub.
+
+```bash
+pip install git+https://github.com/standage/genhub.git
+```
+
+All of these methods will also automatically install the `pyyaml` and `pycurl` dependencies.
 See below if you have trouble installing `pycurl` in a virtual environment.
+
+
 
 ## External software
 
