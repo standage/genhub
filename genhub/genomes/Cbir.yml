@@ -8,6 +8,6 @@ Cbir:
     build: CerBir1.0
     checksums:
         gdna: c175569906b4e7d92c011e11ec4300cf7db29dda
-        gff3: a47c65f9a6fbbcabc1c8e3aa8b98a8b6498c056b
-        prot: b70ac88d8599118a4fe9693d405ffa4979ca3f3f
+        gff3: 7cb635048655ae0e4127104d014e7dc4a441153c
+        prot: a8cb222d8bf48c6759e843071308519a719392a1
     description: CerBir1.0 from BGI-Shenzhen
