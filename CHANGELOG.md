@@ -8,12 +8,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - A `relax` option to `fidibus` to proceed with prep task despite failed shasum verification.
 - The `*.protein2ilocus.repr.tsv` file containing mapping for iLocus representatives only.
 - Better exception handling/reporting for failed downloads.
+- Reference genome configurations for *Zootermopsis nevadensis* (in support of the BWASP project) and *Orchesella cincta* (as additional proof-of-concept).
+- Support for all Genbank genomes, not just those within RefSeq.
+- Restored support for HymenopteraBase versions of several ant genomes.
 
 ### Changed
 - Ancillary files `.ilocus.mrnas.txt` and `.protein2ilocus.txt` are not `.tsv` files with headers.
 - Extensive documentation updates.
 - Switched from nose to py.test as the testing framework.
-- Updated checksums for many NCBI annotations to compensate for:
+- Updated checksums for many NCBI annotations to compensate for, among other things:
     - changes in `##species` pragmas
     - transcript evidence descriptions and other metadata
     - feature types for annotated mobile elements, antisense transcripts, origins of replication, and various other features
