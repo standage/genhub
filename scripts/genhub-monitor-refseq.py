@@ -112,6 +112,8 @@ def main(args):
         db = registry.genome(label, workdir=args.work)
         if 'source' not in db.config or db.config['source'] != 'refseq':
             continue
+        if 'known_failing' in db.config:
+            continue
 
         db.download()
         cache = GenomeDBCache(db, tempdir=args.work, cachedir=args.cache)

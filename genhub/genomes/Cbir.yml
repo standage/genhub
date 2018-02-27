@@ -11,3 +11,4 @@ Cbir:
         gff3: 7cb635048655ae0e4127104d014e7dc4a441153c
         prot: a8cb222d8bf48c6759e843071308519a719392a1
     description: CerBir1.0 from BGI-Shenzhen
+    known_failing: 'missing'
