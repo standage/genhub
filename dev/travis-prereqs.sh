@@ -14,6 +14,7 @@ fi
 gtdir="$HOME/local/src/gt-1.5.10-Linux_x86_64-64bit-complete"
 tar -xzf $HOME/local/tgz/gt-1.5.10-Linux_x86_64-64bit-complete.tar.gz --directory $HOME/local/src
 cp -r $gtdir/bin/* $HOME/local/bin/
+cp -r $gtdir/gtdata/ $HOME/local/bin/gtdata/
 cp -r $gtdir/include/genometools $HOME/local/include/
 cp -r $gtdir/lib/* $HOME/local/lib/
 
