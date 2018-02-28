@@ -134,7 +134,7 @@ class FeatureFormatter(object):
         attributes = fields[8]
         ttypes = [
             'mRNA', 'tRNA', 'rRNA', 'transcript', 'primary_transcript',
-            'ncRNA', 'miRNA', 'snRNA', 'snoRNA', 'lnc_RNA', 'SRP_RNA',
+            'ncRNA', 'miRNA', 'snRNA', 'snoRNA', 'lnc_RNA', 'scRNA', 'SRP_RNA',
             'antisense_RNA', 'RNase_P_RNA', 'telomerase_RNA', 'piRNA',
             'RNase_MRP_RNA'
         ]
