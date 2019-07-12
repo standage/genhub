@@ -91,7 +91,7 @@ class Registry(object):
         """
         if isinstance(config, str):
             config = open(config, 'r')
-        return yaml.load(config)
+        return yaml.safe_load(config)
 
     def parse_batch_config(self, config):
         """
