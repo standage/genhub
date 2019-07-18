@@ -57,9 +57,11 @@ def exon_sequences(db, logstream=sys.stderr):
 
 
 def parse_intron_accessions(instream):
-    moltypes = ['mRNA', 'tRNA', 'ncRNA', 'transcript', 'primary_transcript',
-                'V_gene_segment', 'D_gene_segment', 'J_gene_segment',
-                'C_gene_segment']
+    moltypes = [
+        'mRNA', 'tRNA', 'ncRNA', 'transcript', 'primary_transcript',
+        'guide_RNA', 'V_gene_segment', 'D_gene_segment', 'J_gene_segment',
+        'C_gene_segment'
+    ]
     id_to_accession = dict()
     for line in instream:
         line = line.rstrip()

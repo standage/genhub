@@ -90,7 +90,7 @@ class CrgDB(genhub.genomedb.GenomeDB):
         for line in instream:
             if '\tCDS\t' not in line:
                 continue
-            idmatch = re.search('Target=(\S+)', line)
+            idmatch = re.search(r'Target=(\S+)', line)
             assert idmatch, 'cannot parse protein_id: ' + line
             protid = idmatch.group(1)
             if protid not in protids:
@@ -110,27 +110,27 @@ class CrgDB(genhub.genomedb.GenomeDB):
             attrs = fields[8]
 
             if feattype == 'locus':
-                idmatch = re.search('ID=([^;\n]+);.*Name=([^;\n]+)', attrs)
+                idmatch = re.search(r'ID=([^;\n]+);.*Name=([^;\n]+)', attrs)
                 if idmatch:
                     locusid = idmatch.group(1)
                     locusname = idmatch.group(2)
                     locusid2name[locusid] = locusname
             elif feattype == 'gene':
-                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                idmatch = re.search(r'ID=([^;\n]+);Parent=([^;\n]+)', attrs)
                 assert idmatch, \
                     'Unable to parse gene and iLocus IDs: %s' % attrs
                 geneid = idmatch.group(1)
                 ilocusid = idmatch.group(2)
                 gene2loci[geneid] = ilocusid
             elif feattype == 'mRNA':
-                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                idmatch = re.search(r'ID=([^;\n]+);Parent=([^;\n]+)', attrs)
                 assert idmatch, \
                     'Unable to parse mRNA and gene IDs: %s' % attrs
                 mrnaid = idmatch.group(1)
                 geneid = idmatch.group(2)
                 mrna2gene[mrnaid] = geneid
             elif feattype == 'CDS':
-                idmatch = re.search('Parent=([^;\n]+).*Target=(\S+)', attrs)
+                idmatch = re.search(r'Parent=([^;\n]+).*Target=(\S+)', attrs)
                 assert idmatch, \
                     'Unable to parse protein and mRNA IDs: %s' % attrs
                 mrnaid = idmatch.group(1)

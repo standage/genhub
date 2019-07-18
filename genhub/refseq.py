@@ -28,7 +28,7 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
 
     @classmethod
     def base(self):
-        return 'ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq'
+        return 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq'
 
     def __init__(self, label, conf, workdir='.'):
         super(RefSeqDB, self).__init__(label, conf, workdir)
@@ -42,9 +42,12 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
         species = self.config['species'].replace(' ', '_')
         self.acc = self.config['accession'] + '_' + self.config['build']
 
-        url_parts = [self.base(), self.config['branch'], species,
-                     'all_assembly_versions', self.acc]
-        self.specbase = '/'.join(url_parts + [self.acc])
+        pathbase = [self.config['branch'], species, 'all_assembly_versions']
+        if 'suppressed' in self.config and self.config['suppressed'] is True:
+            pathbase.append('suppressed')
+        pathbase.extend([self.acc, self.acc])
+        self.specbase = '/'.join(pathbase)
+        self.urlbase = '/'.join([self.base()] + pathbase)
         self.format_gdna = self.format_fasta
         self.format_prot = self.format_fasta
 
@@ -65,15 +68,28 @@ class RefSeqDB(genhub.genomedb.GenomeDB):
 
     @property
     def gdnaurl(self):
-        return '%s_genomic.fna.gz' % self.specbase
+        return '%s_genomic.fna.gz' % self.urlbase
 
     @property
     def gff3url(self):
-        return '%s_genomic.gff.gz' % self.specbase
+        return '%s_genomic.gff.gz' % self.urlbase
 
     @property
     def proturl(self):
-        return '%s_protein.faa.gz' % self.specbase
+        return '%s_protein.faa.gz' % self.urlbase
+
+    def download(self, localpath=None, logstream=sys.stderr):  # pragma: no cover  # noqa
+        """Override the download task to enable connection to local mirrors."""
+        if localpath is None:
+            super(RefSeqDB, self).download(logstream=logstream)
+        else:
+            subprocess.call(['mkdir', '-p', self.dbdir])
+            asmblpath = '/'.join(localpath, specbase, '_genomic.fna.gz')
+            annotpath = '/'.join(localpath, specbase, '_genomic.gff.gz')
+            protpath = '/'.join(localpath, specbase, '_protein.faa.gz')
+            copy_file(asmblpath, self.gdnafilename)
+            copy_file(annotpath, self.gff3filename)
+            copy_file(protpath, self.protfilename)
 
     def format_fasta(self, instream, outstream, logstream=sys.stderr):
         for defline, sequence in genhub.fasta.parse(instream):
@@ -185,7 +201,7 @@ class GenbankDB(RefSeqDB):
 
     @classmethod
     def base(self):
-        return 'ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank'
+        return 'https://ftp.ncbi.nlm.nih.gov/genomes/genbank'
 
     def __repr__(self):
         return 'Genbank'
@@ -199,7 +215,7 @@ class GenbankDB(RefSeqDB):
 def test_genome_download():
     """RefSeq: gDNA download"""
     ador_db = genhub.test_registry.genome('Ador')
-    testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
+    testurl = ('https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
                'GCF_000469605.1_Apis_dorsata_1.3_genomic.fna.gz')
@@ -212,8 +228,8 @@ def test_genome_download():
     assert ador_db.compress_gdna is False
 
     amel_db = genhub.test_registry.genome('Amel')
-    testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
-               'Apis_mellifera/all_assembly_versions/'
+    testurl = ('https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
+               'Apis_mellifera/all_assembly_versions/suppressed/'
                'GCF_000002195.4_Amel_4.5/'
                'GCF_000002195.4_Amel_4.5_genomic.fna.gz')
     testpath = './Amel/GCF_000002195.4_Amel_4.5_genomic.fna.gz'
@@ -227,7 +243,7 @@ def test_genome_download():
 def test_annot_download():
     """RefSeq: annotation download"""
     ador_db = genhub.test_registry.genome('Ador')
-    testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
+    testurl = ('https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
                'GCF_000469605.1_Apis_dorsata_1.3_genomic.gff.gz')
@@ -242,7 +258,7 @@ def test_annot_download():
 def test_proteins_download():
     """RefSeq: protein download"""
     db = genhub.test_registry.genome('Ador', workdir='/home/gandalf/HymHub')
-    testurl = ('ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
+    testurl = ('https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/'
                'Apis_dorsata/all_assembly_versions/'
                'GCF_000469605.1_Apis_dorsata_1.3/'
                'GCF_000469605.1_Apis_dorsata_1.3_protein.faa.gz')
@@ -414,4 +430,4 @@ def test_genbank():
     """Genbank: smoke test"""
     db = genhub.test_registry.genome('Znev')
     assert str(db) == 'Genbank'
-    assert db.base() == 'ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank'
+    assert db.base() == 'https://ftp.ncbi.nlm.nih.gov/genomes/genbank'

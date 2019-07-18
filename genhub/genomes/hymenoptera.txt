@@ -5,7 +5,6 @@ Aflo
 Amel
 Bimp
 Bter
-Cbir
 Cflo
 Dnov
 Dqua
@@ -17,6 +16,7 @@ Lhum
 Mqua
 Mrot
 Nvit
+Obir
 Pbar
 Pcan
 Pdom

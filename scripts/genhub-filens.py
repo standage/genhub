@@ -19,9 +19,9 @@ parser.add_argument('gff3', type=argparse.FileType('r'), default=sys.stdin)
 args = parser.parse_args()
 
 for line in args.gff3:
-    liilmatch = re.search('liil=(\d+)', line)
-    riilmatch = re.search('riil=(\d+)', line)
-    namematch = re.search('Name=([^;\n]+)', line)
+    liilmatch = re.search(r'liil=(\d+)', line)
+    riilmatch = re.search(r'riil=(\d+)', line)
+    namematch = re.search(r'Name=([^;\n]+)', line)
     if not liilmatch or not riilmatch:
         continue
 

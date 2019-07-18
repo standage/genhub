@@ -60,7 +60,7 @@ class HymBaseDB(genhub.genomedb.GenomeDB):
     def format_fasta(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
             if line.startswith('>gnl|'):
-                deflinematch = re.search('>gnl\|[^\|]+\|(\S+)', line)
+                deflinematch = re.search(r'>gnl\|[^\|]+\|(\S+)', line)
                 assert deflinematch, line
                 protid = deflinematch.group(1)
                 line = line.replace('>', '>%s ' % protid)
@@ -99,7 +99,7 @@ class HymBaseDB(genhub.genomedb.GenomeDB):
         for line in instream:
             if '\tmRNA\t' not in line:
                 continue
-            namematch = re.search('Name=([^;\n]+)', line)
+            namematch = re.search(r'Name=([^;\n]+)', line)
             assert namematch, 'cannot parse mRNA name: ' + line
             protid = namematch.group(1).replace('-RA', '-PA')
             yield protid
@@ -115,13 +115,13 @@ class HymBaseDB(genhub.genomedb.GenomeDB):
             attrs = fields[8]
 
             if feattype == 'locus':
-                idmatch = re.search('ID=([^;\n]+);.*Name=([^;\n]+)', attrs)
+                idmatch = re.search(r'ID=([^;\n]+);.*Name=([^;\n]+)', attrs)
                 if idmatch:
                     locusid = idmatch.group(1)
                     locusname = idmatch.group(2)
                     locusid2name[locusid] = locusname
             elif feattype == 'gene':
-                idmatch = re.search('ID=([^;\n]+);Parent=([^;\n]+)', attrs)
+                idmatch = re.search(r'ID=([^;\n]+);Parent=([^;\n]+)', attrs)
                 assert idmatch, \
                     'Unable to parse gene and iLocus IDs: %s' % attrs
                 geneid = idmatch.group(1)
@@ -163,7 +163,7 @@ class BeeBaseDB(HymBaseDB):
     def format_prot(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
             if line.startswith('>gnl|'):
-                deflinematch = re.search('>gnl\|[^\|]+\|(\S+)', line)
+                deflinematch = re.search(r'>gnl\|[^\|]+\|(\S+)', line)
                 assert deflinematch, line
                 protid = deflinematch.group(1)
                 line = line.replace('>', '>%s ' % protid)

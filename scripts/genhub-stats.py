@@ -87,7 +87,7 @@ def ilocus_desc(gff3, fasta, miloci=False):
         if miloci:
             locuspos = 'locus:%s.' % locuspos
         locusid = locuspos
-        locusidmatch = re.search('Name=([^;\n]+)', fields[8])
+        locusidmatch = re.search(r'Name=([^;\n]+)', fields[8])
         if locusidmatch:
             locusid = locusidmatch.group(1)
         locuslen = int(fields[4]) - int(fields[3]) + 1
@@ -99,23 +99,23 @@ def ilocus_desc(gff3, fasta, miloci=False):
         gcskew = gc_skew(locusseq)
         ncontent = n_content(locusseq)
 
-        classmatch = re.search('iLocus_type=([^;\n]+)', fields[8])
+        classmatch = re.search(r'iLocus_type=([^;\n]+)', fields[8])
         assert(classmatch), fields[8]
         locusclass = classmatch.group(1)
         genecount = 0
         attrs = fields[8]
         unannot = 'unannot=true' in attrs
         efflen = 0
-        efflenmatch = re.search('effective_length=(\d+)', attrs)
+        efflenmatch = re.search(r'effective_length=(\d+)', attrs)
         if efflenmatch:
             efflen = int(efflenmatch.group(1))
         if 'gene=' in attrs:
             locustype = 'gene'
-            gmatch = re.search('gene=(\d+)', attrs)
+            gmatch = re.search(r'gene=(\d+)', attrs)
             assert gmatch
             genecount = int(gmatch.group(1))
         orient = 'NA'
-        orientmatch = re.search('fg_orient=(..)', attrs)
+        orientmatch = re.search(r'fg_orient=(..)', attrs)
         if orientmatch:
             orient = orientmatch.group(1)
         values = '%s %s %s %d %d %.3f %.3f %.3f %s %d %r %s' % (
@@ -148,7 +148,7 @@ def premrna_desc(gff3, fasta):
         if '\tmRNA\t' in entry:
             fields = entry.rstrip().split('\t')
             assert len(fields) == 9
-            mrnaacc = re.search('accession=([^;\n]+)', fields[8]).group(1)
+            mrnaacc = re.search(r'accession=([^;\n]+)', fields[8]).group(1)
             mrnalen = int(fields[4]) - int(fields[3]) + 1
             mrnaseq = seqs[mrnaacc]
             if len(mrnaseq) != mrnalen:
@@ -208,7 +208,7 @@ def mrna_desc(gff3, fasta):
             fields = entry.rstrip().split('\t')
             assert len(fields) == 9
             mrnalen += int(fields[4]) - int(fields[3]) + 1
-            accmatch = re.search('accession=([^;\n]+)', fields[8])
+            accmatch = re.search(r'accession=([^;\n]+)', fields[8])
             assert accmatch, 'Unable to parse mRNA accession: %s' % fields[8]
             mrnaacc = accmatch.group(1)
         elif entry.startswith('###'):
@@ -246,7 +246,7 @@ def cds_desc(gff3, fasta):
         if '\tCDS\t' in entry:
             fields = entry.rstrip().split('\t')
             assert len(fields) == 9
-            accession = re.search('accession=([^;\n]+)', fields[8]).group(1)
+            accession = re.search(r'accession=([^;\n]+)', fields[8]).group(1)
             cdslen += int(fields[4]) - int(fields[3]) + 1
         elif entry.startswith('###'):
             if accession:
@@ -352,8 +352,8 @@ def exon_desc(gff3, fasta):
     for entry in gff3:
         for moltype in moltypes:
             if ('\t%s\t' % moltype) in entry:
-                accession = re.search('accession=([^;\n]+)', entry).group(1)
-                tid = re.search('ID=([^;\n]+)', entry).group(1)
+                accession = re.search(r'accession=([^;\n]+)', entry).group(1)
+                tid = re.search(r'ID=([^;\n]+)', entry).group(1)
                 rnaid_to_accession[tid] = accession
 
         if '\texon\t' in entry:
@@ -383,7 +383,7 @@ def exon_desc(gff3, fasta):
                 fields = exon.split('\t')
                 assert len(
                     fields) == 9, 'entry does not have 9 fields: %s' % exon
-                mrnaid = re.search('Parent=([^;\n]+)', fields[8]).group(1)
+                mrnaid = re.search(r'Parent=([^;\n]+)', fields[8]).group(1)
                 exonpos = '%s_%s-%s%s' % (fields[0],
                                           fields[3], fields[4], fields[6])
                 if exonpos in reported_exons:
@@ -466,7 +466,7 @@ def intron_desc(gff3, fasta):
     start, stop = None, None
     for entry in gff3:
         if '\tmRNA\t' in entry:
-            mrnaid = re.search('accession=([^;\n]+)', entry).group(1)
+            mrnaid = re.search(r'accession=([^;\n]+)', entry).group(1)
         elif '\tintron\t' in entry:
             introns.append(entry)
         elif '\tstart_codon\t' in entry:
@@ -504,6 +504,7 @@ def intron_desc(gff3, fasta):
             mrnaid = None
             introns = []
             start, stop = None, None
+
 
 if __name__ == '__main__':
     desc = 'Calculate descriptive statistics of genome features'

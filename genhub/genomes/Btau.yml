@@ -2,6 +2,7 @@ Btau:
     species: Bos taurus
     common: cattle
     source: refseq
+    suppressed: True
     branch: vertebrate_mammalian
     accession: GCF_000003055.6
     build: Bos_taurus_UMD_3.1.1

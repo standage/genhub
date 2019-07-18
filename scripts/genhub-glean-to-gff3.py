@@ -19,7 +19,7 @@ for line in sys.stdin:
     assert ftype in ['mRNA', 'CDS']
 
     attrstring = fields[8]
-    protmatch = re.search('GenePrediction (\S+)', attrstring)
+    protmatch = re.search(r'GenePrediction (\S+)', attrstring)
     assert protmatch, line
     protid = protmatch.group(1)
     featid = protid

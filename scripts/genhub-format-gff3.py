@@ -50,7 +50,7 @@ class FeatureFormatter(object):
 
         ftype = fields[2]
         attributes = fields[8]
-        idmatch = re.search('ID=([^;\n]+)', attributes)
+        idmatch = re.search(r'ID=([^;\n]+)', attributes)
         if idmatch:
             featureid = idmatch.group(1)
             self.id2type[featureid] = ftype
@@ -79,7 +79,7 @@ class FeatureFormatter(object):
         if ftype != 'CDS':
             return False
 
-        parentmatch = re.search('Parent=([^;\n]+)', attributes)
+        parentmatch = re.search(r'Parent=([^;\n]+)', attributes)
         assert parentmatch, attributes
         parentid = parentmatch.group(1)
         if self.id2type[parentid] == 'pseudogene':
@@ -99,21 +99,21 @@ class FeatureFormatter(object):
 
         accmatch = None
         if self.source == 'refseq':
-            accmatch = re.search('GeneID:([^;,\n]+)', line)
+            accmatch = re.search(r'GeneID:([^;,\n]+)', line)
         elif self.source == 'crg':
-            accmatch = re.search('ID=([^;\n]+)', line)
+            accmatch = re.search(r'ID=([^;\n]+)', line)
         elif self.source in ['genbank', 'pdom', 'tair', 'beebase']:
-            accmatch = re.search('Name=([^;\n]+)', line)
+            accmatch = re.search(r'Name=([^;\n]+)', line)
         elif self.source == 'local':
-            accmatch = re.search('accession=([^;\n]+)', attributes)
+            accmatch = re.search(r'accession=([^;\n]+)', attributes)
             if not accmatch:
-                accmatch = re.search('Name=([^;\n]+)', attributes)
+                accmatch = re.search(r'Name=([^;\n]+)', attributes)
         else:
             pass
         assert accmatch, 'unable to parse gene accession: %s' % line
         accession = accmatch.group(1)
 
-        idmatch = re.search('ID=([^;\n]+)', attributes)
+        idmatch = re.search(r'ID=([^;\n]+)', attributes)
         if idmatch:
             geneid = idmatch.group(1)
             self.id2acc[geneid] = accession
@@ -136,7 +136,7 @@ class FeatureFormatter(object):
             'mRNA', 'tRNA', 'rRNA', 'transcript', 'primary_transcript',
             'ncRNA', 'miRNA', 'snRNA', 'snoRNA', 'lnc_RNA', 'scRNA', 'SRP_RNA',
             'antisense_RNA', 'RNase_P_RNA', 'telomerase_RNA', 'piRNA',
-            'RNase_MRP_RNA'
+            'RNase_MRP_RNA', 'guide_RNA',
         ]
         if ftype not in ttypes:
             return line
@@ -145,21 +145,21 @@ class FeatureFormatter(object):
         idmatch = None
         parentaccession = None
         if self.source == 'refseq':
-            accmatch = re.search('transcript_id=([^;\n]+)', attributes)
-            idmatch = re.search('GeneID:([^;,\n]+)', attributes)
+            accmatch = re.search(r'transcript_id=([^;\n]+)', attributes)
+            idmatch = re.search(r'GeneID:([^;,\n]+)', attributes)
         elif self.source == 'genbank':
-            parentid = re.search('Parent=([^;\n]+)', attributes).group(1)
+            parentid = re.search(r'Parent=([^;\n]+)', attributes).group(1)
             parentaccession = self.id2acc[parentid]
         elif self.source in ['crg', 'pdom']:
-            accmatch = re.search('ID=([^;\n]+)', attributes)
+            accmatch = re.search(r'ID=([^;\n]+)', attributes)
         elif self.source in ['beebase', 'tair', 'am10']:
-            accmatch = re.search('Name=([^;\n]+)', attributes)
+            accmatch = re.search(r'Name=([^;\n]+)', attributes)
         elif self.source == 'local':
-            accmatch = re.search('protein_id=([^;\n]+)', attributes)
+            accmatch = re.search(r'protein_id=([^;\n]+)', attributes)
             if not accmatch:
-                accmatch = re.search('accession=([^;\n]+)', attributes)
+                accmatch = re.search(r'accession=([^;\n]+)', attributes)
             if not accmatch:
-                accmatch = re.search('Name=([^;\n]+)', attributes)
+                accmatch = re.search(r'Name=([^;\n]+)', attributes)
         else:
             pass
         assert accmatch or idmatch or parentaccession, \
@@ -171,7 +171,7 @@ class FeatureFormatter(object):
         else:
             accession = '%s:%s' % (idmatch.group(1), ftype)
 
-        rnaidmatch = re.search('ID=([^;\n]+)', attributes)
+        rnaidmatch = re.search(r'ID=([^;\n]+)', attributes)
         if rnaidmatch:
             rnaid = rnaidmatch.group(1)
             self.id2acc[rnaid] = accession
@@ -193,8 +193,8 @@ class FeatureFormatter(object):
                          'C_gene_segment']:
             return line
 
-        vdjid = re.search('ID=([^;\n]+)', line).group(1)
-        accession = re.search('GeneID:([^;,\n]+)', line).group(1)
+        vdjid = re.search(r'ID=([^;\n]+)', line).group(1)
+        accession = re.search(r'GeneID:([^;,\n]+)', line).group(1)
         self.id2acc[vdjid] = accession
 
         return line + ';accession=' + accession
@@ -212,7 +212,7 @@ class FeatureFormatter(object):
         if ftype not in ['exon', 'intron', 'CDS']:
             return line
 
-        parentid = re.search('Parent=([^;\n]+)', line).group(1)
+        parentid = re.search(r'Parent=([^;\n]+)', line).group(1)
         if self.source == 'tair':
             for pid in parentid.split(','):
                 if 'RNA' in pid:
@@ -244,8 +244,8 @@ def format_prefix(line, prefix):
     if len(line.split('\t')) == 9:
         return prefix + line
     elif line.startswith('##sequence-region'):
-        return re.sub('##sequence-region(\s+)(\S+)',
-                      '##sequence-region\g<1>%s\g<2>' % args.prefix, line)
+        return re.sub(r'##sequence-region(\s+)(\S+)',
+                      r'##sequence-region\g<1>%s\g<2>' % args.prefix, line)
 
 
 def main():
@@ -255,6 +255,7 @@ def main():
         if args.prefix:
             line = format_prefix(line, args.prefix)
         print(line, file=args.outfile)
+
 
 if __name__ == '__main__':
     main()

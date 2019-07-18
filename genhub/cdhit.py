@@ -19,7 +19,7 @@ class ClusterSeq(object):
 
     def __init__(self, line):
         self.rawdata = line.rstrip()
-        values = re.compile("\s+").split(self.rawdata)
+        values = re.compile(r'\s+').split(self.rawdata)
         self.index = int(values[0])
         self.length = int(values[1][:-3])
         self.defline = values[2]
@@ -32,7 +32,7 @@ class ClusterSeq(object):
             >gnl|Tcas|XP_008191512.1
         """
         assert self.defline.startswith('>gnl|')
-        acc = re.match('>gnl\|[^\|]+\|([^\|\n]+)', self.defline).group(1)
+        acc = re.match(r'>gnl\|[^\|]+\|([^\|\n]+)', self.defline).group(1)
         assert acc.endswith('...')
         acc = acc[:-3]
         return acc

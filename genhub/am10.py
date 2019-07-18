@@ -44,7 +44,7 @@ class Am10DB(genhub.genomedb.GenomeDB):
 
     def format_gdna(self, instream, outstream, logstream=sys.stderr):
         for line in instream:
-            deflinematch = re.search('>gnl\|[^\|]+\|(\S+)', line)
+            deflinematch = re.search(r'>gnl\|[^\|]+\|(\S+)', line)
             if deflinematch:
                 seqid = deflinematch.group(1)
                 line = line.replace('>', '>%s ' % seqid)

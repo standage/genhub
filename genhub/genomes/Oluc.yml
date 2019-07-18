@@ -1,5 +1,5 @@
 Oluc:
-    species: Ostreococcus lucimarinus
+    species: Ostreococcus sp. lucimarinus_
     clade: green algae
     source: refseq
     branch: plant
@@ -7,6 +7,6 @@ Oluc:
     build: ASM9206v1
     checksums:
         gdna: 5d1b5aaf55e4bf15d72d701935877641f25afa42
-        gff3: 071ac022d42f3a742e5c4aa908690b9b5592617f
-        prot: 3726074a747deb6732c477f86c36d50ab806418f
+        gff3: 1d15581d6fd97de8c431aa0a1be70c74dd2a65fb
+        prot: 97f64896ddf398c6f39a238ac44e3ade063fe295
     description: ASM9206v1 from JGI

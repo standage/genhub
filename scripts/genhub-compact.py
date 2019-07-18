@@ -62,7 +62,7 @@ def longseqs(db, minlength=1000000):
         for line in gff3:
             if not line.startswith('##sequence-region'):
                 continue
-            pattern = '##sequence-region\s+(\S+)\s+(\d+)\s+(\d+)'
+            pattern = r'##sequence-region\s+(\S+)\s+(\d+)\s+(\d+)'
             seqreg = re.search(pattern, line)
             assert seqreg, line
             seqid = seqreg.group(1)
@@ -175,6 +175,7 @@ def main(args):
         else:
             for seqid, sigma, phi in zip(seqids, sigmas, phis):
                 print(species, seqid, sigma, phi, sep='\t')
+
 
 if __name__ == '__main__':
     main(args=cli().parse_args())

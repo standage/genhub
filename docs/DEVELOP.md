@@ -26,7 +26,7 @@ GenHub also depends on several Python modules.
 The `pyyaml` and `pycurl` modules are required for runtime, and should be installed automatically when installing GenHub from PyPI (`pip install genhub`) or from source (`python setupy.py install`).
 See [INSTALL.md](INSTALL.md) for more information.
 
-Additional Python modules are required for GenHub development: `pytest` and `coverage` (for automated unit tests), and `pep8` (for enforcing coding style).
+Additional Python modules are required for GenHub development: `pytest` and `coverage` (for automated unit tests), and `pycodestyle` (for enforcing coding style).
 
 ### Distribution
 
@@ -39,7 +39,7 @@ The following is suggested for setting up a GenHub development environment.
 
 - Fork the main GenHub repository on GitHub
 - Clone (make a local copy of) your fork to your system: `git clone https://github.com/yourusername/genhub.git && cd genhub`
-- Set up a style check that will run before each attempt to store a new commit: `echo 'pep8 genhub/*.py scripts/*.py' > ~/.git/hooks/pre-commit`
+- Set up a style check that will run before each attempt to store a new commit: `make devhooks`
 - Add the GenHub root directory to your `PYTHONPATH` variable: `export PYTHONPATH=$(pwd)`
 - Add the GenHub `scripts` directory to your `PATH` variable: `export PATH=$(pwd)/scripts:$PATH`
 - Verify that GenomeTools and AEGeAn are installed correctly: `make check`

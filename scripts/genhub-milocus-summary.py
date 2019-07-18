@@ -42,7 +42,7 @@ def count_seqs(data):
     """Count sequences from iLocus positions."""
     seqids = dict()
     for locuspos in data['LocusPos']:
-        posmatch = re.search('(\S+)_(\d+)-(\d+)', locuspos)
+        posmatch = re.search(r'(\S+)_(\d+)-(\d+)', locuspos)
         assert posmatch, 'error parsing iLocus position: ' + locuspos
         seqid = posmatch.group(1)
         seqids[seqid] = True

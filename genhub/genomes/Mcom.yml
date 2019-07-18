@@ -12,7 +12,7 @@ Mcom:
         - NC_012575.1
         - NC_012643.1
     checksums:
-        gdna: 3b8e3a973443c2e592843a2581630c0957235e29
-        gff3: 74c6254f6be03e11edebc52dc43090b290afd466
-        prot: 45dd93a569dd8fffbb6d8ad8c4eeeee69d10b710
+        gdna: 59a0e41c96e0e5d80f1dc213ec5240f8a854e859
+        gff3: 34f807a9f36ca85d82b83a8a12e1a306e5be1368
+        prot: 25d7d6ec2e0e5c578ffae166b6c0f8a6157ef5c0
     description: ASM9098v2 from the Micromonas Genome Consortium
