@@ -1,5 +1,9 @@
-GenHub
-======
+GenHub (deprecated)
+===================
+
+**NOTE**: GenHub has been integrated into the [AEGeAn Toolkit](https://github.com/BrendelGroup/AEGeAn) as the [fidibus module](https://github.com/BrendelGroup/AEGeAn/tree/master/fidibus) and ***IS NO LONGER ACTIVELY DEVELOPED HERE!!!**
+
+----------
 
 ![Supported Python versions](https://img.shields.io/pypi/pyversions/genhub.svg)
 [![PyPI version][pypiv]](https://pypi.python.org/pypi/genhub)
