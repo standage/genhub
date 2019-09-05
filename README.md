@@ -1,7 +1,7 @@
 GenHub (deprecated)
 ===================
 
-**NOTE**: GenHub has been integrated into the [AEGeAn Toolkit](https://github.com/BrendelGroup/AEGeAn) as the [fidibus module](https://github.com/BrendelGroup/AEGeAn/tree/master/fidibus) and ***IS NO LONGER ACTIVELY DEVELOPED HERE!!!**
+**NOTE**: GenHub has been integrated into the [AEGeAn Toolkit](https://github.com/BrendelGroup/AEGeAn) as the [fidibus module](https://github.com/BrendelGroup/AEGeAn/tree/master/fidibus) and **IS NO LONGER ACTIVELY DEVELOPED HERE!!!**
 
 ----------
 
